@@ -34,7 +34,9 @@ deployment/terraform/
 
 ## Prerequisites
 
-1.  **GCP Projects:** You should have three GCP projects (Dev, Staging, Prod) and a dedicated project for CI/CD runners if using the global config.
+1.  **GCP Projects:**
+    -   **Multi-Environment (Enterprise Approach):** Separate projects for Dev, Staging, and Prod.
+    -   **Single Project (Simple Approach):** A single GCP project can be used with the `dev` configuration for all purposes.
 2.  **Tools:**
     -   [Terraform](https://www.terraform.io/downloads) (>= 1.0.0)
     -   [gcloud CLI](https://cloud.google.com/sdk/docs/install)
@@ -45,9 +47,9 @@ deployment/terraform/
 
 ## Deployment Instructions
 
-### 1. Development Environment (`dev`)
+### 1. Single Project or Development Environment (`dev`)
 
-The `dev` environment is intended for quick iterations and testing infrastructure changes in an isolated project.
+The `dev` environment is intended for quick iterations, isolated testing, or **single-project deployments**. It is the simplest way to get the infrastructure running.
 
 ```bash
 cd deployment/terraform/dev
@@ -55,7 +57,8 @@ cd deployment/terraform/dev
 # Initialize Terraform
 terraform init
 
-# Plan changes (ensure you set your dev_project_id)
+# Plan changes
+# Use your project ID as the 'dev_project_id'
 terraform plan -var-file="vars/env.tfvars" -var="dev_project_id=YOUR_PROJECT_ID"
 
 # Apply changes
