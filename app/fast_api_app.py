@@ -18,6 +18,7 @@ from contextlib import asynccontextmanager
 import google.auth
 from fastapi import Depends, FastAPI
 from google.adk.cli.fast_api import get_fast_api_app
+from google.adk.sessions import InMemorySessionService
 from google.cloud import firestore
 from google.cloud import logging as google_cloud_logging
 
@@ -35,7 +36,6 @@ from app.models.project import Project
 from app.services.blog_service import BlogService
 from app.services.experience_service import ExperienceService
 from app.services.project_service import ProjectService
-from app.services.session_service import FirestoreSessionService
 
 setup_telemetry()
 _, project_id = google.auth.default()
@@ -63,7 +63,7 @@ async def lifespan(app: FastAPI):
     app.state.project_service = ProjectService(db)
     app.state.blog_service = BlogService(db)
     app.state.experience_service = ExperienceService(db)
-    app.state.session_service = FirestoreSessionService(db)
+    app.state.session_service = InMemorySessionService()
 
     yield
     # Clean up
