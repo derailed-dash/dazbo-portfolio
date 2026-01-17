@@ -13,5 +13,5 @@
 - [x] Task: Conductor - User Manual Verification 'Firestore Provisioning & Validation' (Protocol in workflow.md) [e60a7c5]
 
 ## Phase 3: Documentation & Finalization
-- [~] Task: Write comprehensive documentation in `deployment/README.md` covering architecture, setup, and execution commands.
-- [ ] Task: Conductor - User Manual Verification 'Documentation & Finalization' (Protocol in workflow.md)
+- [x] Task: Write comprehensive documentation in `deployment/README.md` covering architecture, setup, and execution commands. [c2b7f7e]
+- [~] Task: Conductor - User Manual Verification 'Documentation & Finalization' (Protocol in workflow.md)
