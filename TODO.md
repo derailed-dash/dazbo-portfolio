@@ -3,4 +3,6 @@
 - [x] Implement Conductor
 - [ ] Add instruction for Firestore creation, and API enablement
 - [ ] Ensure Firestore in Terraform deployment; remove any Cloud SQL
+- [ ] Add billing alerts and killswitch
+- [ ] Add rate limiting
 - [ ] Create React UI
