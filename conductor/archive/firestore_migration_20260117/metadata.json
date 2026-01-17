@@ -1,0 +1,8 @@
+{
+  "track_id": "firestore_migration_20260117",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-17T14:30:00Z",
+  "updated_at": "2026-01-17T14:30:00Z",
+  "description": "Migrate the database layer from PostgreSQL/asyncpg to Google Firestore and define the initial portfolio schema."
+}
