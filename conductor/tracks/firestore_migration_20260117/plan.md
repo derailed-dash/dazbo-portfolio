@@ -14,7 +14,7 @@
 
 ## Phase 3: Integration & Clean-up
 - [x] Task: Update FastAPI dependency injection in `app/fast_api_app.py` to use Firestore services [0e1964c]
-- [ ] Task: Update API endpoints in `app/fast_api_app.py` to utilize new Firestore service methods
+- [x] Task: Update API endpoints in `app/fast_api_app.py` to utilize new Firestore service methods [252cf15]
 - [ ] Task: Remove `asyncpg` dependency and delete any residual PostgreSQL-specific code (e.g., `deployment/terraform/sql/`)
 - [ ] Task: Update `tech-stack.md` to reflect the final database implementation
 - [ ] Task: Conductor - User Manual Verification 'Integration & Clean-up' (Protocol in workflow.md)
