@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation & Configuration
 - [x] Task: Add `google-cloud-firestore` to dependencies in `pyproject.toml` [1f358fd]
-- [ ] Task: Update environment configuration in `app/config.py` (if exists) and `.env.template` to support Firestore settings (Project ID, Database ID)
+- [x] Task: Update environment configuration in `app/config.py` (if exists) and `.env.template` to support Firestore settings (Project ID, Database ID) [89f33d2]
 - [ ] Task: Conductor - User Manual Verification 'Foundation & Configuration' (Protocol in workflow.md)
 
 ## Phase 2: Data Schema & Service Implementation
