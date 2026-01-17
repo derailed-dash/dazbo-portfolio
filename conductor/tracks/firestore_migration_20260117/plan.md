@@ -7,7 +7,7 @@
 
 ## Phase 2: Data Schema & Service Implementation
 - [x] Task: Define Pydantic models for `Project`, `Blog`, and `Experience` in `app/models/` [f037867]
-- [ ] Task: Implement `FirestoreService` base class in `app/services/firestore_base.py`
+- [x] Task: Implement `FirestoreService` base class in `app/services/firestore_base.py` [850ebea]
 - [ ] Task: Implement specific services for `Project`, `Blog`, and `Experience` in `app/services/`
 - [ ] Task: Implement `FirestoreSessionService` for ADK in `app/services/session_service.py`
 - [ ] Task: Conductor - User Manual Verification 'Data Schema & Service Implementation' (Protocol in workflow.md)
