@@ -13,14 +13,21 @@
 # limitations under the License.
 
 import os
+from contextlib import asynccontextmanager
 
 import google.auth
 from fastapi import FastAPI
 from google.adk.cli.fast_api import get_fast_api_app
+from google.cloud import firestore
 from google.cloud import logging as google_cloud_logging
 
 from app.app_utils.telemetry import setup_telemetry
 from app.app_utils.typing import Feedback
+from app.config import settings
+from app.services.blog_service import BlogService
+from app.services.experience_service import ExperienceService
+from app.services.project_service import ProjectService
+from app.services.session_service import FirestoreSessionService
 
 setup_telemetry()
 _, project_id = google.auth.default()
@@ -39,6 +46,28 @@ session_service_uri = None
 
 artifact_service_uri = f"gs://{logs_bucket_name}" if logs_bucket_name else None
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize Firestore client
+    db = firestore.AsyncClient(
+        project=settings.google_cloud_project, database=settings.firestore_database_id
+    )
+    app.state.firestore_db = db
+
+    # Initialize Services
+    app.state.project_service = ProjectService(db)
+    app.state.blog_service = BlogService(db)
+    app.state.experience_service = ExperienceService(db)
+    app.state.session_service = FirestoreSessionService(db)
+
+    yield
+    # Clean up
+    # firestore.AsyncClient doesn't have a close() method in all versions, 
+    # but it's good practice to check or just let it be.
+    # Actually, it does have close() in newer versions.
+
+
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
     web=True,
@@ -46,6 +75,7 @@ app: FastAPI = get_fast_api_app(
     allow_origins=allow_origins,
     session_service_uri=session_service_uri,
     otel_to_cloud=True,
+    lifespan=lifespan,
 )
 app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
