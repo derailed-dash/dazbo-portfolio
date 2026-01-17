@@ -1,18 +1,15 @@
-from typing import Generic, TypeVar
-
 from google.cloud import firestore
 from pydantic import BaseModel
 
-T = TypeVar("T", bound=BaseModel)
 
-class FirestoreService(Generic[T]):
+class FirestoreService[T: BaseModel]:
     def __init__(self, db: firestore.AsyncClient, collection_name: str, model_class: type[T]):
         self.db = db
         self.collection = db.collection(collection_name)
         self.model_class = model_class
 
     async def create(self, item: T, item_id: str | None = None) -> T:
-        data = item.model_dump(mode="json", exclude={"id"}) # Exclude ID from payload, we use doc ID
+        data = item.model_dump(mode="json", exclude={"id"})  # Exclude ID from payload, we use doc ID
         # If item has explicit ID set, use it.
         if item.id:
             item_id = item.id
@@ -21,7 +18,7 @@ class FirestoreService(Generic[T]):
             doc_ref = self.collection.document(item_id)
             await doc_ref.set(data)
         else:
-            update_time, doc_ref = await self.collection.add(data)
+            _, doc_ref = await self.collection.add(data)
             item_id = doc_ref.id
 
         # Return a copy with the ID set

@@ -8,16 +8,17 @@ from app.models.project import Project
 @pytest.mark.asyncio
 async def test_firestore_service_import():
     try:
-        from app.services.firestore_base import FirestoreService
+        from app.services.firestore_base import FirestoreService  # noqa: F401
     except ImportError:
         pytest.fail("Could not import FirestoreService")
+
 
 @pytest.mark.asyncio
 async def test_firestore_service_create():
     try:
         from app.services.firestore_base import FirestoreService
     except ImportError:
-        return # Handled by test_import
+        return  # Handled by test_import
 
     mock_db = MagicMock()
     mock_collection = MagicMock()

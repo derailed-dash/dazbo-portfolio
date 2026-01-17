@@ -18,4 +18,5 @@ class Settings(BaseSettings):
     google_genai_use_vertexai: bool = False
     gemini_api_key: str | None = None
 
+
 settings = Settings()

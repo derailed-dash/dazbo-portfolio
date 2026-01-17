@@ -31,9 +31,7 @@ def test_agent_stream() -> None:
     session = session_service.create_session_sync(user_id="test_user", app_name="test")
     runner = Runner(agent=root_agent, session_service=session_service, app_name="test")
 
-    message = types.Content(
-        role="user", parts=[types.Part.from_text(text="Why is the sky blue?")]
-    )
+    message = types.Content(role="user", parts=[types.Part.from_text(text="Why is the sky blue?")])
 
     events = list(
         runner.run(
@@ -47,11 +45,7 @@ def test_agent_stream() -> None:
 
     has_text_content = False
     for event in events:
-        if (
-            event.content
-            and event.content.parts
-            and any(part.text for part in event.content.parts)
-        ):
+        if event.content and event.content.parts and any(part.text for part in event.content.parts):
             has_text_content = True
             break
     assert has_text_content, "Expected at least one message with text content"

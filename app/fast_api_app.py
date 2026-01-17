@@ -14,7 +14,6 @@
 
 import os
 from contextlib import asynccontextmanager
-from typing import List
 
 import google.auth
 from fastapi import Depends, FastAPI
@@ -42,9 +41,7 @@ setup_telemetry()
 _, project_id = google.auth.default()
 logging_client = google_cloud_logging.Client()
 logger = logging_client.logger(__name__)
-allow_origins = (
-    os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
-)
+allow_origins = os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
 
 # Artifact bucket for ADK (created by Terraform, passed via env var)
 logs_bucket_name = os.environ.get("LOGS_BUCKET_NAME")
@@ -59,9 +56,7 @@ artifact_service_uri = f"gs://{logs_bucket_name}" if logs_bucket_name else None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize Firestore client
-    db = firestore.AsyncClient(
-        project=settings.google_cloud_project, database=settings.firestore_database_id
-    )
+    db = firestore.AsyncClient(project=settings.google_cloud_project, database=settings.firestore_database_id)
     app.state.firestore_db = db
 
     # Initialize Services
@@ -95,19 +90,19 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
     return {"status": "success"}
 
 
-@app.get("/projects", response_model=List[Project])
+@app.get("/projects", response_model=list[Project])
 async def list_projects(service: ProjectService = Depends(get_project_service)):
     """List all projects."""
     return await service.list()
 
 
-@app.get("/blogs", response_model=List[Blog])
+@app.get("/blogs", response_model=list[Blog])
 async def list_blogs(service: BlogService = Depends(get_blog_service)):
     """List all blog posts."""
     return await service.list()
 
 
-@app.get("/experience", response_model=List[Experience])
+@app.get("/experience", response_model=list[Experience])
 async def list_experience(service: ExperienceService = Depends(get_experience_service)):
     """List all work experience."""
     return await service.list()

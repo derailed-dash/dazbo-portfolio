@@ -15,10 +15,11 @@ def test_project_model():
         description="A test project",
         tags=["python", "ai"],
         featured=True,
-        created_at=datetime.now(UTC)
+        created_at=datetime.now(UTC),
     )
     assert project.title == "Test Project"
     assert project.tags == ["python", "ai"]
+
 
 def test_blog_model():
     try:
@@ -33,9 +34,10 @@ def test_blog_model():
         date="2026-01-17",
         platform="Medium",
         url="https://medium.com/test",
-        created_at=datetime.now(UTC)
+        created_at=datetime.now(UTC),
     )
     assert blog.title == "Test Blog"
+
 
 def test_experience_model():
     try:
@@ -50,6 +52,6 @@ def test_experience_model():
         duration="2020 - Present",
         description="Working on cloud stuff",
         skills=["Go", "Python"],
-        order=1
+        order=1,
     )
     assert experience.company == "Google"
