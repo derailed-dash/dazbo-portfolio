@@ -1,5 +1,7 @@
+from datetime import UTC, datetime
+
 import pytest
-from datetime import datetime, timezone
+
 
 def test_project_model():
     try:
@@ -13,7 +15,7 @@ def test_project_model():
         description="A test project",
         tags=["python", "ai"],
         featured=True,
-        created_at=datetime.now(timezone.utc)
+        created_at=datetime.now(UTC)
     )
     assert project.title == "Test Project"
     assert project.tags == ["python", "ai"]
@@ -31,7 +33,7 @@ def test_blog_model():
         date="2026-01-17",
         platform="Medium",
         url="https://medium.com/test",
-        created_at=datetime.now(timezone.utc)
+        created_at=datetime.now(UTC)
     )
     assert blog.title == "Test Blog"
 

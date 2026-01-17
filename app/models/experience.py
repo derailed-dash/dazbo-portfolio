@@ -1,11 +1,12 @@
-from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
+
 class Experience(BaseModel):
-    id: Optional[str] = None
+    id: str | None = None
     company: str
     role: str
     duration: str
     description: str
-    skills: List[str] = Field(default_factory=list)
+    skills: list[str] = Field(default_factory=list)
     order: int = 0

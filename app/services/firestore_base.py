@@ -1,6 +1,7 @@
-from typing import TypeVar, Generic, List, Optional
-from pydantic import BaseModel
+from typing import Generic, TypeVar
+
 from google.cloud import firestore
+from pydantic import BaseModel
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -10,12 +11,12 @@ class FirestoreService(Generic[T]):
         self.collection = db.collection(collection_name)
         self.model_class = model_class
 
-    async def create(self, item: T, item_id: Optional[str] = None) -> T:
+    async def create(self, item: T, item_id: str | None = None) -> T:
         data = item.model_dump(mode="json", exclude={"id"}) # Exclude ID from payload, we use doc ID
         # If item has explicit ID set, use it.
         if item.id:
             item_id = item.id
-            
+
         if item_id:
             doc_ref = self.collection.document(item_id)
             await doc_ref.set(data)
@@ -26,7 +27,7 @@ class FirestoreService(Generic[T]):
         # Return a copy with the ID set
         return item.model_copy(update={"id": item_id})
 
-    async def get(self, item_id: str) -> Optional[T]:
+    async def get(self, item_id: str) -> T | None:
         doc_ref = self.collection.document(item_id)
         doc = await doc_ref.get()
         if doc.exists:
@@ -35,7 +36,7 @@ class FirestoreService(Generic[T]):
             return self.model_class(**data)
         return None
 
-    async def list(self) -> List[T]:
+    async def list(self) -> list[T]:
         # Simple list all, pagination can be added later
         docs = self.collection.stream()
         items = []
@@ -45,7 +46,7 @@ class FirestoreService(Generic[T]):
             items.append(self.model_class(**data))
         return items
 
-    async def update(self, item_id: str, item_data: dict) -> Optional[T]:
+    async def update(self, item_id: str, item_data: dict) -> T | None:
         doc_ref = self.collection.document(item_id)
         # Using update() which fails if doc doesn't exist
         # Or set(..., merge=True) which creates if not exists

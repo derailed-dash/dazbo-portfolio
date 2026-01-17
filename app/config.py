@@ -1,5 +1,5 @@
-import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     # Infrastructure
     google_cloud_project: str = "dazbo-portfolio"
     google_cloud_location: str = "europe-west1"
-    
+
     # Firestore
     firestore_database_id: str = "(default)"
 

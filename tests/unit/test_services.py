@@ -1,5 +1,6 @@
 import pytest
 
+
 def test_project_service_exists():
     try:
         from app.services.project_service import ProjectService

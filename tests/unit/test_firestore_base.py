@@ -1,6 +1,9 @@
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 from app.models.project import Project
+
 
 @pytest.mark.asyncio
 async def test_firestore_service_import():
@@ -19,12 +22,12 @@ async def test_firestore_service_create():
     mock_db = MagicMock()
     mock_collection = MagicMock()
     mock_doc_ref = MagicMock()
-    
+
     mock_db.collection.return_value = mock_collection
     mock_collection.document.return_value = mock_doc_ref
-    
+
     service = FirestoreService(db=mock_db, collection_name="projects", model_class=Project)
-    
+
     project = Project(title="Test", description="Desc")
     # Assume create returns the created item with ID
     # This mock setup is minimal, just to verify method existence

@@ -1,7 +1,8 @@
-from typing import List, Optional
-from google.adk.sessions import BaseSessionService, Session
+
 from google.adk.events import Event
+from google.adk.sessions import BaseSessionService, Session
 from google.cloud import firestore
+
 
 class FirestoreSessionService(BaseSessionService):
     def __init__(self, db: firestore.AsyncClient):
@@ -9,18 +10,18 @@ class FirestoreSessionService(BaseSessionService):
         self.collection = db.collection("sessions")
 
     async def create_session(
-        self, session_id: str, user_id: Optional[str] = None, app_name: Optional[str] = None, **kwargs
+        self, session_id: str, user_id: str | None = None, app_name: str | None = None, **kwargs
     ) -> Session:
         existing = await self.get_session(session_id)
         if existing:
             return existing
-            
+
         session = Session(id=session_id, user_id=user_id, app_name=app_name, **kwargs)
         data = session.model_dump(mode="json")
         await self.collection.document(session_id).set(data)
         return session
 
-    async def get_session(self, session_id: str) -> Optional[Session]:
+    async def get_session(self, session_id: str) -> Session | None:
         doc = await self.collection.document(session_id).get()
         if doc.exists:
             data = doc.to_dict()
@@ -30,13 +31,13 @@ class FirestoreSessionService(BaseSessionService):
     async def delete_session(self, session_id: str) -> None:
         await self.collection.document(session_id).delete()
 
-    async def list_sessions(self, user_id: Optional[str] = None, app_name: Optional[str] = None) -> List[Session]:
+    async def list_sessions(self, user_id: str | None = None, app_name: str | None = None) -> list[Session]:
         query = self.collection
         if user_id:
             query = query.where(filter=firestore.FieldFilter("user_id", "==", user_id))
         if app_name:
             query = query.where(filter=firestore.FieldFilter("app_name", "==", app_name))
-            
+
         docs = query.stream()
         sessions = []
         async for doc in docs:
