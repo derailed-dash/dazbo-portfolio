@@ -7,10 +7,10 @@
 - [x] Task: Conductor - User Manual Verification 'Terraform Configuration Analysis & Cleanup' (Protocol in workflow.md) [1f893ec]
 
 ## Phase 2: Firestore Provisioning & Validation
-- [ ] Task: Ensure `google_firestore_database` resource is correctly defined in Terraform for Native Mode.
-- [ ] Task: Verify necessary APIs (`firestore.googleapis.com`) are enabled in `apis.tf`.
-- [ ] Task: Validate Terraform configuration (`terraform validate`).
-- [ ] Task: Conductor - User Manual Verification 'Firestore Provisioning & Validation' (Protocol in workflow.md)
+- [x] Task: Ensure `google_firestore_database` resource is correctly defined in Terraform for Native Mode. [ec9e846]
+- [x] Task: Verify necessary APIs (`firestore.googleapis.com`) are enabled in `apis.tf`. [ec9e846]
+- [x] Task: Validate Terraform configuration (`terraform validate`). [ec9e846]
+- [~] Task: Conductor - User Manual Verification 'Firestore Provisioning & Validation' (Protocol in workflow.md)
 
 ## Phase 3: Documentation & Finalization
 - [ ] Task: Write comprehensive documentation in `deployment/README.md` covering architecture, setup, and execution commands.
