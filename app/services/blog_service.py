@@ -1,3 +1,9 @@
+"""
+Description: Blog service implementation.
+Why: Handles business logic and Firestore operations for blog posts.
+How: Extends `FirestoreService` for `Blog` model and `blogs` collection.
+"""
+
 from google.cloud import firestore
 
 from app.models.blog import Blog

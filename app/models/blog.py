@@ -1,3 +1,9 @@
+"""
+Description: Blog data model.
+Why: Defines the schema for blog posts stored in Firestore and returned by the API.
+How: Uses Pydantic BaseModel to define fields like title, summary, date, url, etc.
+"""
+
 from datetime import datetime
 
 from pydantic import BaseModel, Field

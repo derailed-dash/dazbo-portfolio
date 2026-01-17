@@ -1,3 +1,9 @@
+"""
+Description: Unit tests for FirestoreService.
+Why: Verifies that generic Firestore service methods are callable and handle imports correctly.
+How: Uses mocks for Firestore client/collection/document.
+"""
+
 from unittest.mock import MagicMock
 
 import pytest

@@ -1,3 +1,9 @@
+"""
+Description: Integration tests for API endpoints.
+Why: Verifies that API routes return correct status codes and data format.
+How: Uses `TestClient` and mocks dependency injection overrides for services.
+"""
+
 from unittest.mock import AsyncMock
 
 from fastapi.testclient import TestClient

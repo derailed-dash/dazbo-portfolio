@@ -1,3 +1,9 @@
+"""
+Description: FastAPI dependency injection providers.
+Why: Decouples route handlers from service instantiation and ensures consistent access to shared resources.
+How: Provides functions to retrieve services (ProjectService, BlogService, etc.) from `request.app.state`.
+"""
+
 from fastapi import Request
 
 from app.services.blog_service import BlogService

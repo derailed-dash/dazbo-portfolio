@@ -1,3 +1,9 @@
+"""
+Description: Application configuration settings.
+Why: Centralizes settings from environment variables for consistent configuration across the app.
+How: Uses `pydantic-settings` to load and validate environment variables.
+"""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

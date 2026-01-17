@@ -1,3 +1,9 @@
+"""
+Description: Integration tests for FastAPI application setup.
+Why: Verifies that the application state is correctly initialized.
+How: Uses `TestClient` to trigger lifespan events and checks `app.state`.
+"""
+
 from fastapi.testclient import TestClient
 
 

@@ -1,3 +1,9 @@
+"""
+Description: Firestore-backed session service.
+Why: Manages user sessions and event history in Firestore for persistence.
+How: Implements `BaseSessionService` interface, overriding methods to read/write to Firestore `sessions` collection.
+"""
+
 from typing import Any
 
 from google.adk.events import Event

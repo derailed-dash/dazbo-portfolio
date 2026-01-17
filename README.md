@@ -29,6 +29,35 @@ dazbo-portfolio/
 
 ## Developing With This Repo
 
+### One-Time Setup
+
+1. Create a Google Cloud project and attach a billing account.
+2. Enable the required APIs.
+
+    ```bash
+    gcloud services enable --project=$GOOGLE_CLOUD_PROJECT \
+      artifactregistry.googleapis.com \
+      cloudbuild.googleapis.com \
+      secretmanager.googleapis.com \
+      run.googleapis.com \
+      logging.googleapis.com \
+      aiplatform.googleapis.com \
+      serviceusage.googleapis.com \
+      storage.googleapis.com \
+      cloudtrace.googleapis.com \
+      geminicloudassist.googleapis.com \
+      firestore.googleapis.com
+    ```
+
+3. Create your API key, e.g. at https://aistudio.google.com/api-keys
+
+4. Set up Firestore.
+
+    ```bash
+    # If not using Terraform
+    gcloud firestore databases create --location=europe-west1 --type=firestore-native
+    ```
+
 ### Per Dev Session (Once One-Time Setup Tasks Have Been Completed)
 
 **DO THIS STEP BEFORE EACH DEV SESSION**

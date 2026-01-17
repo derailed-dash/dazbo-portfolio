@@ -1,3 +1,9 @@
+"""
+Description: Experience data model.
+Why: Defines the schema for work experience entries.
+How: Uses Pydantic BaseModel for fields like company, role, duration, description.
+"""
+
 from pydantic import BaseModel, Field
 
 

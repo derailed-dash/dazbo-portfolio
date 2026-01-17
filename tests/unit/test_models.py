@@ -1,3 +1,9 @@
+"""
+Description: Unit tests for Pydantic models.
+Why: Verifies that data models can be instantiated and basic validation works.
+How: Instantiates models with valid data and asserts field values.
+"""
+
 from datetime import UTC, datetime
 
 import pytest

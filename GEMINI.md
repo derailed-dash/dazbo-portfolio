@@ -13,14 +13,15 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 
 ## Key Docs
 
-- @README.md
-- @GEMINI.md
-- @TODO.md
-- @Makefile
-- @docs/design-and-walkthrough.md
-- @docs/testing.md
+- @README.md - repo overview and dev guidance
+- @GEMINI.md - guidance for you, the agent
+- @TODO.md - list of tasks to complete
+- @Makefile - dev commands
+- @docs/design-and-walkthrough.md - design and walkthrough, including design decisions and implementation
+- @docs/testing.md - testing docs, including descriptions of all tests
 
 ## Rules
 
 - ALWAYS use the adk-docs-mcp to answer questions about building agents with ADK. If you can't use this MCP, you MUST alert me rather than falling back to what you know.
 - Key docs should be updated as you make changes.
+- Always include top-of-file docstrings in every Python file you create or edit. This should include a description of what the file does, why it exists, and how it works.

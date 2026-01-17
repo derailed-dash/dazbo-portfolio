@@ -1,3 +1,9 @@
+"""
+Description: Project service implementation.
+Why: Handles business logic and Firestore operations for portfolio projects.
+How: Extends `FirestoreService` for `Project` model and `projects` collection.
+"""
+
 from google.cloud import firestore
 
 from app.models.project import Project

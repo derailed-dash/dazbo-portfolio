@@ -88,6 +88,15 @@ build-backend = "hatchling.build"
 [tool.pytest.ini_options]
 pythonpath = "."
 asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    # Ignore Pydantic V2 deprecation warnings from third-party libs like litellm
+    "ignore::pydantic.warnings.PydanticDeprecatedSince20",
+    # Ignore ADK experimental warnings
+    "ignore:\\[EXPERIMENTAL\\]:UserWarning:google.adk.*",
+    # Ignore internal DeprecationWarnings from ADK and GenAI
+    "ignore:deprecated:DeprecationWarning:google.adk.*",
+    "ignore:Inheritance class AiohttpClientSession.*:DeprecationWarning:google.genai.*",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["app","frontend"]

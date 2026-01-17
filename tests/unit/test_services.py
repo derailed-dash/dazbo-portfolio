@@ -1,3 +1,9 @@
+"""
+Description: Unit tests for Service existence.
+Why: Verifies that service classes can be imported, ensuring no circular dependency or syntax errors.
+How: Simple import checks.
+"""
+
 import pytest
 
 

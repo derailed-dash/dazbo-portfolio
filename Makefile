@@ -70,7 +70,7 @@ setup-dev-env:
 # Run unit and integration tests
 test:
 	uv sync --dev
-	uv run pytest --disable-warnings tests/unit && uv run pytest --disable-warnings tests/integration
+	uv run pytest tests/unit && uv run pytest tests/integration
 
 # Run code quality checks (codespell, ruff, ty)
 lint:

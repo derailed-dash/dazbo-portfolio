@@ -1,3 +1,9 @@
+"""
+Description: Unit tests for FirestoreSessionService.
+Why: Verifies that the session service implements the required interface and has expected methods.
+How: Import checks and interface verification.
+"""
+
 from unittest.mock import MagicMock
 
 import pytest

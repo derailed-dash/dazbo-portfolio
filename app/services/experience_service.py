@@ -1,3 +1,9 @@
+"""
+Description: Experience service implementation.
+Why: Handles business logic and Firestore operations for work experience entries.
+How: Extends `FirestoreService` for `Experience` model and `experience` collection.
+"""
+
 from google.cloud import firestore
 
 from app.models.experience import Experience

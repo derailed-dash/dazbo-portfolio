@@ -1,3 +1,9 @@
+"""
+Description: Generic Firestore service base class.
+Why: Provides reusable CRUD operations for Pydantic models backed by Firestore.
+How: Implements `create`, `get`, `list`, `update`, `delete` using python 3.12+ generics.
+"""
+
 from google.cloud import firestore
 from pydantic import BaseModel
 

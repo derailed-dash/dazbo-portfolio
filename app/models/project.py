@@ -1,3 +1,10 @@
+"""
+Description: Project data model.
+Why: Defines the schema for portfolio projects.
+How: Uses Pydantic BaseModel for fields like title, description, tags, urls.
+Dependencies: pydantic.
+"""
+
 from datetime import datetime
 
 from pydantic import BaseModel, Field
