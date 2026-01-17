@@ -9,7 +9,7 @@
 - [x] Task: Define Pydantic models for `Project`, `Blog`, and `Experience` in `app/models/` [f037867]
 - [x] Task: Implement `FirestoreService` base class in `app/services/firestore_base.py` [850ebea]
 - [x] Task: Implement specific services for `Project`, `Blog`, and `Experience` in `app/services/` [116f320]
-- [ ] Task: Implement `FirestoreSessionService` for ADK in `app/services/session_service.py`
+- [x] Task: Implement `FirestoreSessionService` for ADK in `app/services/session_service.py` [6367329]
 - [ ] Task: Conductor - User Manual Verification 'Data Schema & Service Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Integration & Clean-up
