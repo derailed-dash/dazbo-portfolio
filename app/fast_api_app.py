@@ -14,9 +14,10 @@
 
 import os
 from contextlib import asynccontextmanager
+from typing import List
 
 import google.auth
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from google.adk.cli.fast_api import get_fast_api_app
 from google.cloud import firestore
 from google.cloud import logging as google_cloud_logging
@@ -24,6 +25,14 @@ from google.cloud import logging as google_cloud_logging
 from app.app_utils.telemetry import setup_telemetry
 from app.app_utils.typing import Feedback
 from app.config import settings
+from app.dependencies import (
+    get_blog_service,
+    get_experience_service,
+    get_project_service,
+)
+from app.models.blog import Blog
+from app.models.experience import Experience
+from app.models.project import Project
 from app.services.blog_service import BlogService
 from app.services.experience_service import ExperienceService
 from app.services.project_service import ProjectService
@@ -63,9 +72,7 @@ async def lifespan(app: FastAPI):
 
     yield
     # Clean up
-    # firestore.AsyncClient doesn't have a close() method in all versions, 
-    # but it's good practice to check or just let it be.
-    # Actually, it does have close() in newer versions.
+    db.close()
 
 
 app: FastAPI = get_fast_api_app(
@@ -83,16 +90,27 @@ app.description = "API for interacting with the Agent dazbo-portfolio"
 
 @app.post("/feedback")
 def collect_feedback(feedback: Feedback) -> dict[str, str]:
-    """Collect and log feedback.
-
-    Args:
-        feedback: The feedback data to log
-
-    Returns:
-        Success message
-    """
+    """Collect and log feedback."""
     logger.log_struct(feedback.model_dump(), severity="INFO")
     return {"status": "success"}
+
+
+@app.get("/projects", response_model=List[Project])
+async def list_projects(service: ProjectService = Depends(get_project_service)):
+    """List all projects."""
+    return await service.list()
+
+
+@app.get("/blogs", response_model=List[Blog])
+async def list_blogs(service: BlogService = Depends(get_blog_service)):
+    """List all blog posts."""
+    return await service.list()
+
+
+@app.get("/experience", response_model=List[Experience])
+async def list_experience(service: ExperienceService = Depends(get_experience_service)):
+    """List all work experience."""
+    return await service.list()
 
 
 # Main execution
