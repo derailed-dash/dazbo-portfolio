@@ -1,0 +1,6 @@
+- [x] Create design-and-walkthrough doc
+- [x] Create testing doc
+- [x] Implement Conductor
+- [ ] Add instruction for Firestore creation, and API enablement
+- [ ] Ensure Firestore in Terraform deployment; remove any Cloud SQL
+- [ ] Create React UI

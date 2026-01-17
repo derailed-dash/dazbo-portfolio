@@ -15,6 +15,7 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 
 - @README.md
 - @GEMINI.md
+- @TODO.md
 - @Makefile
 - @docs/design-and-walkthrough.md
 - @docs/testing.md
