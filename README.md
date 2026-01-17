@@ -1,71 +1,71 @@
 # dazbo-portfolio
 
-Simple ReAct agent
-Agent generated with [`googleCloudPlatform/agent-starter-pack`](https://github.com/GoogleCloudPlatform/agent-starter-pack) version `0.31.2`
+A development portfolio application, with React frontend, and an ADK/Gemini-based chat interface. The goal of the portfolio application is to showcase my blogs, projects and public code repos.
+
+## Repo Metadata
+
+Author: Darren "Dazbo" Lester
 
 ## Project Structure
 
 ```
 dazbo-portfolio/
-├── app/         # Core agent code
+├── app/                       # Core agent code
 │   ├── agent.py               # Main agent logic
 │   ├── fast_api_app.py        # FastAPI Backend server
 │   └── app_utils/             # App utilities and helpers
 ├── .cloudbuild/               # CI/CD pipeline configurations for Google Cloud Build
 ├── deployment/                # Infrastructure and deployment scripts
+│   └── terraform/             # Terraform configuration
 ├── notebooks/                 # Jupyter notebooks for prototyping and evaluation
 ├── tests/                     # Unit, integration, and load tests
-├── GEMINI.md                  # AI-assisted development guide
+├── .env.template              # .env template file
+├── .envrc                     # Optional auto env configuration file
+├── GEMINI.md                  # Guidance for Gemini
 ├── Makefile                   # Development commands
-└── pyproject.toml             # Project dependencies
+├── pyproject.toml             # Project Python dependencies and configuration
+└── README.md                  # This file
 ```
 
-> 💡 **Tip:** Use [Gemini CLI](https://github.com/google-gemini/gemini-cli) for AI-assisted development - project context is pre-configured in `GEMINI.md`.
+## Developing With This Repo
 
-## Requirements
+### Per Dev Session (Once One-Time Setup Tasks Have Been Completed)
 
-Before you begin, ensure you have:
-- **uv**: Python package manager (used for all dependency management in this project) - [Install](https://docs.astral.sh/uv/getting-started/installation/) ([add packages](https://docs.astral.sh/uv/concepts/dependencies/) with `uv add <package>`)
-- **Google Cloud SDK**: For GCP services - [Install](https://cloud.google.com/sdk/docs/install)
-- **Terraform**: For infrastructure deployment - [Install](https://developer.hashicorp.com/terraform/downloads)
-- **make**: Build automation tool - [Install](https://www.gnu.org/software/make/) (pre-installed on most Unix-based systems)
+**DO THIS STEP BEFORE EACH DEV SESSION**
 
-
-## Quick Start
-
-Install required packages and launch the local development environment:
+To configure your shell for a development session, **source** the `scripts/setup-env.sh` script. This will handle authentication, set the correct Google Cloud project, install dependencies, and activate the Python virtual environment.
 
 ```bash
-make install && make playground
+source scripts/setup-env.sh [--noauth]
 ```
-> **📊 Observability Note:** Agent telemetry (Cloud Trace) is always enabled. Prompt-response logging (GCS, BigQuery, Cloud Logging) is **disabled** locally, **enabled by default** in deployed environments (metadata only - no prompts/responses). See [Monitoring and Observability](#monitoring-and-observability) for details.
 
-## Commands
+### Using Direnv
 
-| Command              | Description                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------- |
-| `make install`       | Install dependencies using uv                                                               |
-| `make playground`    | Launch local development environment                                                        |
-| `make lint`          | Run code quality checks                                                                     |
-| `make test`          | Run unit and integration tests                                                              |
-| `make deploy`        | Deploy agent to Cloud Run                                                                   |
-| `make local-backend` | Launch local development server with hot-reload                                             |
-| `make setup-dev-env` | Set up development environment resources using Terraform                                   |
+Note that you can automate loading the `setup-env.sh` script by installing [direnv](https://direnv.net/), and then including the `.envrc` in the project folder. E.g.
+
+```bash
+sudo apt install direnv
+
+# Add eval "$(direnv hook bash)" to your .bashrc
+echo "eval \"\$(direnv hook bash)\"" >> ~/.bashrc
+
+# Then, from this project folder:
+direnv allow
+```
+
+## Useful Commands
+
+| Command              | Description                                                             |
+| -------------------- | ----------------------------------------------------------------------- |
+| `make install`       | Install dependencies using uv                                           |
+| `make playground`    | Launch local development environment using ADK Web UI                   |
+| `make lint`          | Run code quality checks                                                 |
+| `make test`          | Run unit and integration tests                                          |
+| `make deploy`        | Deploy agent to Cloud Run                                               |
+| `make local-backend` | Launch local development server with hot-reload                         |
+| `make setup-dev-env` | Set up development environment resources using Terraform                |
 
 For full command options and usage, refer to the [Makefile](Makefile).
-
-
-## Usage
-
-This template follows a "bring your own agent" approach - you focus on your business logic, and the template handles everything else (UI, infrastructure, deployment, monitoring).
-1. **Prototype:** Build your Generative AI Agent using the intro notebooks in `notebooks/` for guidance. Use Vertex AI Evaluation to assess performance.
-2. **Integrate:** Import your agent into the app by editing `app/agent.py`.
-3. **Test:** Explore your agent functionality using the local playground with `make playground`. The playground automatically reloads your agent on code changes.
-4. **Deploy:** Set up and initiate the CI/CD pipelines, customizing tests as necessary. Refer to the [deployment section](#deployment) for comprehensive instructions. For streamlined infrastructure deployment, simply run `uvx agent-starter-pack setup-cicd`. Check out the [`agent-starter-pack setup-cicd` CLI command](https://googlecloudplatform.github.io/agent-starter-pack/cli/setup_cicd.html). Currently supports GitHub with both Google Cloud Build and GitHub Actions as CI/CD runners.
-5. **Monitor:** Track performance and gather insights using BigQuery telemetry data, Cloud Logging, and Cloud Trace to iterate on your application.
-
-The project includes a `GEMINI.md` file that provides context for AI tools like Gemini CLI when asking questions about your template.
-
 
 ## Deployment
 
@@ -80,9 +80,34 @@ gcloud config set project <your-dev-project-id>
 make deploy
 ```
 
-
 The repository includes a Terraform configuration for the setup of the Dev Google Cloud project.
 See [deployment/README.md](deployment/README.md) for instructions.
+
+### Running in a Local Container
+
+```bash
+# from project root directory
+
+# Get a unique version to tag our image
+export VERSION=$(git rev-parse --short HEAD)
+
+# To build as a container image
+docker build -t $SERVICE_NAME:$VERSION .
+
+# To run as a local container
+# We need to pass environment variables to the container
+# and the Google Application Default Credentials (ADC)
+docker run --rm -p 8080:8080 \
+  -e GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT -e GOOGLE_CLOUD_REGION=$GOOGLE_CLOUD_REGION \
+  -e LOG_LEVEL=$LOG_LEVEL \
+  -e APP_NAME=$APP_NAME \
+  -e AGENT_NAME=$AGENT_NAME \
+  -e GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI \
+  -e MODEL=$MODEL \
+  -e GOOGLE_APPLICATION_CREDENTIALS="/app/.config/gcloud/application_default_credentials.json" \
+  --mount type=bind,source=${HOME}/.config/gcloud,target=/app/.config/gcloud \
+   $SERVICE_NAME:$VERSION
+```
 
 ### Production Deployment
 
