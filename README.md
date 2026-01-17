@@ -98,8 +98,6 @@ For full command options and usage, refer to the [Makefile](Makefile).
 
 ## Deployment
 
-> **Note:** For a streamlined one-command deployment of the entire CI/CD pipeline and infrastructure using Terraform, you can use the [`agent-starter-pack setup-cicd` CLI command](https://googlecloudplatform.github.io/agent-starter-pack/cli/setup_cicd.html). Currently supports GitHub with both Google Cloud Build and GitHub Actions as CI/CD runners.
-
 ### Dev Environment
 
 You can test deployment towards a Dev Environment using the following command:

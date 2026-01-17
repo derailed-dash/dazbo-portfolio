@@ -19,6 +19,7 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 - @Makefile - dev commands
 - @docs/design-and-walkthrough.md - design and walkthrough, including design decisions and implementation
 - @docs/testing.md - testing docs, including descriptions of all tests
+- @deployment/README.md - deployment docs
 
 ## Rules
 
