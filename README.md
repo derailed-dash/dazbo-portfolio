@@ -84,15 +84,16 @@ direnv allow
 
 ## Useful Commands
 
-| Command              | Description                                                             |
-| -------------------- | ----------------------------------------------------------------------- |
-| `make install`       | Install dependencies using uv                                           |
-| `make playground`    | Launch local development environment using ADK Web UI                   |
-| `make lint`          | Run code quality checks                                                 |
-| `make test`          | Run unit and integration tests                                          |
-| `make deploy`        | Deploy agent to Cloud Run                                               |
-| `make local-backend` | Launch local development server with hot-reload                         |
-| `make setup-dev-env` | Set up development environment resources using Terraform                |
+| Command                 | Description                                                             |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `make install`          | Install dependencies using uv                                           |
+| `make playground`       | Launch local development environment using ADK Web UI                   |
+| `make lint`             | Run code quality checks                                                 |
+| `make test`             | Run unit and integration tests                                          |
+| `make deploy-cloud-run` | Deploy agent to Cloud Run                                               |
+| `make local-backend`    | Launch local development server with hot-reload                         |
+| `make tf-plan`          | Plan Terraform deployment                                               |
+| `make tf-deploy`        | Deploy environment resources using Terraform                            |
 
 For full command options and usage, refer to the [Makefile](Makefile).
 
@@ -104,7 +105,7 @@ You can test deployment towards a Dev Environment using the following command:
 
 ```bash
 gcloud config set project <your-dev-project-id>
-make deploy
+make deploy-cloud-run
 ```
 
 The repository includes a Terraform configuration for the setup of the Dev Google Cloud project.

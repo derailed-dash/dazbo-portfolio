@@ -19,17 +19,19 @@ The infrastructure is designed to be serverless, scalable, and secure, leveragin
 
 ```text
 deployment/terraform/
-├── dev/                  # Isolated environment for local/individual development
-│   ├── apis.tf           # Services to enable in the dev project
-│   ├── iam.tf            # Service accounts and IAM roles for dev
-│   ├── storage.tf        # GCS buckets and Firestore for dev
-│   └── service.tf        # Cloud Run service definition for dev
-├── modules/              # (Planned) Shared modules for common resources
-├── apis.tf               # Global APIs for Staging/Prod/CICD projects
-├── iam.tf                # Global IAM configuration
-├── storage.tf            # Global GCS, Artifact Registry, and Firestore
-├── service.tf            # Multi-environment Cloud Run definitions
-└── telemetry.tf          # Cloud Logging buckets and sinks for telemetry
+├── vars/
+│   └── env.tfvars        # Environment-specific variable values
+├── apis.tf               # Google Cloud API enablement
+├── build_triggers.tf     # Cloud Build trigger definitions for CI/CD
+├── github.tf             # GitHub repository and connection configuration
+├── iam.tf                # IAM bindings and permissions
+├── locals.tf             # Local variable definitions and helpers
+├── providers.tf          # Terraform provider configuration
+├── service.tf            # Cloud Run service definition
+├── service_accounts.tf   # Service Account definitions
+├── storage.tf            # GCS buckets, Artifact Registry, and Firestore
+├── telemetry.tf          # Cloud Logging buckets and telemetry sinks
+└── variables.tf          # Input variable definitions
 ```
 
 ## Prerequisites
@@ -47,22 +49,17 @@ deployment/terraform/
 
 ## Deployment Instructions
 
-### 1. Single Project or Development Environment (`dev`)
+### 1. Single Project / Quick Start
 
-The `dev` environment is intended for quick iterations, isolated testing, or **single-project deployments**. It is the simplest way to get the infrastructure running.
+For individual development or single-project setups, use the root configuration.
 
 ```bash
-cd deployment/terraform/dev
-
-# Initialize Terraform
-terraform init
-
-# Plan changes
-# Use your project ID as the 'dev_project_id'
-terraform plan -var-file="vars/env.tfvars" -var="dev_project_id=YOUR_PROJECT_ID"
+```bash
+# Plan changes for your project
+make tf-plan
 
 # Apply changes
-terraform apply -var-file="vars/env.tfvars" -var="dev_project_id=YOUR_PROJECT_ID"
+make tf-deploy
 ```
 
 ### 2. Multi-Environment (Staging & Production)

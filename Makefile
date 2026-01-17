@@ -35,7 +35,7 @@ local-backend:
 
 # Deploy the agent remotely
 # Usage: make deploy [IAP=true] [PORT=8080] - Set IAP=true to enable Identity-Aware Proxy, PORT to specify container port
-deploy:
+deploy-cloud-run:
 	PROJECT_ID=$$(gcloud config get-value project) && \
 	gcloud beta run deploy dazbo-portfolio \
 		--source . \
@@ -59,9 +59,11 @@ backend: deploy
 # ==============================================================================
 
 # Set up development environment resources using Terraform
-setup-dev-env:
-	PROJECT_ID=$$(gcloud config get-value project) && \
-	(cd deployment/terraform/dev && terraform init && terraform apply --var-file vars/env.tfvars --var dev_project_id=$$PROJECT_ID --auto-approve)
+tf-plan:
+	(cd deployment/terraform && terraform init && terraform plan --var-file vars/env.tfvars)
+
+tf-deploy:
+	(cd deployment/terraform && terraform init && terraform apply --var-file vars/env.tfvars --auto-approve)
 
 # ==============================================================================
 # Testing & Code Quality

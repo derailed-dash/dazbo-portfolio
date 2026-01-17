@@ -3,7 +3,8 @@
 - [x] Implement Conductor
 - [x] Add Gemini PR GitHub Actions
 - [x] Add instruction for Firestore creation, and API enablement
-- [ ] Ensure Firestore in Terraform deployment; remove any Cloud SQL
-- [ ] Add billing alerts and killswitch
-- [ ] Add rate limiting
+- [x] Ensure Firestore in Terraform deployment; remove any Cloud SQL
+- [x] Add billing alerts and killswitch
+- [ ] Establish how to ingest/point to source blogs, repos, etc
 - [ ] Create React UI
+- [ ] Add rate limiting
