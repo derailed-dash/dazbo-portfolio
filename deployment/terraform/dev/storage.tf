@@ -26,4 +26,20 @@ resource "google_storage_bucket" "logs_data_bucket" {
   depends_on = [resource.google_project_service.services]
 }
 
+resource "google_firestore_database" "database" {
 
+  project                     = var.dev_project_id
+
+  name                        = "(default)"
+
+  location_id                 = var.region
+
+  type                        = "FIRESTORE_NATIVE"
+
+  delete_protection_state     = "DELETE_PROTECTION_DISABLED"
+
+  
+
+  depends_on = [resource.google_project_service.services]
+
+}

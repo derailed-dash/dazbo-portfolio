@@ -22,6 +22,7 @@ locals {
     "serviceusage.googleapis.com",
     "logging.googleapis.com",
     "cloudtrace.googleapis.com",
+    "firestore.googleapis.com",
   ]
 }
 

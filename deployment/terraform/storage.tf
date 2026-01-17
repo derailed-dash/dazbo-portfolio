@@ -37,5 +37,22 @@ resource "google_artifact_registry_repository" "repo-artifacts-genai" {
   depends_on    = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
 
+resource "google_firestore_database" "database" {
 
+  for_each                    = local.deploy_project_ids
 
+  project                     = each.value
+
+  name                        = "(default)"
+
+  location_id                 = var.region
+
+  type                        = "FIRESTORE_NATIVE"
+
+  delete_protection_state     = "DELETE_PROTECTION_DISABLED"
+
+  
+
+  depends_on = [resource.google_project_service.deploy_project_services]
+
+}

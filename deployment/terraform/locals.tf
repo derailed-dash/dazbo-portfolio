@@ -29,6 +29,7 @@ locals {
     "serviceusage.googleapis.com",
     "logging.googleapis.com",
     "cloudtrace.googleapis.com",
+    "firestore.googleapis.com",
   ]
 
   deploy_project_ids = {
