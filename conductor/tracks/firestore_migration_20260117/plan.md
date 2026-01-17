@@ -5,12 +5,12 @@
 - [x] Task: Update environment configuration in `app/config.py` (if exists) and `.env.template` to support Firestore settings (Project ID, Database ID) [89f33d2]
 - [x] Task: Conductor - User Manual Verification 'Foundation & Configuration' (Protocol in workflow.md)
 
-## Phase 2: Data Schema & Service Implementation
+## Phase 2: Data Schema & Service Implementation [checkpoint: 1c83e8a]
 - [x] Task: Define Pydantic models for `Project`, `Blog`, and `Experience` in `app/models/` [f037867]
 - [x] Task: Implement `FirestoreService` base class in `app/services/firestore_base.py` [850ebea]
 - [x] Task: Implement specific services for `Project`, `Blog`, and `Experience` in `app/services/` [116f320]
 - [x] Task: Implement `FirestoreSessionService` for ADK in `app/services/session_service.py` [6367329]
-- [ ] Task: Conductor - User Manual Verification 'Data Schema & Service Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Data Schema & Service Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Integration & Clean-up
 - [ ] Task: Update FastAPI dependency injection in `app/fast_api_app.py` to use Firestore services
