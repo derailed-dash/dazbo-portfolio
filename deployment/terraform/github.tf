@@ -1,16 +1,22 @@
-# Copyright 2025 Google LLC
+# ==============================================================================
+# GitHub Repository & Connection Configuration
+# ==============================================================================
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# Manages the integration between Google Cloud and GitHub.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# Key Logic:
+# 1. Existing Secrets: This configuration EXPECTS the GitHub PAT secret to already exist 
+#    in Secret Manager (defined by `var.github_pat_secret_id`). It effectively imports/reads
+#    this secret to authorize Cloud Build.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# 2. Connection Management (`var.connection_already_exists`):
+#    - If false (default): Terraform attempts to CREATE a new Cloud Build Connection.
+#      NOTE: If a connection with `var.host_connection_name` already exists manually, this will FAIL.
+#    - If true: Terraform assumes the connection exists and simply references it directly.
+#      Use this setting if you have already set up the connection via the Cloud Console.
+#
+# 3. Repository Linking:
+#    - Connects the specified GitHub repository to the Cloud Build Connection, enabling triggers.
 
 provider "github" {
   owner = var.repository_owner
@@ -41,8 +47,6 @@ resource "github_repository" "repo" {
   auto_init = false
 }
 
-
-
 # Reference existing GitHub PAT secret created by gcloud CLI
 data "google_secret_manager_secret" "github_pat" {
   project   = var.cicd_runner_project_id
@@ -65,7 +69,7 @@ resource "google_secret_manager_secret_iam_member" "cloudbuild_secret_accessor" 
 
 # Create the GitHub connection (fallback for manual Terraform usage)
 resource "google_cloudbuildv2_connection" "github_connection" {
-  count      = var.create_cb_connection ? 0 : 1
+  count      = var.connection_already_exists ? 0 : 1
   project    = var.cicd_runner_project_id
   location   = var.region
   name       = var.host_connection_name
@@ -83,14 +87,13 @@ resource "google_cloudbuildv2_connection" "github_connection" {
   ]
 }
 
-
 resource "google_cloudbuildv2_repository" "repo" {
   project  = var.cicd_runner_project_id
   location = var.region
   name     = var.repository_name
   
   # Use existing connection ID when it exists, otherwise use the created connection
-  parent_connection = var.create_cb_connection ? "projects/${var.cicd_runner_project_id}/locations/${var.region}/connections/${var.host_connection_name}" : google_cloudbuildv2_connection.github_connection[0].id
+  parent_connection = var.connection_already_exists ? "projects/${var.cicd_runner_project_id}/locations/${var.region}/connections/${var.host_connection_name}" : google_cloudbuildv2_connection.github_connection[0].id
   remote_uri       = "https://github.com/${var.repository_owner}/${var.repository_name}.git"
   depends_on = [
     resource.google_project_service.cicd_services,

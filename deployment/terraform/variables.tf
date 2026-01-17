@@ -1,16 +1,10 @@
-# Copyright 2025 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# ==============================================================================
+# Input Variable Definitions
+# ==============================================================================
+
+# Defines all input variables required for the Terraform configuration.
+# Includes project IDs, region settings, repository details, and IAM roles.
+# Values for these variables should be provided via a `terraform.tfvars` file or command-line arguments.
 
 variable "project_name" {
   type        = string
@@ -108,8 +102,8 @@ variable "github_pat_secret_id" {
   default     = null
 }
 
-variable "create_cb_connection" {
-  description = "Flag indicating if a Cloud Build connection already exists"
+variable "connection_already_exists" {
+  description = "Flag indicating if a Cloud Build connection already exists. if false, Terraform will attempt to create it."
   type        = bool
   default     = false
 }

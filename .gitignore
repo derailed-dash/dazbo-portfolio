@@ -144,10 +144,12 @@ dmypy.json
 # PyCharm
 .idea
 
-# User-specific files
+# Terraform
 .terraform*
 .Terraform*
-
+*.tfstate
+*.tfstate.backup
+*.tfplan
 
 tmp*
 
@@ -201,5 +203,8 @@ my_env.tfvars
 # A2A Inspector
 tools/a2a-inspector/
 
+.scratch/
 .gemini/
+working_docs/
 gha-creds-*.json
+

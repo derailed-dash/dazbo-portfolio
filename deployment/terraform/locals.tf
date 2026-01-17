@@ -1,3 +1,12 @@
+# ==============================================================================
+# Local Variables & Helper Definitions
+# ==============================================================================
+
+# Defines local variables used for iteration and configuration consolidation.
+# - Lists APIs to enable for different project types.
+# - Maps environment names (prod, staging) to project IDs.
+# - Aggregates project IDs for resource-wide operations.
+
 locals {
   cicd_services = [
     "cloudbuild.googleapis.com",

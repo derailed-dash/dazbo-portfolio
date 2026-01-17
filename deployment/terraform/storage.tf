@@ -1,3 +1,12 @@
+# ==============================================================================
+# Storage & Database Resources
+# ==============================================================================
+
+# Manages stateful resources and artifact storage.
+# 1. Cloud Storage: Buckets for application logs and telemetry.
+# 2. Artifact Registry: Docker repository for storing application images.
+# 3. Firestore: NoSQL database in Native mode for application data.
+
 provider "google" {
   region = var.region
   user_project_override = true

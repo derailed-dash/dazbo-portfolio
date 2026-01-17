@@ -1,16 +1,12 @@
-# Copyright 2025 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# ==============================================================================
+# Cloud Run Service Definition
+# ==============================================================================
+
+# Defines the main application Cloud Run service.
+# - Configures container image (initially "hello-world", replaced by CI/CD).
+# - Sets resource limits (CPU, Memory) and scaling parameters.
+# - Injects environment variables for runtime configuration (e.g., Log Bucket).
+# - Ties the service to its dedicated Service Account.
 
 # Get project information to access the project number
 data "google_project" "project" {
@@ -37,8 +33,8 @@ resource "google_cloud_run_v2_service" "app" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
       resources {
         limits = {
-          cpu    = "4"
-          memory = "8Gi"
+          cpu    = "2"
+          memory = "4Gi"
         }
         cpu_idle = false
       }
@@ -59,7 +55,7 @@ resource "google_cloud_run_v2_service" "app" {
 
     scaling {
       min_instance_count = 1
-      max_instance_count = 10
+      max_instance_count = 2
     }
 
     session_affinity = true
