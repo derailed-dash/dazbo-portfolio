@@ -56,7 +56,6 @@ variable "app_sa_roles" {
   default = [
 
     "roles/aiplatform.user",
-    "roles/discoveryengine.editor",
     "roles/logging.logWriter",
     "roles/cloudtrace.agent",
     "roles/storage.admin",
@@ -71,7 +70,6 @@ variable "cicd_roles" {
     "roles/run.invoker",
     "roles/storage.admin",
     "roles/aiplatform.user",
-    "roles/discoveryengine.editor",
     "roles/logging.logWriter",
     "roles/cloudtrace.agent",
     "roles/artifactregistry.writer",
