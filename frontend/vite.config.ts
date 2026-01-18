@@ -11,19 +11,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/projects': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      '/blogs': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      '/experience': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      '/feedback': {
+      '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
