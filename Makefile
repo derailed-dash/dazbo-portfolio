@@ -47,6 +47,9 @@ docker-run:
 	docker run --rm -p 8080:8080 \
 		-e GOOGLE_CLOUD_PROJECT=$$(gcloud config get-value project) \
 		-e FIRESTORE_DATABASE_ID="(default)" \
+		-e GEMINI_API_KEY="$${GEMINI_API_KEY}" \
+		-e MODEL="$${MODEL}" \
+		-e GOOGLE_GENAI_USE_VERTEXAI="$${GOOGLE_GENAI_USE_VERTEXAI}" \
 		-e GOOGLE_APPLICATION_CREDENTIALS="/code/.config/gcloud/application_default_credentials.json" \
 		--mount type=bind,source=$${HOME}/.config/gcloud,target=/code/.config/gcloud \
 		dazbo-portfolio:latest

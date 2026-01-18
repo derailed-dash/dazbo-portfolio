@@ -43,6 +43,8 @@ The application employs a **Unified Origin Architecture**. In production, the Fa
     *   **API Prefixing**: All routes are explicitly prefixed with `/api`.
     *   **Static Serving**: Mounts the `frontend/dist` directory to serve static assets (`/assets/*`).
     *   **SPA Support**: Implements a catch-all route that serves `index.html` for any non-API, non-asset path, enabling React Router's client-side navigation.
+    *   **Dependency Injection**: `app/dependencies.py` provides dependency injection providers to supply Services to Route Handlers.
+    *   **Routes**: API endpoints expose the functionality (e.g., `/projects`, `/blogs`, `/experience`) and Agent interaction.
 
 ## CORS Strategy
 
@@ -81,7 +83,69 @@ To ensure readable and deterministic URLs/pointers, the system uses **Slug-based
 
 ## Solution Architecture
 
+### Component Architecture
+
 The following diagram illustrates the relationship between the application's runtime components, the ingestion scripts, and the shared code modules.
+
+```mermaid
+graph TD
+    subgraph "Cloud Run / Local Runtime"
+        API["FastAPI App<br/>(app/fast_api_app.py)"]
+        Frontend["React UI<br/>(frontend/)"]
+        Agent["Gemini Agent<br/>(app/agent.py)"]
+        Dep["Dependencies<br/>(app/dependencies.py)"]
+        
+        Frontend -->|API Calls| API
+        API -->|Mounts| Agent
+        API -->|Uses| Dep
+    end
+
+    subgraph "CLI / Scripts"
+        CLI["Ingest Tool<br/>(app/tools/ingest.py)"]
+    end
+
+    subgraph "Service Layer (Shared)"
+        PS["ProjectService"]
+        BS["BlogService"]
+        ES["ExperienceService"]
+        FS["FirestoreService<br/>(Generic Base)"]
+        
+        PS --> FS
+        BS --> FS
+        ES --> FS
+    end
+
+    subgraph "Data Layer (Shared)"
+        Models["Pydantic Models<br/>(app/models/*)"];
+    end
+
+    subgraph "Infrastructure"
+        Firestore["Google Firestore"]
+        GCS["Google Cloud Storage"]
+    end
+
+    %% Relationships
+    Dep -->|Injects| PS
+    Dep -->|Injects| BS
+    Dep -->|Injects| ES
+    CLI -->|Instantiates| PS
+    CLI -->|Instantiates| BS
+    CLI -->|Instantiates| ES
+    FS -->|Reads/Writes| Firestore
+    FS -->|Validates| Models
+    
+    %% User Interactions
+    User["User / Web Frontend"] -->|Interacts| Frontend
+    Frontend -->|HTTP Requests| API
+    User -->|Chat| Agent
+    
+    %% Ingestion Flow
+    Dev["Developer"] -->|Runs| CLI
+```
+
+### Runtime & Deployment Architecture
+
+The diagram below details the runtime configurations for both production (Unified Container) and local development.
 
 ```mermaid
 graph TD
