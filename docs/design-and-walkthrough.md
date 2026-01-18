@@ -78,7 +78,14 @@ The system uses modular "Connectors" to fetch data:
 
 *   **Storage:** Images (project screenshots, thumbnails) are stored in a public **Google Cloud Storage (GCS)** bucket (e.g., `<project-id>-assets`).
 *   **Ingestion:** Currently, images must be uploaded manually to the GCS bucket (e.g., via `gsutil` or Cloud Console).
-*   **Linking:** The public URL of the image (e.g., `https://storage.googleapis.com/<bucket>/<image.png>`) is manually added to the `image_url` field in the `manual_resources.yaml` file or updated in the Firestore document directly.
+*   **Linking:**
+    *   **New Manual Entries:** Add the public URL to the `image_url` field in your `manual_resources.yaml` file.
+    *   **Existing Entries (e.g., from GitHub/Medium):**
+        1.  Upload the image to the GCS bucket.
+        2.  Copy the public URL (e.g., `https://storage.googleapis.com/<bucket>/<image.png>`).
+        3.  Go to the **Google Cloud Console > Firestore**.
+        4.  Find the document for the project or blog post.
+        5.  Manually add or update the `image_url` field with the copied URL.
 *   **Future:** Automated image scraping and uploading may be added in future phases.
 
 ### 5. Data Management
