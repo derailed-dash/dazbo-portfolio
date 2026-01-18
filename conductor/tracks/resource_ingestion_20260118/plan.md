@@ -14,7 +14,7 @@
     - [ ] Write unit tests for GCS utility with mocked storage client
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Models' (Protocol in workflow.md) f36df99
 
-## Phase 2: Ingestion Connectors
+## Phase 2: Ingestion Connectors [checkpoint: c8d380d]
 - [x] Task: Implement GitHub Connector [27fec3d]
     - [ ] Create `GitHubConnector` to fetch repos using `PyGithub` or `httpx`
     - [ ] Implement mapping from GitHub API response to `Project` model
@@ -27,7 +27,7 @@
     - [ ] Create `DevToConnector` to fetch posts via API
     - [ ] Implement mapping to `Blog` model
     - [ ] Write unit tests with mocked API responses
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Ingestion Connectors' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Ingestion Connectors' (Protocol in workflow.md) c8d380d
 
 ## Phase 3: CLI Ingestion Tool
 - [ ] Task: Implement CLI Harness
