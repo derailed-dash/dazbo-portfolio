@@ -112,13 +112,7 @@ if os.path.exists(frontend_dist):
     if os.path.exists(assets_dir):
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
-    @app.get("/{full_path:path}")
-    async def serve_react_app(full_path: str):
-        """Catch-all route to serve the React SPA."""
-        # Check if the requested path is a specific file in the dist folder (e.g. favicon.ico)
-        file_path = os.path.join(frontend_dist, full_path)
-        if full_path and os.path.isfile(file_path):
-            return FileResponse(file_path)
+        if full_path and await anyio.to_thread.run_sync(os.path.isfile, file_path):
 
         # Default to index.html for React Router (client-side routing)
         return FileResponse(os.path.join(frontend_dist, "index.html"))
