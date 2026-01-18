@@ -12,7 +12,7 @@ This plan outlines the steps to implement the React-based frontend for the Dazbo
     - [x] Setup global CSS variables for Material Design (colors, shadows, spacing)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Setup' (Protocol in workflow.md) [commit: e84015f]
 
-## Phase 2: Core Layout & Styling
+## Phase 2: Core Layout & Styling [checkpoint: 4849d31]
 - [x] Task: Create Base Layout Components [commit: d6830b2]
     - [x] Implement Responsive Navbar (Material Design style)
     - [x] Implement Footer with social links
@@ -20,7 +20,7 @@ This plan outlines the steps to implement the React-based frontend for the Dazbo
 - [x] Task: Implement Material Design Theme [commit: eb2ee52]
     - [x] Customize Bootstrap SCSS/CSS to match elevations and typography
     - [x] Create shared UI components (Buttons, Cards) with Material attributes
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Layout' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Layout' (Protocol in workflow.md) [commit: 4849d31]
 
 ## Phase 3: Content Carousels
 - [ ] Task: Create Generic Carousel Component
