@@ -15,8 +15,12 @@ dazbo-portfolio/
 │   ├── fast_api_app.py        # FastAPI Backend server
 │   └── app_utils/             # App utilities and helpers
 ├── .cloudbuild/               # CI/CD pipeline configurations for Google Cloud Build
+├── conductor/                 # Conductor tracks
 ├── deployment/                # Infrastructure and deployment scripts
-│   └── terraform/             # Terraform configuration
+│   ├── terraform/             # Terraform configuration
+│   └── README.md              # Deployment documentation
+├── docs/                      # Project documentation
+├── frontend/                  # Frontend React application
 ├── notebooks/                 # Jupyter notebooks for prototyping and evaluation
 ├── scripts/                   # Convenience scripts, e.g. for environment setup
 ├── tests/                     # Unit, integration, and load tests

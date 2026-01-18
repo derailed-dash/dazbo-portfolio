@@ -8,7 +8,9 @@
 - [x] Deploy with Terraform
 - [x] Establish how to ingest/point to source blogs, repos, etc
 - [ ] Create React UI with carousel for blogs, GitHub repos, applications, etc.
+- [ ] Build container image and test locally.
 - [ ] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
 - [ ] Add conversational agent to React UI, using Dazbo persona.
 - [ ] Persona can answer portfolio questions and questions about me. Evaluate if we should use RAG in Firestore.
 - [ ] Add rate limiting
+- [ ] Add SEO
