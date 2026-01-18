@@ -51,9 +51,9 @@ This tool allows the developer to trigger synchronization from external sources 
 **Usage:**
 ```bash
 uv run python -m app.tools.ingest \
-  --github-user derailed-dash \
-  --medium-user derailed-dash \
-  --devto-user derailed-dash \
+  --github-user <user-name> \
+  --medium-user <user-name> \
+  --devto-user <user-name> \
   --yaml-file manual_resources.yaml
 ```
 
@@ -85,3 +85,33 @@ The system uses modular "Connectors" to fetch data:
 
 *   **Deletions:** The ingestion tool currently supports **create** and **update** operations. It does *not* delete entries that have been removed from the source.
     *   **To Delete:** Use the **Google Cloud Console (Firestore)** to manually delete obsolete documents. This is a safety design choice to prevent accidental bulk deletion.
+
+### 6. Manual Resources YAML Schema
+
+To ingest resources that are not on GitHub, Medium, or Dev.to (e.g., standalone websites, private projects, or specific external articles), use a YAML file with the following structure:
+
+**Example `manual_resources.yaml`:**
+
+```yaml
+projects:
+  - title: "Advent of Code Walkthroughs"
+    description: "My solutions and Python learning resources for Advent of Code."
+    repo_url: "https://github.com/derailed-dash/advent-of-code" # Optional, if there is a repo
+    demo_url: "https://aoc.just2good.co.uk/"
+    image_url: "https://storage.googleapis.com/<project-id>-assets/aoc-thumb.png"
+    tags: ["python", "algorithms", "education"]
+    featured: true
+    metadata_only: true # Indicates this is purely a reference, not fully managed by connector
+
+blogs:
+  - title: "Understanding Python Decorators"
+    summary: "A deep dive into how decorators work under the hood."
+    date: "2025-12-01"
+    platform: "External"
+    url: "https://realpython.com/some-guest-post"
+    metadata_only: true
+```
+
+**Fields:**
+*   **Projects:** `title` (required), `description`, `repo_url`, `demo_url`, `image_url`, `tags` (list), `featured` (bool), `metadata_only` (bool).
+*   **Blogs:** `title` (required), `summary`, `date` (ISO 8601), `platform` (e.g., "External", "Substack"), `url` (required), `metadata_only` (bool).
