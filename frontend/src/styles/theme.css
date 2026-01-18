@@ -1,0 +1,107 @@
+:root {
+  /* Material Design Color Palette */
+  --md-sys-color-primary: #6200ee;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #e8def8;
+  --md-sys-color-on-primary-container: #21005d;
+  
+  --md-sys-color-secondary: #03dac6;
+  --md-sys-color-on-secondary: #000000;
+  
+  --md-sys-color-background: #f8f9fa;
+  --md-sys-color-on-background: #1c1b1f;
+  
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-on-surface: #1c1b1f;
+  --md-sys-color-surface-variant: #e7e0ec;
+  --md-sys-color-on-surface-variant: #49454f;
+
+  /* Elevations (Shadows) */
+  --md-sys-elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --md-sys-elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  --md-sys-elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+/* Material Typography & Base Styles */
+body {
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Material Cards */
+.card {
+  border: none;
+  border-radius: 12px;
+  background-color: var(--md-sys-color-surface);
+  box-shadow: var(--md-sys-elevation-1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--md-sys-elevation-2);
+  transform: translateY(-4px);
+}
+
+/* Material Buttons */
+.btn-primary {
+  background-color: var(--md-sys-color-primary);
+  border: none;
+  border-radius: 20px; /* Pill shape for Material 3 */
+  padding: 8px 24px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: var(--md-sys-elevation-1);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #3700b3;
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+/* Navigation Overrides */
+.navbar {
+  background-color: var(--md-sys-color-surface) !important;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant) !important;
+  transition: color 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--md-sys-color-primary) !important;
+}
+
+/* Carousel Improvements */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: var(--md-sys-color-primary);
+  border-radius: 50%;
+  padding: 20px;
+  background-size: 50%;
+}
+
+.carousel-indicators [data-bs-target] {
+  background-color: var(--md-sys-color-primary);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+
+/* Centralizing the application content */
+.app-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.hero-section {
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

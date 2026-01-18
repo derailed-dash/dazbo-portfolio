@@ -1,0 +1,8 @@
+{
+  "track_id": "react_ui_20260118",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-18T14:30:00Z",
+  "updated_at": "2026-01-18T14:30:00Z",
+  "description": "Implement the React UI with carousels for blogs, repos, and apps, plus a chat widget shell."
+}

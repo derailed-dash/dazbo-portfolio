@@ -15,8 +15,12 @@ dazbo-portfolio/
 │   ├── fast_api_app.py        # FastAPI Backend server
 │   └── app_utils/             # App utilities and helpers
 ├── .cloudbuild/               # CI/CD pipeline configurations for Google Cloud Build
+├── conductor/                 # Conductor tracks
 ├── deployment/                # Infrastructure and deployment scripts
-│   └── terraform/             # Terraform configuration
+│   ├── terraform/             # Terraform configuration
+│   └── README.md              # Deployment documentation
+├── docs/                      # Project documentation
+├── frontend/                  # Frontend React application
 ├── notebooks/                 # Jupyter notebooks for prototyping and evaluation
 ├── scripts/                   # Convenience scripts, e.g. for environment setup
 ├── tests/                     # Unit, integration, and load tests
@@ -80,7 +84,8 @@ Note that you can automate loading the `setup-env.sh` script by installing [dire
 sudo apt install direnv
 
 # Add eval "$(direnv hook bash)" to your .bashrc
-echo "eval \"\$(direnv hook bash)\"" >> ~/.bashrc
+echo "eval \"\
+$(direnv hook bash)\"" >> ~/.bashrc
 
 # Then, from this project folder:
 direnv allow
@@ -96,6 +101,7 @@ direnv allow
 | `make test`             | Run unit and integration tests                                |
 | `make deploy-cloud-run` | Deploy agent to Cloud Run                                     |
 | `make local-backend`    | Launch local development server with hot-reload               |
+| `make react-ui`         | Launch React frontend development server                      |
 | `make tf-plan`          | Plan Terraform deployment                                     |
 | `make tf-apply`         | Deploy environment resources using Terraform                  |
 

@@ -1,18 +1,9 @@
-
-# ==============================================================================
-# Installation & Setup
-# ==============================================================================
-
 # Install dependencies using uv package manager
 install:
 	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.8.13/install.sh | sh; source $HOME/.local/bin/env; }
 	uv sync
 
-# ==============================================================================
-# Playground Targets
-# ==============================================================================
-
-# Launch local dev playground
+# Launch local ADK Web UI
 playground:
 	@echo "==============================================================================="
 	@echo "| 🚀 Starting your agent playground...                                        |"
@@ -21,17 +12,13 @@ playground:
 	@echo "==============================================================================="
 	uv run adk web . --port 8501 --reload_agents
 
-# ==============================================================================
-# Local Development Commands
-# ==============================================================================
-
 # Launch local development server with hot-reload
 local-backend:
 	uv run uvicorn app.fast_api_app:app --host localhost --port 8000 --reload
 
-# ==============================================================================
-# Backend Deployment Targets
-# ==============================================================================
+# Run React UI
+react-ui:
+	cd frontend && npm run dev
 
 # Deploy the agent remotely
 # Usage: make deploy [IAP=true] [PORT=8080] - Set IAP=true to enable Identity-Aware Proxy, PORT to specify container port
@@ -51,23 +38,12 @@ deploy-cloud-run:
 		$(if $(IAP),--iap) \
 		$(if $(PORT),--port=$(PORT))
 
-# Alias for 'make deploy' for backward compatibility
-backend: deploy
-
-# ==============================================================================
-# Infrastructure Setup
-# ==============================================================================
-
 # Set up development environment resources using Terraform
 tf-plan:
 	(cd deployment/terraform && terraform init && terraform plan --var-file vars/env.tfvars)
 
 tf-apply:
 	(cd deployment/terraform && terraform init && terraform apply --var-file vars/env.tfvars --auto-approve)
-
-# ==============================================================================
-# Testing & Code Quality
-# ==============================================================================
 
 # Run unit and integration tests
 test:
