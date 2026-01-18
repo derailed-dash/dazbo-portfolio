@@ -18,13 +18,17 @@ dazbo-portfolio/
 ├── deployment/                # Infrastructure and deployment scripts
 │   └── terraform/             # Terraform configuration
 ├── notebooks/                 # Jupyter notebooks for prototyping and evaluation
+├── scripts/                   # Convenience scripts, e.g. for environment setup
 ├── tests/                     # Unit, integration, and load tests
+│   ├── unit/                  # Unit tests
+│   └── integration/           # Integration tests
 ├── .env.template              # .env template file
 ├── .envrc                     # Optional auto env configuration file
 ├── GEMINI.md                  # Guidance for Gemini
 ├── Makefile                   # Development commands
 ├── pyproject.toml             # Project Python dependencies and configuration
-└── README.md                  # This file
+├── README.md                  # This file
+└── TODO.md                    # TODO list
 ```
 
 ## Developing With This Repo
