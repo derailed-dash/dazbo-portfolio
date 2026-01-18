@@ -66,6 +66,14 @@ dazbo-portfolio/
     gcloud firestore databases create --location=europe-west1 --type=firestore-native
     ```
 
+5. (Optional) If you plan to deploy manually from your local machine using `make deploy-cloud-run`, grant your user account the `iam.serviceAccountUser` role on the application Service Account.
+
+    ```bash
+    gcloud iam service-accounts add-iam-policy-binding dazbo-portfolio-app@$GOOGLE_CLOUD_PROJECT.iam.gserviceaccount.com \
+      --member="user:$(gcloud config get-value account)" \
+      --role="roles/iam.serviceAccountUser"
+    ```
+
 ### Per Dev Session (Once One-Time Setup Tasks Have Been Completed)
 
 **DO THIS STEP BEFORE EACH DEV SESSION**

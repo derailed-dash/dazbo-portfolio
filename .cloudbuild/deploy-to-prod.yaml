@@ -44,6 +44,7 @@ substitutions:
   _MODEL: "gemini-3-flash-preview"
   _MAX_INSTANCES: "1"
   _LOG_LEVEL: INFO
+  _APP_SERVICE_ACCOUNT: $_SERVICE_NAME-app@${PROJECT_ID}.iam.gserviceaccount.com
 
 logsBucket: gs://${PROJECT_ID}-dazbo-portfolio-logs/build-logs
 options:
