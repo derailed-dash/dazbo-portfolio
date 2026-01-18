@@ -55,7 +55,7 @@ class MediumConnector:
                 summary = clean_text[:200] + "..." if len(clean_text) > 200 else clean_text
 
             if not summary:
-                summary = "Blog post from Medium"
+                summary = None
 
             blog = Blog(
                 title=title,

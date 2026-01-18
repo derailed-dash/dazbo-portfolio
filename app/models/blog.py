@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 class Blog(BaseModel):
     id: str | None = None
     title: str
-    summary: str
+    summary: str | None = None
     date: str  # ISO 8601 string as per spec
     platform: str
     url: str
