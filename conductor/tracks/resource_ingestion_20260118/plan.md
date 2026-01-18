@@ -19,7 +19,7 @@
     - [ ] Create `GitHubConnector` to fetch repos using `PyGithub` or `httpx`
     - [ ] Implement mapping from GitHub API response to `Project` model
     - [ ] Write unit tests with mocked API responses
-- [ ] Task: Implement Medium Connector
+- [x] Task: Implement Medium Connector [2f860c4]
     - [ ] Create `MediumConnector` to fetch post metadata (titles, links, summaries)
     - [ ] Implement mapping to `Blog` model
     - [ ] Write unit tests with mocked responses
