@@ -27,7 +27,8 @@ local-backend:
 react-ui:
 	cd frontend && npm run dev
 
-# Deploy the agent remotely (Manual / Development)
+# Build and deploy the agent to Cloud Run (Manual / Development)
+# Builds directly from source; not from Google Artifact Registry
 # Usage: make deploy-cloud-run [IAP=true]
 deploy-cloud-run:
 	PROJECT_ID=$$(gcloud config get-value project) && \
@@ -37,6 +38,8 @@ deploy-cloud-run:
 		--project $$PROJECT_ID \
 		--region $(REGION) \
 		--service-account="$$SERVICE_SA_EMAIL" \
+		--max-instances=1 \
+		--cpu-boost \
 		--allow-unauthenticated \
 		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(SERVICE_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),LOG_LEVEL=DEBUG" \
 		$(if $(IAP),--iap)

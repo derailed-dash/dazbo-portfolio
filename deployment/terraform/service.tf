@@ -45,8 +45,7 @@ resource "google_cloud_run_v2_service" "app" {
     max_instance_request_concurrency = 40
 
     scaling {
-      min_instance_count = 1
-      max_instance_count = 2
+      max_instance_count = 1
     }
 
     session_affinity = true
