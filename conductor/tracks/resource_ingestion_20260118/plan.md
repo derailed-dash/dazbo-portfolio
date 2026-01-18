@@ -1,7 +1,7 @@
 # Implementation Plan: Portfolio Resource Ingestion Strategy
 
 ## Phase 1: Foundation & Data Models
-- [ ] Task: Update Pydantic models to support ingestion metadata
+- [x] Task: Update Pydantic models to support ingestion metadata [b0319a9]
     - [ ] Add `source_platform` and `is_manual` fields to `Project` and `Blog` models
     - [ ] Add support for "metadata-only" entries
     - [ ] Update Firestore service layer to handle these new fields
