@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
+import type { ShowcaseItem, Blog } from '../types';
 import ShowcaseCarousel from './ShowcaseCarousel';
 import { getBlogs } from '../services/contentService';
 import { Spinner, Alert } from 'react-bootstrap';
 
 const BlogCarousel: React.FC = () => {
-  const [blogs, setBlogs] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<ShowcaseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getBlogs()
-      .then(data => {
+      .then((data: Blog[]) => {
         // Map backend data to ShowcaseCarousel item format
-        const mapped = data.map((b: any) => ({
-          id: b.id || b.url,
+        const mapped: ShowcaseItem[] = data.map((b) => ({
+          id: b.id || b.url || 'unknown',
           title: b.title,
           description: b.summary || b.description || '',
           imageUrl: b.image_url,

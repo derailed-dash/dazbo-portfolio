@@ -1,12 +1,13 @@
 import axios from 'axios';
+import type { Project, Blog } from '../types';
 
-export const getBlogs = async () => {
-  const response = await axios.get('/blogs');
+export const getBlogs = async (): Promise<Blog[]> => {
+  const response = await axios.get<Blog[]>('/blogs');
   return response.data;
 };
 
-export const getProjects = async () => {
-  const response = await axios.get('/projects');
+export const getProjects = async (): Promise<Project[]> => {
+  const response = await axios.get<Project[]>('/projects');
   return response.data;
 };
 

@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import type { ShowcaseItem, Project } from '../types';
 import ShowcaseCarousel from './ShowcaseCarousel';
 import { getProjects } from '../services/contentService';
 import { Spinner, Alert } from 'react-bootstrap';
 
 const ProjectCarousel: React.FC = () => {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<ShowcaseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getProjects()
-      .then(data => {
-        const mapped = data.map((p: any) => ({
-          id: p.id || p.repo_url,
+      .then((data: Project[]) => {
+        const mapped: ShowcaseItem[] = data.map((p) => ({
+          id: p.id || p.repo_url || 'unknown',
           title: p.title,
           description: p.description || '',
           imageUrl: p.image_url,

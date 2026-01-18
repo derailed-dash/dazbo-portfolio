@@ -2,19 +2,12 @@ import React from 'react';
 import { Carousel, Row, Col } from 'react-bootstrap';
 import ShowcaseCard from './ShowcaseCard';
 
-interface Item {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl?: string;
-  tags?: string[];
-  linkUrl?: string;
-  repoUrl?: string;
-  type: 'blog' | 'project' | 'app';
-}
+import type { ShowcaseItem } from '../types';
+
+/* Item interface replaced by import */
 
 interface ShowcaseCarouselProps {
-  items: Item[];
+  items: ShowcaseItem[];
   title?: string;
 }
 
@@ -22,7 +15,7 @@ const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => 
   if (!items || items.length === 0) return null;
 
   // Function to chunk items for multi-item display on larger screens
-  const chunkItems = (arr: Item[], size: number) => {
+  const chunkItems = (arr: ShowcaseItem[], size: number) => {
     const chunks = [];
     for (let i = 0; i < arr.length; i += size) {
       chunks.push(arr.slice(i, i + size));
