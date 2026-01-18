@@ -5,6 +5,6 @@
 - [x] Add instruction for Firestore creation, and API enablement
 - [x] Ensure Firestore in Terraform deployment; remove any Cloud SQL
 - [x] Add billing alerts and killswitch
-- [ ] Establish how to ingest/point to source blogs, repos, etc
+- [~] Establish how to ingest/point to source blogs, repos, etc
 - [ ] Create React UI
 - [ ] Add rate limiting
