@@ -1,0 +1,49 @@
+# Implementation Plan: Portfolio Resource Ingestion Strategy
+
+## Phase 1: Foundation & Data Models [checkpoint: f36df99]
+- [x] Task: Update Pydantic models to support ingestion metadata [b0319a9]
+    - [ ] Add `source_platform` and `is_manual` fields to `Project` and `Blog` models
+    - [ ] Add support for "metadata-only" entries
+    - [ ] Update Firestore service layer to handle these new fields
+- [x] Task: Verify and Update Terraform for GCS [3a306bc]
+    - [ ] Check `deployment/terraform/storage.tf` for the public assets bucket definition
+    - [ ] Ensure the bucket has correct public access policies (if intended for public serving)
+    - [ ] Apply Terraform changes if necessary (update `tech-stack.md` if new resources are added)
+- [x] Task: Implement Google Cloud Storage (GCS) Utility [3f165bb]
+    - [ ] Create a utility class for uploading and retrieving URLs for images in GCS
+    - [ ] Write unit tests for GCS utility with mocked storage client
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Models' (Protocol in workflow.md) f36df99
+
+## Phase 2: Ingestion Connectors [checkpoint: c8d380d]
+- [x] Task: Implement GitHub Connector [27fec3d]
+    - [ ] Create `GitHubConnector` to fetch repos using `PyGithub` or `httpx`
+    - [ ] Implement mapping from GitHub API response to `Project` model
+    - [ ] Write unit tests with mocked API responses
+- [x] Task: Implement Medium Connector [2f860c4]
+    - [ ] Create `MediumConnector` to fetch post metadata (titles, links, summaries)
+    - [ ] Implement mapping to `Blog` model
+    - [ ] Write unit tests with mocked responses
+- [x] Task: Implement Dev.to Connector [2e2f62f]
+    - [ ] Create `DevToConnector` to fetch posts via API
+    - [ ] Implement mapping to `Blog` model
+    - [ ] Write unit tests with mocked API responses
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Ingestion Connectors' (Protocol in workflow.md) c8d380d
+
+## Phase 3: CLI Ingestion Tool [checkpoint: 166c66f]
+- [x] Task: Implement CLI Harness [8ade09f]
+    - [ ] Create a script in `app/tools/ingest.py` using `typer` or `argparse`
+    - [ ] Implement the command logic to orchestrate connectors
+    - [ ] Add logic to ensure idempotency (prevent duplicates in Firestore)
+- [x] Task: Implement YAML-based Manual Entry Support [a5c395b]
+    - [ ] Define YAML schema for manual resource entries
+    - [ ] Add logic to the CLI to parse YAML and insert entries into Firestore
+    - [ ] Write unit tests for YAML parsing and ingestion logic
+- [x] Task: Conductor - User Manual Verification 'Phase 3: CLI Ingestion Tool' (Protocol in workflow.md) 166c66f
+
+## Phase 4: Integration & Documentation [checkpoint: 5b1ab0f]
+- [x] Task: End-to-End Integration Testing [c0f7e32]
+    - [ ] Create integration tests that run the full ingestion flow against a local Firestore emulator or mock
+    - [ ] Verify that images are correctly referenced and metadata is accurate
+- [x] Task: Update Documentation [dd93d77]
+    - [ ] Update `README.md` and `docs/design-and-walkthrough.md` with the new ingestion architecture
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Integration & Documentation' (Protocol in workflow.md) 5b1ab0f

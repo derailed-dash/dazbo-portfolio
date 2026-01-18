@@ -8,19 +8,12 @@
 # - Injects environment variables for runtime configuration (e.g., Log Bucket).
 # - Ties the service to its dedicated Service Account.
 
-# Get project information to access the project number
-data "google_project" "project" {
-  for_each = local.deploy_project_ids
 
-  project_id = local.deploy_project_ids[each.key]
-}
 
 resource "google_cloud_run_v2_service" "app" {
-  for_each = local.deploy_project_ids
-
   name                = var.project_name
   location            = var.region
-  project             = each.value
+  project             = var.project_id
   deletion_protection = false
   ingress             = "INGRESS_TRAFFIC_ALL"
   labels = {
@@ -41,7 +34,7 @@ resource "google_cloud_run_v2_service" "app" {
 
       env {
         name  = "LOGS_BUCKET_NAME"
-        value = google_storage_bucket.logs_data_bucket[each.value].name
+        value = google_storage_bucket.logs_data_bucket[var.project_id].name
       }
 
       env {
@@ -50,7 +43,7 @@ resource "google_cloud_run_v2_service" "app" {
       }
     }
 
-    service_account                = google_service_account.app_sa[each.key].email
+    service_account                = google_service_account.app_sa.email
     max_instance_request_concurrency = 40
 
     scaling {

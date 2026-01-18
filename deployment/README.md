@@ -37,8 +37,7 @@ deployment/terraform/
 ## Prerequisites
 
 1.  **GCP Projects:**
-    -   **Multi-Environment (Enterprise Approach):** Separate projects for Dev, Staging, and Prod.
-    -   **Single Project (Simple Approach):** A single GCP project can be used with the `dev` configuration for all purposes.
+    -   **Single Project Architecture:** The configuration uses a single `project_id` for resources. You can deploy to different environments by using different `env.tfvars` files, but the logical definition is unified.
 2.  **Tools:**
     -   [Terraform](https://www.terraform.io/downloads) (>= 1.0.0)
     -   [gcloud CLI](https://cloud.google.com/sdk/docs/install)
@@ -49,22 +48,21 @@ deployment/terraform/
 
 ## Deployment Instructions
 
-### 1. Single Project / Quick Start
+The easiest way to manage the infrastructure is using the provided `Makefile` in the project root.
 
-For individual development or single-project setups, use the root configuration.
+### Quick Start (Makefile)
 
-```bash
 ```bash
 # Plan changes for your project
 make tf-plan
 
 # Apply changes
-make tf-deploy
+make tf-apply
 ```
 
-### 2. Multi-Environment (Staging & Production)
+### Manual Terraform Usage
 
-The root Terraform configuration manages the full pipeline, including CI/CD triggers and environment parity.
+If you prefer to run Terraform directly:
 
 ```bash
 cd deployment/terraform

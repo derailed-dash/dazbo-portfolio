@@ -16,6 +16,7 @@ locals {
     "cloudtrace.googleapis.com",
   ]
 
+  # List of APIs to enable in the deployment project
   deploy_project_services = [
     "aiplatform.googleapis.com",
     "run.googleapis.com",
@@ -27,16 +28,10 @@ locals {
     "firestore.googleapis.com",
   ]
 
-  deploy_project_ids = {
-    prod    = var.prod_project_id
-    staging = var.staging_project_id
-  }
-
-  all_project_ids = [
+  all_project_ids = distinct([
     var.cicd_runner_project_id,
-    var.prod_project_id,
-    var.staging_project_id
-  ]
+    var.project_id
+  ])
 
 }
 

@@ -18,6 +18,7 @@
 
 ## Development & Quality Tools
 - **Package Manager:** `uv` — Fast Python package and environment management.
+- **Ingestion & CLI:** `typer`, `httpx`, `PyYAML` — Powering the hybrid resource ingestion system.
 - **Linting & Formatting:** `ruff` — Extremely fast Python linter and code formatter.
 - **Testing:** `pytest` — Feature-rich testing framework for unit and integration tests.
 - **Quality Checks:** `codespell` — Checking for common misspellings in code and documentation.

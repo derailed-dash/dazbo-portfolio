@@ -1,11 +1,8 @@
 # Project name used for resource naming
 project_name = "dazbo-portfolio"
 
-# Your Production Google Cloud project id
-prod_project_id = "dazbo-portfolio"
-
-# Your Staging / Test Google Cloud project id
-staging_project_id = "dazbo-portfolio"
+# Your Google Cloud Project ID for resource deployment
+project_id = "dazbo-portfolio"
 
 # Your Google Cloud project ID that will be used to host the Cloud Build pipelines.
 cicd_runner_project_id = "dazbo-portfolio"

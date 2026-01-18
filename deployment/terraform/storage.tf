@@ -23,6 +23,29 @@ resource "google_storage_bucket" "logs_data_bucket" {
   depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
 
+resource "google_storage_bucket" "assets_bucket" {
+  name                        = "${var.project_id}-assets"
+  location                    = var.region
+  project                     = var.project_id
+  uniform_bucket_level_access = true
+  force_destroy               = true
+
+  cors {
+    origin          = ["*"]
+    method          = ["GET", "HEAD", "OPTIONS"]
+    response_header = ["*"]
+    max_age_seconds = 3600
+  }
+
+  depends_on = [resource.google_project_service.deploy_project_services]
+}
+
+resource "google_storage_bucket_iam_member" "assets_bucket_public_access" {
+  bucket = google_storage_bucket.assets_bucket.name
+  role   = "roles/storage.objectViewer"
+  member = "allUsers"
+}
+
 resource "google_artifact_registry_repository" "repo-artifacts-genai" {
   location      = var.region
   repository_id = "${var.project_name}-repo"
@@ -33,8 +56,7 @@ resource "google_artifact_registry_repository" "repo-artifacts-genai" {
 }
 
 resource "google_firestore_database" "database" {
-  for_each                    = local.deploy_project_ids
-  project                     = each.value
+  project                     = var.project_id
   name                        = "(default)"
   location_id                 = var.region
   type                        = "FIRESTORE_NATIVE"

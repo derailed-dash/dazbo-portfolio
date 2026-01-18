@@ -5,6 +5,9 @@
 - [x] Add instruction for Firestore creation, and API enablement
 - [x] Ensure Firestore in Terraform deployment; remove any Cloud SQL
 - [x] Add billing alerts and killswitch
-- [ ] Establish how to ingest/point to source blogs, repos, etc
-- [ ] Create React UI
+- [x] Deploy with Terraform
+- [x] Establish how to ingest/point to source blogs, repos, etc
+- [ ] Create React UI with carousel for blogs, GitHub repos, applications, etc.
+- [ ] Add conversational agent to React UI, using Dazbo persona.
+- [ ] Persona can answer portfolio questions and questions about me. Evaluate if we should use RAG in Firestore.
 - [ ] Add rate limiting

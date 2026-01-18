@@ -12,8 +12,11 @@ from pydantic import BaseModel, Field
 class Blog(BaseModel):
     id: str | None = None
     title: str
-    summary: str
+    summary: str | None = None
     date: str  # ISO 8601 string as per spec
     platform: str
     url: str
+    source_platform: str | None = None
+    is_manual: bool = True
+    metadata_only: bool = False
     created_at: datetime = Field(default_factory=datetime.now)

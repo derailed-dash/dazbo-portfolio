@@ -58,7 +58,7 @@ dazbo-portfolio/
 4. Set up Firestore.
 
     ```bash
-    # If not using Terraform
+    # If NOT using Terraform
     gcloud firestore databases create --location=europe-west1 --type=firestore-native
     ```
 
@@ -88,16 +88,16 @@ direnv allow
 
 ## Useful Commands
 
-| Command                 | Description                                                             |
-| ----------------------- | ----------------------------------------------------------------------- |
-| `make install`          | Install dependencies using uv                                           |
-| `make playground`       | Launch local development environment using ADK Web UI                   |
-| `make lint`             | Run code quality checks                                                 |
-| `make test`             | Run unit and integration tests                                          |
-| `make deploy-cloud-run` | Deploy agent to Cloud Run                                               |
-| `make local-backend`    | Launch local development server with hot-reload                         |
-| `make tf-plan`          | Plan Terraform deployment                                               |
-| `make tf-deploy`        | Deploy environment resources using Terraform                            |
+| Command                 | Description                                                   |
+| ----------------------- | ------------------------------------------------------------- |
+| `make install`          | Install dependencies using uv                                 |
+| `make playground`       | Launch local development environment using ADK Web UI         |
+| `make lint`             | Run code quality checks                                       |
+| `make test`             | Run unit and integration tests                                |
+| `make deploy-cloud-run` | Deploy agent to Cloud Run                                     |
+| `make local-backend`    | Launch local development server with hot-reload               |
+| `make tf-plan`          | Plan Terraform deployment                                     |
+| `make tf-apply`         | Deploy environment resources using Terraform                  |
 
 For full command options and usage, refer to the [Makefile](Makefile).
 
