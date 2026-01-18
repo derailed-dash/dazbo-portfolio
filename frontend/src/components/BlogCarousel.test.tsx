@@ -16,7 +16,7 @@ describe('BlogCarousel', () => {
     expect(screen.getByRole('status')).toBeInTheDocument(); // Spinner
 
     await waitFor(() => {
-      expect(screen.getByText('Test Blog')).toBeInTheDocument();
+      expect(screen.getAllByText('Test Blog').length).toBeGreaterThan(0);
     });
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });

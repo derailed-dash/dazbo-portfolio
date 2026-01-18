@@ -1,29 +1,19 @@
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './components/MainLayout';
-import { Button } from 'react-bootstrap';
-import BlogCarousel from './components/BlogCarousel';
-import ProjectCarousel from './components/ProjectCarousel';
-import AppsCarousel from './components/AppsCarousel';
+import HomePage from './pages/HomePage';
+import DetailPlaceholderPage from './pages/DetailPlaceholderPage';
 
 function App() {
   return (
     <BrowserRouter>
       <MainLayout>
-        <div className="text-center py-5 hero-section">
-          <h1 className="display-4 fw-bold mb-4">Welcome to Dazbo Portfolio</h1>
-          <p className="lead mb-4">
-            A showcase of technical writing, open-source projects, and professional experience.
-          </p>
-          <div>
-            <Button variant="primary" size="lg" className="mb-5">
-              Explore My Work
-            </Button>
-          </div>
-        </div>
-
-        <BlogCarousel />
-        <ProjectCarousel />
-        <AppsCarousel />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/details/:id" element={<DetailPlaceholderPage />} />
+          {/* Support navigation to sections if needed, or other routes */}
+          <Route path="/blogs" element={<HomePage />} />
+          <Route path="/projects" element={<HomePage />} />
+        </Routes>
       </MainLayout>
     </BrowserRouter>
   )

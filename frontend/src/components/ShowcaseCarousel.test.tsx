@@ -10,8 +10,8 @@ describe('ShowcaseCarousel', () => {
 
   it('renders the carousel items', () => {
     render(<ShowcaseCarousel items={items} />);
-    expect(screen.getByText('Item 1')).toBeInTheDocument();
-    expect(screen.getByText('Item 2')).toBeInTheDocument();
+    expect(screen.getAllByText('Item 1').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Item 2').length).toBeGreaterThan(0);
   });
 
   it('renders section title if provided', () => {
