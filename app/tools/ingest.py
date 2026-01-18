@@ -145,13 +145,23 @@ async def ingest_resources(
                     # Upsert logic based on repo_url if present, else title?
 
                     # We need a map for titles too if we support that
-                    existing_titles = {p.title: p.id for p in existing_projects}
+                    existing_title_map = {}
+                    ambiguous_titles = set()
+                    for existing_p in existing_projects:
+                        if existing_p.title in existing_title_map:
+                            ambiguous_titles.add(existing_p.title)
+                        existing_title_map[existing_p.title] = existing_p.id
 
                     match_id = None
                     if p.repo_url and p.repo_url in existing_urls:
                         match_id = existing_urls[p.repo_url]
-                    elif p.title in existing_titles:
-                        match_id = existing_titles[p.title]
+                    elif p.title in existing_title_map:
+                        if p.title in ambiguous_titles:
+                            console.print(
+                                f"[bold red]Error: Title '{p.title}' matches multiple existing projects. Cannot safely upsert by title. Please provide explicit 'id' or 'repo_url'. Skipping.[/bold red]"
+                            )
+                            continue
+                        match_id = existing_title_map[p.title]
 
                     desired_id = None
                     if p.id:

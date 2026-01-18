@@ -9,16 +9,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-# from app.services.connectors.github_connector import GitHubConnector
+from app.services.connectors.github_connector import GitHubConnector
 
 
 @pytest.mark.asyncio
 async def test_fetch_repositories():
-    try:
-        from app.services.connectors.github_connector import GitHubConnector
-    except ImportError:
-        pytest.fail("Could not import GitHubConnector")
-
     # Mock data representing GitHub API response
     mock_repos = [
         {

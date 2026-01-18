@@ -8,8 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Will fail import until created
-# from app.app_utils.gcs import GCSClient
+from app.app_utils.gcs import GCSClient
 
 
 @pytest.fixture
@@ -19,11 +18,6 @@ def mock_storage_client():
 
 
 def test_upload_image(mock_storage_client):
-    try:
-        from app.app_utils.gcs import GCSClient
-    except ImportError:
-        pytest.fail("Could not import GCSClient")
-
     # Setup Mocks
     mock_bucket = MagicMock()
     mock_blob = MagicMock()
@@ -55,10 +49,7 @@ def test_upload_image(mock_storage_client):
 
 
 def test_get_public_url():
-    try:
-        from app.app_utils.gcs import GCSClient
-    except ImportError:
-        pytest.fail("Could not import GCSClient")
+    gcs = GCSClient(project_id="test-project", bucket_name="test-bucket")
 
     gcs = GCSClient(project_id="test-project", bucket_name="test-bucket")
     url = gcs.get_public_url("test.png")

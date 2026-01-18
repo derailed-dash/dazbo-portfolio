@@ -22,6 +22,10 @@ projects:
     repo_url: https://github.com/user/fallback-repo
     metadata_only: true
 
+  - title: Ambiguous Project
+    description: Should be skipped
+    metadata_only: true
+
 blogs:
   - id: explicit-blog-id
     title: Blog With ID
@@ -46,7 +50,16 @@ def test_ingest_yaml(mock_firestore, mock_blog_service, mock_project_service):
     # Setup mocks
     mock_proj_svc = mock_project_service.return_value
     mock_proj_svc.create = AsyncMock()
-    mock_proj_svc.list = AsyncMock(return_value=[])
+
+    # Mock existing projects with duplicates for Ambiguous Project
+    from app.models.project import Project
+
+    mock_proj_svc.list = AsyncMock(
+        return_value=[
+            Project(title="Ambiguous Project", description="Desc", id="dup-1"),
+            Project(title="Ambiguous Project", description="Desc", id="dup-2"),
+        ]
+    )
     mock_proj_svc.update = AsyncMock()
 
     mock_blog_svc = mock_blog_service.return_value
@@ -61,11 +74,16 @@ def test_ingest_yaml(mock_firestore, mock_blog_service, mock_project_service):
         # We need to invoke the app with --yaml-file
         result = runner.invoke(app, ["--yaml-file", "manual_resources.yaml"])
 
-    assert result.exit_code == 0
+    assert result.exit_code == 0, f"CLI failed: {result.stdout}"
+
+    # Verify we found projects
+    assert "Found 3 manual projects" in result.stdout, f"Output: {result.stdout}"
 
     # Verify Project creation calls
     # Should have 2 calls
-    assert mock_proj_svc.create.call_count == 2
+    assert mock_proj_svc.create.call_count == 2, (
+        f"Expected 2 create calls, got {mock_proj_svc.create.call_count}. Output: {result.stdout}"
+    )
 
     # 1. Explicit ID
     call_args_1 = mock_proj_svc.create.call_args_list[0]
