@@ -47,7 +47,8 @@ variable "app_sa_roles" {
     "roles/aiplatform.user",
     "roles/logging.logWriter",
     "roles/cloudtrace.agent",
-    "roles/storage.admin",
+    "roles/cloudtrace.agent",
+    "roles/storage.objectAdmin",
     "roles/serviceusage.serviceUsageConsumer",
     "roles/datastore.user",
   ]

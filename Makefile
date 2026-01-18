@@ -1,3 +1,10 @@
+# Assign env variables if they are not already set
+GOOGLE_GENAI_USE_VERTEXAI = true
+SERVICE_NAME ?= dazbo-portfolio
+AGENT_NAME ?= dazbo-portfolio
+MODEL ?= gemini-2.5-flash
+REGION ?= europe-west1
+
 # Install dependencies using uv package manager
 install:
 	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.8.13/install.sh | sh; source $HOME/.local/bin/env; }
@@ -22,13 +29,6 @@ react-ui:
 
 # Deploy the agent remotely (Manual / Development)
 # Usage: make deploy-cloud-run [IAP=true]
-# Assign env variables if they are not already set
-GOOGLE_GENAI_USE_VERTEXAI = true
-SERVICE_NAME ?= dazbo-portfolio
-AGENT_NAME ?= dazbo-portfolio
-MODEL ?= gemini-2.5-flash
-REGION ?= europe-west1
-
 deploy-cloud-run:
 	PROJECT_ID=$$(gcloud config get-value project) && \
 	gcloud run deploy $(SERVICE_NAME) \
