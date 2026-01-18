@@ -21,17 +21,42 @@ interface ShowcaseCarouselProps {
 const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => {
   if (!items || items.length === 0) return null;
 
-  // For this initial implementation, we'll show 1 item per slide on mobile
-  // and try to accommodate more on desktop if we refactor later.
-  // For now, keeping it simple: 1 item per slide to ensure stability.
+  // Function to chunk items for multi-item display on larger screens
+  const chunkItems = (arr: Item[], size: number) => {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+  };
+
+  const desktopChunks = chunkItems(items, 3);
+
   return (
     <div className="mb-5">
       {title && <h2 className="h3 mb-4 fw-bold border-start border-primary border-4 ps-3">{title}</h2>}
-      <Carousel interval={null} indicators={items.length > 1} className="pb-4">
+      
+      {/* Desktop/Tablet View: 3 items per slide */}
+      <Carousel interval={null} indicators={items.length > 3} className="pb-5 d-none d-md-block">
+        {desktopChunks.map((chunk, idx) => (
+          <Carousel.Item key={idx}>
+            <Row className="px-5">
+              {chunk.map(item => (
+                <Col md={4} key={item.id} className="mb-3">
+                  <ShowcaseCard {...item} />
+                </Col>
+              ))}
+            </Row>
+          </Carousel.Item>
+        ))}
+      </Carousel>
+
+      {/* Mobile View: 1 item per slide */}
+      <Carousel interval={null} indicators={items.length > 1} className="pb-5 d-md-none">
         {items.map((item) => (
           <Carousel.Item key={item.id}>
             <Row className="justify-content-center px-1">
-              <Col xs={12} md={8} lg={6}>
+              <Col xs={11}>
                 <ShowcaseCard {...item} />
               </Col>
             </Row>

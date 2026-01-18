@@ -12,7 +12,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div className="d-flex flex-column min-vh-100 bg-light">
       <AppNavbar />
       <main className="flex-grow-1">
-        <Container className="py-4">
+        <Container className="py-4 app-container">
           {children}
         </Container>
       </main>
