@@ -58,7 +58,7 @@ dazbo-portfolio/
 4. Set up Firestore.
 
     ```bash
-    # If not using Terraform
+    # If NOT using Terraform
     gcloud firestore databases create --location=europe-west1 --type=firestore-native
     ```
 
