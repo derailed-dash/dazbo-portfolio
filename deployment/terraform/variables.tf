@@ -12,14 +12,9 @@ variable "project_name" {
   default     = "dazbo-portfolio"
 }
 
-variable "prod_project_id" {
+variable "project_id" {
   type        = string
-  description = "**Production** Google Cloud Project ID for resource deployment."
-}
-
-variable "staging_project_id" {
-  type        = string
-  description = "**Staging** Google Cloud Project ID for resource deployment."
+  description = "Google Cloud Project ID for resource deployment."
 }
 
 variable "cicd_runner_project_id" {

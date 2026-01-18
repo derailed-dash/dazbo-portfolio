@@ -62,7 +62,7 @@ backend: deploy
 tf-plan:
 	(cd deployment/terraform && terraform init && terraform plan --var-file vars/env.tfvars)
 
-tf-deploy:
+tf-apply:
 	(cd deployment/terraform && terraform init && terraform apply --var-file vars/env.tfvars --auto-approve)
 
 # ==============================================================================

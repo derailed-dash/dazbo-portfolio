@@ -4,8 +4,7 @@
 
 # Create a custom Cloud Logging bucket for GenAI telemetry logs with long-term retention
 resource "google_logging_project_bucket_config" "genai_telemetry_bucket" {
-  for_each         = local.deploy_project_ids
-  project          = each.value
+  project          = var.project_id
   location         = var.region
   bucket_id        = "${var.project_name}-genai-telemetry"
   retention_days   = 3650  # 10 years retention (maximum allowed)
@@ -18,11 +17,10 @@ resource "google_logging_project_bucket_config" "genai_telemetry_bucket" {
 # Log sink to route only GenAI telemetry logs to the dedicated bucket
 # Filter by bucket name in the GCS path (which includes project_name) to isolate this agent's logs
 resource "google_logging_project_sink" "genai_logs_to_bucket" {
-  for_each    = local.deploy_project_ids
   name        = "${var.project_name}-genai-logs"
-  project     = each.value
-  destination = "logging.googleapis.com/projects/${each.value}/locations/${var.region}/buckets/${google_logging_project_bucket_config.genai_telemetry_bucket[each.key].bucket_id}"
-  filter      = "log_name=\"projects/${each.value}/logs/gen_ai.client.inference.operation.details\" AND (labels.\"gen_ai.input.messages_ref\" =~ \".*${var.project_name}.*\" OR labels.\"gen_ai.output.messages_ref\" =~ \".*${var.project_name}.*\")"
+  project     = var.project_id
+  destination = "logging.googleapis.com/projects/${var.project_id}/locations/${var.region}/buckets/${google_logging_project_bucket_config.genai_telemetry_bucket.bucket_id}"
+  filter      = "log_name=\"projects/${var.project_id}/logs/gen_ai.client.inference.operation.details\" AND (labels.\"gen_ai.input.messages_ref\" =~ \".*${var.project_name}.*\" OR labels.\"gen_ai.output.messages_ref\" =~ \".*${var.project_name}.*\")"
 
   unique_writer_identity = true
   depends_on             = [google_logging_project_bucket_config.genai_telemetry_bucket]
@@ -34,10 +32,9 @@ resource "google_logging_project_sink" "genai_logs_to_bucket" {
 
 # Log sink for user feedback logs - routes to the same Cloud Logging bucket
 resource "google_logging_project_sink" "feedback_logs_to_bucket" {
-  for_each    = local.deploy_project_ids
   name        = "${var.project_name}-feedback"
-  project     = each.value
-  destination = "logging.googleapis.com/projects/${each.value}/locations/${var.region}/buckets/${google_logging_project_bucket_config.genai_telemetry_bucket[each.key].bucket_id}"
+  project     = var.project_id
+  destination = "logging.googleapis.com/projects/${var.project_id}/locations/${var.region}/buckets/${google_logging_project_bucket_config.genai_telemetry_bucket.bucket_id}"
   filter      = var.feedback_logs_filter
 
   unique_writer_identity = true

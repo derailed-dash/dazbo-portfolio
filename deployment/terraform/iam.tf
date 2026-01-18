@@ -10,9 +10,9 @@
 # - Configures cross-project permissions for artifact access.
 
 # Data source to get project numbers
-data "google_project" "projects" {
-  for_each   = local.deploy_project_ids
-  project_id = each.value
+# Data source to get project number
+data "google_project" "project" {
+  project_id = var.project_id
 }
 
 # 1. Assign roles for the CICD project
@@ -27,46 +27,35 @@ resource "google_project_iam_member" "cicd_project_roles" {
 }
 
 # 2. Assign roles for the other two projects (prod and staging)
-resource "google_project_iam_member" "other_projects_roles" {
-  for_each = {
-    for pair in setproduct(keys(local.deploy_project_ids), var.cicd_sa_deployment_required_roles) :
-    "${pair[0]}-${pair[1]}" => {
-      project_id = local.deploy_project_ids[pair[0]]
-      role       = pair[1]
-    }
-  }
+# 2. Assign roles for the deployment project (Prod/Staging/Single)
+resource "google_project_iam_member" "deployment_project_roles" {
+  for_each = toset(var.cicd_sa_deployment_required_roles)
 
-  project    = each.value.project_id
-  role       = each.value.role
+  project    = var.project_id
+  role       = each.value
   member     = "serviceAccount:${resource.google_service_account.cicd_runner_sa.email}"
   depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
 # 3. Grant application SA the required permissions to run the application
+# 3. Grant application SA the required permissions to run the application
 resource "google_project_iam_member" "app_sa_roles" {
-  for_each = {
-    for pair in setproduct(keys(local.deploy_project_ids), var.app_sa_roles) :
-    join(",", pair) => {
-      project = local.deploy_project_ids[pair[0]]
-      role    = pair[1]
-    }
-  }
+  for_each = toset(var.app_sa_roles)
 
-  project    = each.value.project
-  role       = each.value.role
-  member     = "serviceAccount:${google_service_account.app_sa[split(",", each.key)[0]].email}"
+  project    = var.project_id
+  role       = each.value
+  member     = "serviceAccount:${google_service_account.app_sa.email}"
   depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 }
 
 
 # 4. Allow Cloud Run service SA to pull containers stored in the CICD project
+# 4. Allow Cloud Run service SA to pull containers stored in the CICD project
 resource "google_project_iam_member" "cicd_run_invoker_artifact_registry_reader" {
-  for_each = local.deploy_project_ids
   project  = var.cicd_runner_project_id
 
   role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:service-${data.google_project.projects[each.key].number}@serverless-robot-prod.iam.gserviceaccount.com"
+  member     = "serviceAccount:service-${data.google_project.project.number}@serverless-robot-prod.iam.gserviceaccount.com"
   depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
-
 }
 
 

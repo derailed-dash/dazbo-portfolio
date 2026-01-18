@@ -33,8 +33,7 @@ resource "google_artifact_registry_repository" "repo-artifacts-genai" {
 }
 
 resource "google_firestore_database" "database" {
-  for_each                    = local.deploy_project_ids
-  project                     = each.value
+  project                     = var.project_id
   name                        = "(default)"
   location_id                 = var.region
   type                        = "FIRESTORE_NATIVE"
