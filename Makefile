@@ -38,6 +38,17 @@ deploy-cloud-run:
 		$(if $(IAP),--iap) \
 		$(if $(PORT),--port=$(PORT))
 
+# Build the unified container image
+docker-build:
+	docker build -t dazbo-portfolio:latest .
+
+# Run the unified container locally
+docker-run:
+	docker run --rm -p 8080:8080 \
+		-e GOOGLE_CLOUD_PROJECT=$$(gcloud config get-value project) \
+		-e FIRESTORE_DATABASE_ID="(default)" \
+		dazbo-portfolio:latest
+
 # Set up development environment resources using Terraform
 tf-plan:
 	(cd deployment/terraform && terraform init && terraform plan --var-file vars/env.tfvars)
