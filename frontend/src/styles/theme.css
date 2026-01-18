@@ -77,59 +77,31 @@ body {
 }
 
 /* Carousel Improvements */
-
 .carousel-control-prev-icon,
-
 .carousel-control-next-icon {
-
   background-color: var(--md-sys-color-primary);
-
   border-radius: 50%;
-
   padding: 20px;
-
   background-size: 50%;
-
 }
-
-
 
 .carousel-indicators [data-bs-target] {
-
   background-color: var(--md-sys-color-primary);
-
   width: 10px;
-
   height: 10px;
-
   border-radius: 50%;
-
   margin: 0 5px;
-
 }
-
-
 
 /* Centralizing the application content */
-
 .app-container {
-
   max-width: 1000px;
-
   margin: 0 auto;
-
 }
 
-
-
 .hero-section {
-
   min-height: 40vh;
-
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
-
 }
