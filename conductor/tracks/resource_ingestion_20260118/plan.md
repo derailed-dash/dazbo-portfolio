@@ -41,9 +41,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: CLI Ingestion Tool' (Protocol in workflow.md) 166c66f
 
 ## Phase 4: Integration & Documentation
-- [ ] Task: End-to-End Integration Testing
+- [x] Task: End-to-End Integration Testing [c0f7e32]
     - [ ] Create integration tests that run the full ingestion flow against a local Firestore emulator or mock
     - [ ] Verify that images are correctly referenced and metadata is accurate
-- [ ] Task: Update Documentation
+- [x] Task: Update Documentation [dd93d77]
     - [ ] Update `README.md` and `docs/design-and-walkthrough.md` with the new ingestion architecture
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Integration & Documentation' (Protocol in workflow.md)
