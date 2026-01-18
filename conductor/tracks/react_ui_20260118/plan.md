@@ -26,9 +26,9 @@ This plan outlines the steps to implement the React-based frontend for the Dazbo
 - [x] Task: Create Generic Carousel Component [commit: c5dd60b]
     - [x] Write unit tests for Carousel rendering and responsiveness
     - [x] Implement `ShowcaseCarousel` using React Bootstrap `Carousel`
-- [ ] Task: Implement Content Services
-    - [ ] Create API service for fetching Blogs, Projects, and Experience
-    - [ ] Write tests for data fetching and error handling
+- [x] Task: Implement Content Services [commit: 848aac6]
+    - [x] Create API service for fetching Blogs, Projects, and Experience
+    - [x] Write tests for data fetching and error handling
 - [ ] Task: Build Specific Carousels
     - [ ] Implement `BlogCarousel` with card-based items
     - [ ] Implement `ProjectCarousel` for GitHub repositories
