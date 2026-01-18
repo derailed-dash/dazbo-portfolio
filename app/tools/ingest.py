@@ -198,14 +198,5 @@ def main(
 
     asyncio.run(ingest_resources(github_user, medium_user, devto_user, yaml_file, project_id))
 
-    """
-    Ingest data from configured sources.
-    """
-    if not project_id:
-        console.print("[bold red]Error: GOOGLE_CLOUD_PROJECT environment variable or --project-id option required.[/bold red]")
-        raise typer.Exit(code=1)
-
-    asyncio.run(ingest_resources(github_user, medium_user, devto_user, project_id))
-
 if __name__ == "__main__":
     app()
