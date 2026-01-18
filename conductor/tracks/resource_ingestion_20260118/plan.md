@@ -29,7 +29,7 @@
     - [ ] Write unit tests with mocked API responses
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Ingestion Connectors' (Protocol in workflow.md) c8d380d
 
-## Phase 3: CLI Ingestion Tool
+## Phase 3: CLI Ingestion Tool [checkpoint: 166c66f]
 - [x] Task: Implement CLI Harness [8ade09f]
     - [ ] Create a script in `app/tools/ingest.py` using `typer` or `argparse`
     - [ ] Implement the command logic to orchestrate connectors
@@ -38,7 +38,7 @@
     - [ ] Define YAML schema for manual resource entries
     - [ ] Add logic to the CLI to parse YAML and insert entries into Firestore
     - [ ] Write unit tests for YAML parsing and ingestion logic
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: CLI Ingestion Tool' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: CLI Ingestion Tool' (Protocol in workflow.md) 166c66f
 
 ## Phase 4: Integration & Documentation
 - [ ] Task: End-to-End Integration Testing
