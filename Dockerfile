@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir uv==0.8.13
 WORKDIR /code
 
 # Copy backend requirements and install
-COPY ./pyproject.toml ./README.md ./uv.lock* ./
+COPY ./pyproject.toml ./README.md ./uv.lock ./
 RUN uv sync --frozen
 
 # Copy backend code
