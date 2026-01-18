@@ -2,6 +2,7 @@ import React from 'react';
 import { Container } from 'react-bootstrap';
 import AppNavbar from './Navbar';
 import Footer from './Footer';
+import ChatWidget from './ChatWidget';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           {children}
         </Container>
       </main>
+      <ChatWidget />
       <Footer />
     </div>
   );
