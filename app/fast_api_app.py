@@ -75,26 +75,26 @@ app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
 
 
-@app.post("/feedback")
+@app.post("/api/feedback")
 def collect_feedback(feedback: Feedback) -> dict[str, str]:
     """Collect and log feedback."""
     logger.log_struct(feedback.model_dump(), severity="INFO")
     return {"status": "success"}
 
 
-@app.get("/projects", response_model=list[Project])
+@app.get("/api/projects", response_model=list[Project])
 async def list_projects(service: ProjectService = Depends(get_project_service)):
     """List all projects."""
     return await service.list()
 
 
-@app.get("/blogs", response_model=list[Blog])
+@app.get("/api/blogs", response_model=list[Blog])
 async def list_blogs(service: BlogService = Depends(get_blog_service)):
     """List all blog posts."""
     return await service.list()
 
 
-@app.get("/experience", response_model=list[Experience])
+@app.get("/api/experience", response_model=list[Experience])
 async def list_experience(service: ExperienceService = Depends(get_experience_service)):
     """List all work experience."""
     return await service.list()
