@@ -23,7 +23,7 @@
     - [ ] Create `MediumConnector` to fetch post metadata (titles, links, summaries)
     - [ ] Implement mapping to `Blog` model
     - [ ] Write unit tests with mocked responses
-- [ ] Task: Implement Dev.to Connector
+- [x] Task: Implement Dev.to Connector [2e2f62f]
     - [ ] Create `DevToConnector` to fetch posts via API
     - [ ] Implement mapping to `Blog` model
     - [ ] Write unit tests with mocked API responses
