@@ -23,9 +23,9 @@ This plan outlines the steps to implement the React-based frontend for the Dazbo
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Layout' (Protocol in workflow.md) [commit: 4849d31]
 
 ## Phase 3: Content Carousels
-- [ ] Task: Create Generic Carousel Component
-    - [ ] Write unit tests for Carousel rendering and responsiveness
-    - [ ] Implement `ShowcaseCarousel` using React Bootstrap `Carousel`
+- [x] Task: Create Generic Carousel Component [commit: c5dd60b]
+    - [x] Write unit tests for Carousel rendering and responsiveness
+    - [x] Implement `ShowcaseCarousel` using React Bootstrap `Carousel`
 - [ ] Task: Implement Content Services
     - [ ] Create API service for fetching Blogs, Projects, and Experience
     - [ ] Write tests for data fetching and error handling
