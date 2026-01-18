@@ -34,7 +34,7 @@
     - [ ] Create a script in `app/tools/ingest.py` using `typer` or `argparse`
     - [ ] Implement the command logic to orchestrate connectors
     - [ ] Add logic to ensure idempotency (prevent duplicates in Firestore)
-- [ ] Task: Implement YAML-based Manual Entry Support
+- [x] Task: Implement YAML-based Manual Entry Support [a5c395b]
     - [ ] Define YAML schema for manual resource entries
     - [ ] Add logic to the CLI to parse YAML and insert entries into Firestore
     - [ ] Write unit tests for YAML parsing and ingestion logic
