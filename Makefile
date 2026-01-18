@@ -1,3 +1,10 @@
+# Assign env variables if they are not already set
+GOOGLE_GENAI_USE_VERTEXAI = true
+SERVICE_NAME ?= dazbo-portfolio
+AGENT_NAME ?= dazbo-portfolio
+MODEL ?= gemini-2.5-flash
+REGION ?= europe-west1
+
 # Install dependencies using uv package manager
 install:
 	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.8.13/install.sh | sh; source $HOME/.local/bin/env; }
@@ -20,19 +27,19 @@ local-backend:
 react-ui:
 	cd frontend && npm run dev
 
-# Deploy the agent remotely
-# Usage: make deploy [IAP=true] [PORT=8080] - Set IAP=true to enable Identity-Aware Proxy, PORT to specify container port
+# Deploy the agent remotely (Manual / Development)
+# Usage: make deploy-cloud-run [IAP=true]
 deploy-cloud-run:
 	PROJECT_ID=$$(gcloud config get-value project) && \
-	gcloud beta run deploy dazbo-portfolio \
+	gcloud run deploy $(SERVICE_NAME) \
 		--source . \
 		--memory "4Gi" \
 		--project $$PROJECT_ID \
-		--region $$GOOGLE_CLOUD_LOCATION \
-		--update-env-vars \
-		"COMMIT_SHA=$(shell git rev-parse HEAD)" \
-		$(if $(IAP),--iap) \
-		$(if $(PORT),--port=$(PORT))
+		--region $(REGION) \
+		--service-account="$$SERVICE_SA_EMAIL" \
+		--allow-unauthenticated \
+		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(SERVICE_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),LOG_LEVEL=DEBUG" \
+		$(if $(IAP),--iap)
 
 # Build the unified container image
 docker-build:

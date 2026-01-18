@@ -9,7 +9,7 @@
 - [x] Establish how to ingest/point to source blogs, repos, etc
 - [x] Create React UI with carousel for blogs, GitHub repos, applications, etc.
 - [x] Build container image and test locally.
-- [ ] Deploy and test on Cloud Run.
+- [x] Deploy and test on Cloud Run.
 - [ ] Add conversational agent using Dazbo persona. Store the persona as a Google Secret.
 - [ ] UI experimentation / aesthetics.
 - [ ] Persona can answer portfolio questions and questions about me. Evaluate if we should use RAG in Firestore.

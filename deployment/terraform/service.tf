@@ -70,3 +70,12 @@ resource "google_cloud_run_v2_service" "app" {
     google_project_service.deploy_project_services,
   ]
 }
+
+# Allow unauthenticated invocations for the public website
+resource "google_cloud_run_service_iam_member" "public_access" {
+  location = google_cloud_run_v2_service.app.location
+  project  = google_cloud_run_v2_service.app.project
+  service  = google_cloud_run_v2_service.app.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}

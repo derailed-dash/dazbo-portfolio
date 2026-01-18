@@ -28,63 +28,21 @@ resource "google_cloudbuild_trigger" "pr_checks" {
   included_files = [
     "app/**",
     "data_ingestion/**",
-    "tests/**",
     "deployment/**",
-    "uv.lock",
-  
-  ]
-  include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
-  depends_on = [
-    resource.google_project_service.cicd_services, 
-    resource.google_project_service.deploy_project_services, 
-    google_cloudbuildv2_connection.github_connection, 
-    google_cloudbuildv2_repository.repo
-  ]
-}
-
-# b. Create CD pipeline trigger
-resource "google_cloudbuild_trigger" "cd_pipeline" {
-  name            = "cd-${var.project_name}"
-  project         = var.cicd_runner_project_id
-  location        = var.region
-  service_account = resource.google_service_account.cicd_runner_sa.id
-  description     = "Trigger for CD pipeline"
-
-  repository_event_config {
-    repository = "projects/${var.cicd_runner_project_id}/locations/${var.region}/connections/${var.host_connection_name}/repositories/${var.repository_name}"
-    push {
-      branch = "main"
-    }
-  }
-
-  filename = ".cloudbuild/staging.yaml"
-  included_files = [
-    "app/**",
-    "data_ingestion/**",
+    "frontend/**",
     "tests/**",
-    "deployment/**",
     "uv.lock"
   ]
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
-  substitutions = {
-    _STAGING_PROJECT_ID            = var.project_id
-    _LOGS_BUCKET_NAME_STAGING      = resource.google_storage_bucket.logs_data_bucket[var.project_id].name
-    _APP_SERVICE_ACCOUNT_STAGING   = google_service_account.app_sa.email
-    _REGION                        = var.region
-    _CONTAINER_NAME                = var.project_name
-    _ARTIFACT_REGISTRY_REPO_NAME   = resource.google_artifact_registry_repository.repo-artifacts-genai.repository_id
-    # Your other CD Pipeline substitutions
-  }
   depends_on = [
     resource.google_project_service.cicd_services, 
     resource.google_project_service.deploy_project_services, 
     google_cloudbuildv2_connection.github_connection, 
     google_cloudbuildv2_repository.repo
   ]
-
 }
 
-# c. Create Deploy to production trigger
+# b. Create Deploy to production trigger
 resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
   name            = "deploy-${var.project_name}"
   project         = var.cicd_runner_project_id
@@ -93,21 +51,36 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
   service_account = resource.google_service_account.cicd_runner_sa.id
   repository_event_config {
     repository = "projects/${var.cicd_runner_project_id}/locations/${var.region}/connections/${var.host_connection_name}/repositories/${var.repository_name}"
+    push {
+      branch = "main"
+    }
   }
   filename = ".cloudbuild/deploy-to-prod.yaml"
+  included_files = [
+    "app/**",
+    "data_ingestion/**",
+    "deployment/**",
+    "frontend/**",
+    "tests/**",
+    "uv.lock"
+  ]
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
   approval_config {
     approval_required = true
   }
   substitutions = {
-    _PROD_PROJECT_ID             = var.project_id
     _LOGS_BUCKET_NAME_PROD       = resource.google_storage_bucket.logs_data_bucket[var.project_id].name
-    _APP_SERVICE_ACCOUNT_PROD    = google_service_account.app_sa.email
+    _APP_SERVICE_ACCOUNT         = google_service_account.app_sa.email
     _REGION                      = var.region
-    _CONTAINER_NAME              = var.project_name
     _ARTIFACT_REGISTRY_REPO_NAME = resource.google_artifact_registry_repository.repo-artifacts-genai.repository_id
-    # Your other Deploy to Prod Pipeline substitutions
+    _SERVICE_NAME                = var.service_name
+    _AGENT_NAME                  = var.agent_name
+    _GOOGLE_GENAI_USE_VERTEXAI   = var.google_genai_use_vertexai
+    _MODEL                       = var.model
+    _MAX_INSTANCES               = "1"
+    _LOG_LEVEL                   = "DEBUG"
   }
+
   depends_on = [
     resource.google_project_service.cicd_services, 
     resource.google_project_service.deploy_project_services, 

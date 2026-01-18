@@ -15,6 +15,7 @@ The infrastructure is designed to be serverless, scalable, and secure, leveragin
 - **Cloud Build:** Manages the CI/CD pipeline for automated deployments.
 - **Cloud Logging & Trace:** Provides observability and long-term telemetry storage.
 
+
 ## Project Structure
 
 ```text
@@ -33,6 +34,33 @@ deployment/terraform/
 ├── telemetry.tf          # Cloud Logging buckets and telemetry sinks
 └── variables.tf          # Input variable definitions
 ```
+
+### Variable Propagation
+
+Configuration flows from Terraform through to the runtime environment:
+
+1.  **Definition**: Variables (e.g., `model`, `service_name`) are defined in `variables.tf` and populated via `env.tfvars`.
+2.  **Build Configuration**: Terraform injects these values into the **Cloud Build Trigger** via substitutions (see `build_triggers.tf`).
+3.  **Deployment**: When the trigger fires, Cloud Build receives these substitutions and passes them to the `gcloud run deploy` command (see `.cloudbuild/deploy-to-prod.yaml`).
+4.  **Runtime**: The variables are set as **Environment Variables** on the Cloud Run service, accessible to the application at runtime.
+
+### Configuration Sources (Why duplication?)
+
+You may notice similar variables in `env.tfvars` and your local `.env` file. They serve distinct purposes:
+
+-   **`deployment/terraform/vars/env.tfvars` (Infrastructure & CI/CD)**:
+    -   Used by Terraform to configure the **Cloud Build Trigger**.
+    -   Values are baked into the pipeline definition.
+    -   *Source of Truth for automated deployments.*
+
+-   **`.env` (Local Development)**:
+    -   Used by your local runtime (`uvicorn`, `docker run`).
+    -   Not visible to Terraform or Cloud Build.
+    -   *Source of Truth for local testing.*
+
+-   **`Makefile` (Bridging the gap)**:
+    -   The `deploy-cloud-run` target uses conditional assignment (`NAME ?= value`).
+    -   It allows you to use your local `.env` values (via `source .env`) to perform manual deployments that match the production configuration.
 
 ## Prerequisites
 
