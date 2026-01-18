@@ -9,16 +9,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-# from app.services.connectors.devto_connector import DevToConnector
+from app.services.connectors.devto_connector import DevToConnector
 
 
 @pytest.mark.asyncio
 async def test_fetch_posts():
-    try:
-        from app.services.connectors.devto_connector import DevToConnector
-    except ImportError:
-        pytest.fail("Could not import DevToConnector")
-
     # Mock JSON data from Dev.to API
     mock_json = [
         {

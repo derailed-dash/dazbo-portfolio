@@ -9,16 +9,11 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-# from app.services.connectors.medium_connector import MediumConnector
+from app.services.connectors.medium_connector import MediumConnector
 
 
 @pytest.mark.asyncio
 async def test_fetch_posts():
-    try:
-        from app.services.connectors.medium_connector import MediumConnector
-    except ImportError:
-        pytest.fail("Could not import MediumConnector")
-
     # Mock RSS XML data
     mock_rss = """<?xml version="1.0" encoding="UTF-8"?>
     <rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">

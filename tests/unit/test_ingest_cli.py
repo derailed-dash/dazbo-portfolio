@@ -6,7 +6,6 @@ How: Mocks connector classes and Typer context.
 
 from unittest.mock import AsyncMock, patch
 
-import pytest
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -21,13 +20,9 @@ runner = CliRunner()
 def test_ingest_command(
     mock_firestore_client, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
 ):
-    try:
-        from app.tools.ingest import app
-    except ImportError:
-        pytest.fail("Could not import ingest app")
-
     from app.models.blog import Blog
     from app.models.project import Project
+    from app.tools.ingest import app
 
     # Setup mocks
     mock_gh_instance = mock_github.return_value
