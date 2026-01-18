@@ -10,6 +10,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | Use Gemini for LLM | Gemini is a powerful LLM that is well-suited for this application. |
 | Use FastAPI for backend | FastAPI is a modern, fast, and easy-to-use web framework for building APIs. |
 | Use React for frontend | React is a popular and powerful library for building user interfaces. |
+| Use Vite for frontend build | Vite offers superior performance and simplicity for SPAs compared to legacy tools like CRA. |
 | Use Terraform for infrastructure | Terraform is a tool for defining and provisioning infrastructure as code. |
 | Use Google Cloud Build for CI/CD | Google Cloud Build is a managed CI/CD service that is well-suited for this application. |
 | The frontend, API and backend agent will be containerised into a single container image. | This is to simplify deployment and management. |
@@ -21,11 +22,22 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 
 The application follows a clean, layered architecture to ensure separation of concerns and testability.
 
-### 1. Presentation Layer (FastAPI)
+### 1. Presentation Layer (React + FastAPI)
 
-*   **Entry Point**: `app/fast_api_app.py` initializes the application, configures middleware (CORS, Telemetry), and defines the lifespan context.
-*   **Dependency Injection**: `app/dependencies.py` provides dependency injection providers to supply Services to Route Handlers.
-*   **Routes**: API endpoints expose the functionality (e.g., `/projects`, `/blogs`, `/experience`) and Agent interaction.
+*   **Frontend (React/Vite)**:
+    *   **Framework**: React 19+ with TypeScript, built using Vite.
+    *   **UI Library**: React Bootstrap styled with Material Design principles (custom CSS variables).
+    *   **Navigation**: `react-router-dom` handles client-side routing (Home, Details).
+    *   **Components**:
+        *   `MainLayout`: Wrapper providing Navbar and Footer.
+        *   `ShowcaseCarousel`: Reusable, responsive carousel for displaying content cards (Blogs, Projects).
+        *   `ChatWidget`: Persistent floating button that toggles the agent interface.
+    *   **Integration**: Proxies API requests to the FastAPI backend during development via `vite.config.ts`.
+
+*   **Backend (FastAPI)**:
+    *   **Entry Point**: `app/fast_api_app.py` initializes the application, configures middleware (CORS, Telemetry), and defines the lifespan context.
+    *   **Dependency Injection**: `app/dependencies.py` provides dependency injection providers to supply Services to Route Handlers.
+    *   **Routes**: API endpoints expose the functionality (e.g., `/projects`, `/blogs`, `/experience`) and Agent interaction.
 
 ### 2. Service Layer
 
@@ -57,8 +69,6 @@ To ensure readable and deterministic URLs/pointers, the system uses **Slug-based
     *   **Readability**: Easier to identify documents in the Cloud Console.
     *   **Determinism**: Re-ingesting the same resource (with the same title) maps to the same document, preventing duplicates.
 
-
-
 ## Solution Architecture
 
 The following diagram illustrates the relationship between the application's runtime components, the ingestion scripts, and the shared code modules.
@@ -67,9 +77,11 @@ The following diagram illustrates the relationship between the application's run
 graph TD
     subgraph "Cloud Run / Local Runtime"
         API["FastAPI App<br/>(app/fast_api_app.py)"]
+        Frontend["React UI<br/>(frontend/)"]
         Agent["Gemini Agent<br/>(app/agent.py)"]
         Dep["Dependencies<br/>(app/dependencies.py)"]
         
+        Frontend -->|API Calls| API
         API -->|Mounts| Agent
         API -->|Uses| Dep
     end
@@ -109,7 +121,8 @@ graph TD
     FS -->|Validates| Models
     
     %% User Interactions
-    User["User / Web Frontend"] -->|HTTP Requests| API
+    User["User / Web Frontend"] -->|Interacts| Frontend
+    Frontend -->|HTTP Requests| API
     User -->|Chat| Agent
     
     %% Ingestion Flow
@@ -124,6 +137,34 @@ The architecture is designed to maximize code reuse between the runtime API and 
 2.  **Dependency Injection**: The FastAPI app uses `app/dependencies.py` to inject these services into route handlers. This decouples the routes from the concrete service implementation, facilitating testing and loose coupling.
 3.  **Generic Data Access**: The `FirestoreService` (`app/services/firestore_base.py`) provides a generic implementation of CRUD operations using Python 3.12+ type parameters. Domain-specific services (`ProjectService`, etc.) inherit from this base, reducing boilerplate code.
 4.  **Agent Integration**: The Gemini Agent (`app/agent.py`) is integrated directly into the FastAPI application. It shares the same runtime environment and can potentially access the same services (via tools) to answer user queries about the portfolio content.
+
+## Frontend Implementation
+
+The frontend is a single-page application (SPA) built with React and Vite. It is designed to be responsive, performant, and visually consistent with the Material Design system.
+
+### Key Components
+
+*   **`MainLayout`**: The top-level wrapper for all pages. It includes the `AppNavbar` (top), `Footer` (bottom), and the `ChatWidget`.
+*   **`ShowcaseCarousel`**: A reusable component for displaying collections of items (blogs, projects, etc.).
+    *   **Responsiveness**: On mobile, it displays 1 item per slide. On desktop, it displays a grid of 3 items per slide.
+    *   **Navigation**: Includes custom-styled "Previous" and "Next" controls and indicators.
+*   **`ChatWidget`**: A floating action button (FAB) that expands into a chat interface. It currently serves as a shell for future agent integration.
+
+### Development Workflow
+
+To develop the frontend locally:
+
+1.  **Start the Backend**: The frontend relies on the backend for data.
+    ```bash
+    make local-backend
+    ```
+2.  **Start the Frontend**:
+    ```bash
+    make react-ui
+    # OR
+    cd frontend && npm run dev
+    ```
+3.  **Access**: Open `http://localhost:5173`. The Vite proxy is configured to forward API requests (e.g., `/blogs`, `/projects`) to `http://localhost:8000`.
 
 ## Use Cases
 
@@ -140,7 +181,7 @@ This tool allows the developer to trigger synchronization from external sources 
 
 **Usage:**
 ```bash
-uv run python -m app.tools.ingest \
+燬 run python -m app.tools.ingest \
   --github-user <user-name> \
   --medium-user <user-name> \
   --devto-user <user-name> \
@@ -168,7 +209,7 @@ The system uses modular "Connectors" to fetch data:
 
 *   **Storage:** Images (project screenshots, thumbnails) are stored in a public **Google Cloud Storage (GCS)** bucket (e.g., `<project-id>-assets`).
 *   **Ingestion:** Currently, images must be uploaded manually to the GCS bucket (e.g., via `gsutil` or Cloud Console).
-*   **Linking:**
+*   **Linking**:
     *   **New Manual Entries:** Add the public URL to the `image_url` field in your `manual_resources.yaml` file.
     *   **Existing Entries (e.g., from GitHub/Medium):**
         1.  Upload the image to the GCS bucket.

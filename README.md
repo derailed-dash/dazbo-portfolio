@@ -84,7 +84,8 @@ Note that you can automate loading the `setup-env.sh` script by installing [dire
 sudo apt install direnv
 
 # Add eval "$(direnv hook bash)" to your .bashrc
-echo "eval \"\$(direnv hook bash)\"" >> ~/.bashrc
+echo "eval \"\
+$(direnv hook bash)\"" >> ~/.bashrc
 
 # Then, from this project folder:
 direnv allow
@@ -100,6 +101,7 @@ direnv allow
 | `make test`             | Run unit and integration tests                                |
 | `make deploy-cloud-run` | Deploy agent to Cloud Run                                     |
 | `make local-backend`    | Launch local development server with hot-reload               |
+| `make react-ui`         | Launch React frontend development server                      |
 | `make tf-plan`          | Plan Terraform deployment                                     |
 | `make tf-apply`         | Deploy environment resources using Terraform                  |
 
