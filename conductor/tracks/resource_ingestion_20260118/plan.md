@@ -9,7 +9,7 @@
     - [ ] Check `deployment/terraform/storage.tf` for the public assets bucket definition
     - [ ] Ensure the bucket has correct public access policies (if intended for public serving)
     - [ ] Apply Terraform changes if necessary (update `tech-stack.md` if new resources are added)
-- [ ] Task: Implement Google Cloud Storage (GCS) Utility
+- [x] Task: Implement Google Cloud Storage (GCS) Utility [3f165bb]
     - [ ] Create a utility class for uploading and retrieving URLs for images in GCS
     - [ ] Write unit tests for GCS utility with mocked storage client
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Models' (Protocol in workflow.md)
