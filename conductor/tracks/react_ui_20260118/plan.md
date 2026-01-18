@@ -3,7 +3,7 @@
 This plan outlines the steps to implement the React-based frontend for the Dazbo Portfolio, featuring carousels for content and a shell for the conversational agent.
 
 ## Phase 1: Environment Setup & Scaffolding
-- [x] Task: Initialize Vite React Application
+- [x] Task: Initialize Vite React Application [commit: 9c52753]
     - [x] Run Vite initialization in `frontend/` directory with TypeScript template
     - [x] Install core dependencies: `react-bootstrap`, `bootstrap`, `react-router-dom`, `lucide-react`, `axios`
     - [x] Configure `vite.config.ts` for proxying API requests to FastAPI backend
