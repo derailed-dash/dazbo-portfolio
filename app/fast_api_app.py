@@ -7,6 +7,7 @@ How: Configures FastAPI with ADK integration, Telemetry, and Firestore services.
 import os
 from contextlib import asynccontextmanager
 
+import anyio
 import google.auth
 from fastapi import Depends, FastAPI
 from fastapi.responses import FileResponse
@@ -112,7 +113,12 @@ if os.path.exists(frontend_dist):
     if os.path.exists(assets_dir):
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Check if a static file exists (e.g. favicon.ico, manifest.json)
+        file_path = os.path.join(frontend_dist, full_path)
         if full_path and await anyio.to_thread.run_sync(os.path.isfile, file_path):
+            return FileResponse(file_path)
 
         # Default to index.html for React Router (client-side routing)
         return FileResponse(os.path.join(frontend_dist, "index.html"))
