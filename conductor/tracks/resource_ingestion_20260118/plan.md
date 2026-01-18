@@ -1,6 +1,6 @@
 # Implementation Plan: Portfolio Resource Ingestion Strategy
 
-## Phase 1: Foundation & Data Models
+## Phase 1: Foundation & Data Models [checkpoint: f36df99]
 - [x] Task: Update Pydantic models to support ingestion metadata [b0319a9]
     - [ ] Add `source_platform` and `is_manual` fields to `Project` and `Blog` models
     - [ ] Add support for "metadata-only" entries
@@ -12,7 +12,7 @@
 - [x] Task: Implement Google Cloud Storage (GCS) Utility [3f165bb]
     - [ ] Create a utility class for uploading and retrieving URLs for images in GCS
     - [ ] Write unit tests for GCS utility with mocked storage client
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Models' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Models' (Protocol in workflow.md) f36df99
 
 ## Phase 2: Ingestion Connectors
 - [ ] Task: Implement GitHub Connector
