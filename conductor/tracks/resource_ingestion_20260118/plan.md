@@ -30,7 +30,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Ingestion Connectors' (Protocol in workflow.md) c8d380d
 
 ## Phase 3: CLI Ingestion Tool
-- [ ] Task: Implement CLI Harness
+- [x] Task: Implement CLI Harness [8ade09f]
     - [ ] Create a script in `app/tools/ingest.py` using `typer` or `argparse`
     - [ ] Implement the command logic to orchestrate connectors
     - [ ] Add logic to ensure idempotency (prevent duplicates in Firestore)
