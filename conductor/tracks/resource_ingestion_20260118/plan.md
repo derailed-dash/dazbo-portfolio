@@ -5,7 +5,7 @@
     - [ ] Add `source_platform` and `is_manual` fields to `Project` and `Blog` models
     - [ ] Add support for "metadata-only" entries
     - [ ] Update Firestore service layer to handle these new fields
-- [ ] Task: Verify and Update Terraform for GCS
+- [x] Task: Verify and Update Terraform for GCS [3a306bc]
     - [ ] Check `deployment/terraform/storage.tf` for the public assets bucket definition
     - [ ] Ensure the bucket has correct public access policies (if intended for public serving)
     - [ ] Apply Terraform changes if necessary (update `tech-stack.md` if new resources are added)
