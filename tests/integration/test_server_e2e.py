@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "http://127.0.0.1:8000/"
 STREAM_URL = BASE_URL + "run_sse"
-FEEDBACK_URL = BASE_URL + "feedback"
+FEEDBACK_URL = BASE_URL + "api/feedback"
 
 HEADERS = {"Content-Type": "application/json"}
 
