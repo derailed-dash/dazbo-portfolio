@@ -116,3 +116,27 @@ variable "feedback_logs_filter" {
   default     = "jsonPayload.log_type=\"feedback\" jsonPayload.service_name=\"dazbo-portfolio\""
 }
 
+
+variable "service_name" {
+  description = "Name of the Cloud Run service"
+  type        = string
+  default     = "dazbo-portfolio"
+}
+
+variable "agent_name" {
+  description = "Name of the agent"
+  type        = string
+  default     = "dazbo-portfolio"
+}
+
+variable "google_genai_use_vertexai" {
+  description = "Whether to use Vertex AI for Gemini"
+  type        = string
+  default     = "true"
+}
+
+variable "model" {
+  description = "Gemini model to use"
+  type        = string
+  default     = "gemini-2.5-flash"
+}

@@ -5,7 +5,7 @@ steps:
       [
         "build",
         "-t",
-        "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME",
+        "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_SERVICE_NAME:$SHORT_SHA",
         "--build-arg",
         "COMMIT_SHA=$COMMIT_SHA",
         ".",
@@ -16,7 +16,7 @@ steps:
     args:
       [
         "push",
-        "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME",
+        "$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_SERVICE_NAME:$SHORT_SHA",
       ]
 
   # Deploy
@@ -27,14 +27,14 @@ steps:
       - "run"
       - "deploy"
       - "$_SERVICE_NAME"
-      - "--image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_CONTAINER_NAME"
+      - "--image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REGISTRY_REPO_NAME/$_SERVICE_NAME:$SHORT_SHA"
       - "--region=$_REGION"
       - "--project=$PROJECT_ID"
       - "--max-instances=$_MAX_INSTANCES"
-      - '--cpu-boost'
-      - '--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GOOGLE_CLOUD_REGION=$_REGION,LOG_LEVEL=$_LOG_LEVEL,APP_NAME=$_SERVICE_NAME,AGENT_NAME=$_AGENT_NAME,GOOGLE_GENAI_USE_VERTEXAI=$_GOOGLE_GENAI_USE_VERTEXAI,MODEL=$_MODEL'
-      - '--service-account=$_SERVICE_NAME-sa@$PROJECT_ID.iam.gserviceaccount.com'
-      - '--allow-unauthenticated' # Allow unauthenticated invocations - end user will perform OAuth
+      - "--cpu-boost"
+      - "--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GOOGLE_CLOUD_REGION=$_REGION,LOG_LEVEL=$_LOG_LEVEL,APP_NAME=$_SERVICE_NAME,AGENT_NAME=$_AGENT_NAME,GOOGLE_GENAI_USE_VERTEXAI=$_GOOGLE_GENAI_USE_VERTEXAI,MODEL=$_MODEL"
+      - "--service-account=$_APP_SERVICE_ACCOUNT"
+      - "--allow-unauthenticated" # Allow unauthenticated invocations - end user will perform OAuth
 
 substitutions:
   _REGION: europe-west1

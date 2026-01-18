@@ -15,6 +15,15 @@ The infrastructure is designed to be serverless, scalable, and secure, leveragin
 - **Cloud Build:** Manages the CI/CD pipeline for automated deployments.
 - **Cloud Logging & Trace:** Provides observability and long-term telemetry storage.
 
+### Variable Propagation
+
+Configuration flows from Terraform through to the runtime environment:
+
+1.  **Definition**: Variables (e.g., `model`, `service_name`) are defined in `variables.tf` and populated via `env.tfvars`.
+2.  **Build Configuration**: Terraform injects these values into the **Cloud Build Trigger** via substitutions (see `build_triggers.tf`).
+3.  **Deployment**: When the trigger fires, Cloud Build receives these substitutions and passes them to the `gcloud run deploy` command (see `.cloudbuild/deploy-to-prod.yaml`).
+4.  **Runtime**: The variables are set as **Environment Variables** on the Cloud Run service, accessible to the application at runtime.
+
 ## Project Structure
 
 ```text

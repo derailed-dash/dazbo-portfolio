@@ -19,3 +19,9 @@ repository_name = "dazbo-portfolio"
 
 # The Google Cloud region you will use to deploy the infrastructure
 region = "europe-west1"
+
+# Service Configuration
+service_name = "dazbo-portfolio"
+agent_name = "dazbo-portfolio"
+google_genai_use_vertexai = "true"
+model = "gemini-2.5-flash"

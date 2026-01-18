@@ -28,10 +28,10 @@ resource "google_cloudbuild_trigger" "pr_checks" {
   included_files = [
     "app/**",
     "data_ingestion/**",
-    "tests/**",
     "deployment/**",
-    "uv.lock",
-  
+    "frontend/**",
+    "tests/**",
+    "uv.lock"
   ]
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
   depends_on = [
@@ -59,8 +59,9 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
   included_files = [
     "app/**",
     "data_ingestion/**",
-    "tests/**",
     "deployment/**",
+    "frontend/**",
+    "tests/**",
     "uv.lock"
   ]
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
@@ -68,13 +69,18 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
     approval_required = true
   }
   substitutions = {
-    _PROD_PROJECT_ID             = var.project_id
     _LOGS_BUCKET_NAME_PROD       = resource.google_storage_bucket.logs_data_bucket[var.project_id].name
-    _APP_SERVICE_ACCOUNT_PROD    = google_service_account.app_sa.email
+    _APP_SERVICE_ACCOUNT         = google_service_account.app_sa.email
     _REGION                      = var.region
-    _CONTAINER_NAME              = var.project_name
     _ARTIFACT_REGISTRY_REPO_NAME = resource.google_artifact_registry_repository.repo-artifacts-genai.repository_id
+    _SERVICE_NAME                = var.service_name
+    _AGENT_NAME                  = var.agent_name
+    _GOOGLE_GENAI_USE_VERTEXAI   = var.google_genai_use_vertexai
+    _MODEL                       = var.model
+    _MAX_INSTANCES               = "1"
+    _LOG_LEVEL                   = "DEBUG"
   }
+
   depends_on = [
     resource.google_project_service.cicd_services, 
     resource.google_project_service.deploy_project_services, 
