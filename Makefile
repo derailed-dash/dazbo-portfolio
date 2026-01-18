@@ -47,6 +47,8 @@ docker-run:
 	docker run --rm -p 8080:8080 \
 		-e GOOGLE_CLOUD_PROJECT=$$(gcloud config get-value project) \
 		-e FIRESTORE_DATABASE_ID="(default)" \
+		-e GOOGLE_APPLICATION_CREDENTIALS="/code/.config/gcloud/application_default_credentials.json" \
+		--mount type=bind,source=$${HOME}/.config/gcloud,target=/code/.config/gcloud \
 		dazbo-portfolio:latest
 
 # Set up development environment resources using Terraform

@@ -14,6 +14,8 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | Use Terraform for infrastructure | Terraform is a tool for defining and provisioning infrastructure as code. |
 | Use Google Cloud Build for CI/CD | Google Cloud Build is a managed CI/CD service that is well-suited for this application. |
 | The frontend, API and backend agent will be containerised into a single container image. | This is to simplify deployment and management. |
+| Use a Unified Origin architecture. | Serving the React SPA directly from FastAPI simplifies origin management and eliminates CORS complexity in production. |
+| Use an `/api` prefix for all backend routes. | Provides a clear namespace for backend services and prevents collisions with frontend client-side routes. |
 | The container will be deployed to Cloud Run. | Cloud Run is a fully-managed, serverless compute platform that lets you run containers directly on Google Cloud infrastructure. |
 | Use InMemorySessionService for session management | There is no need for session persistence across restarts for this application. |
 | Use Python 3.12+ Type Parameters | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
@@ -24,6 +26,8 @@ The application follows a clean, layered architecture to ensure separation of co
 
 ### 1. Presentation Layer (React + FastAPI)
 
+The application employs a **Unified Origin Architecture**. In production, the FastAPI backend serves both the REST API and the compiled React frontend assets.
+
 *   **Frontend (React/Vite)**:
     *   **Framework**: React 19+ with TypeScript, built using Vite.
     *   **UI Library**: React Bootstrap styled with Material Design principles (custom CSS variables).
@@ -32,12 +36,18 @@ The application follows a clean, layered architecture to ensure separation of co
         *   `MainLayout`: Wrapper providing Navbar and Footer.
         *   `ShowcaseCarousel`: Reusable, responsive carousel for displaying content cards (Blogs, Projects).
         *   `ChatWidget`: Persistent floating button that toggles the agent interface.
-    *   **Integration**: Proxies API requests to the FastAPI backend during development via `vite.config.ts`.
+    *   **API Calls**: All frontend data fetching is directed to the `/api` prefix (e.g., `/api/blogs`).
 
 *   **Backend (FastAPI)**:
     *   **Entry Point**: `app/fast_api_app.py` initializes the application, configures middleware (CORS, Telemetry), and defines the lifespan context.
-    *   **Dependency Injection**: `app/dependencies.py` provides dependency injection providers to supply Services to Route Handlers.
-    *   **Routes**: API endpoints expose the functionality (e.g., `/projects`, `/blogs`, `/experience`) and Agent interaction.
+    *   **API Prefixing**: All routes are explicitly prefixed with `/api`.
+    *   **Static Serving**: Mounts the `frontend/dist` directory to serve static assets (`/assets/*`).
+    *   **SPA Support**: Implements a catch-all route that serves `index.html` for any non-API, non-asset path, enabling React Router's client-side navigation.
+
+## CORS Strategy
+
+*   **Production**: Since the frontend and API share the same origin (protocol, host, and port), the browser's Same-Origin Policy is satisfied without any explicit CORS configuration.
+*   **Local Development**: To maintain a rapid developer loop, the React development server (`:5173`) and FastAPI backend (`:8000`) run as separate processes. Vite is configured to **proxy** requests from `/api` to the backend, mirroring the production environment's single-origin behavior. This avoids the need to enable permissive CORS headers on the backend.
 
 ### 2. Service Layer
 
@@ -75,58 +85,23 @@ The following diagram illustrates the relationship between the application's run
 
 ```mermaid
 graph TD
-    subgraph "Cloud Run / Local Runtime"
+    subgraph "Cloud Run / Local Container"
         API["FastAPI App<br/>(app/fast_api_app.py)"]
-        Frontend["React UI<br/>(frontend/)"]
+        Frontend["React Assets<br/>(frontend/dist/)"]
         Agent["Gemini Agent<br/>(app/agent.py)"]
         Dep["Dependencies<br/>(app/dependencies.py)"]
         
-        Frontend -->|API Calls| API
+        API -->|Serves| Frontend
         API -->|Mounts| Agent
         API -->|Uses| Dep
     end
 
-    subgraph "CLI / Scripts"
-        CLI["Ingest Tool<br/>(app/tools/ingest.py)"]
-    end
-
-    subgraph "Service Layer (Shared)"
-        PS["ProjectService"]
-        BS["BlogService"]
-        ES["ExperienceService"]
-        FS["FirestoreService<br/>(Generic Base)"]
+    subgraph "Local Development (Processes)"
+        Vite["Vite Dev Server<br/>(localhost:5173)"]
+        FastAPI["FastAPI Backend<br/>(localhost:8000)"]
         
-        PS --> FS
-        BS --> FS
-        ES --> FS
+        Vite -->|Proxies /api| FastAPI
     end
-
-    subgraph "Data Layer (Shared)"
-        Models["Pydantic Models<br/>(app/models/*)"];
-    end
-
-    subgraph "Infrastructure"
-        Firestore["Google Firestore"]
-        GCS["Google Cloud Storage"]
-    end
-
-    %% Relationships
-    Dep -->|Injects| PS
-    Dep -->|Injects| BS
-    Dep -->|Injects| ES
-    CLI -->|Instantiates| PS
-    CLI -->|Instantiates| BS
-    CLI -->|Instantiates| ES
-    FS -->|Reads/Writes| Firestore
-    FS -->|Validates| Models
-    
-    %% User Interactions
-    User["User / Web Frontend"] -->|Interacts| Frontend
-    Frontend -->|HTTP Requests| API
-    User -->|Chat| Agent
-    
-    %% Ingestion Flow
-    Dev["Developer"] -->|Runs| CLI
 ```
 
 ### Module & Service Relationships
@@ -152,19 +127,19 @@ The frontend is a single-page application (SPA) built with React and Vite. It is
 
 ### Development Workflow
 
-To develop the frontend locally:
+There are two primary ways to run the application locally:
 
-1.  **Start the Backend**: The frontend relies on the backend for data.
-    ```bash
-    make local-backend
-    ```
-2.  **Start the Frontend**:
-    ```bash
-    make react-ui
-    # OR
-    cd frontend && npm run dev
-    ```
-3.  **Access**: Open `http://localhost:5173`. The Vite proxy is configured to forward API requests (e.g., `/blogs`, `/projects`) to `http://localhost:8000`.
+#### 1. Process Mode (Rapid Frontend/Backend Iteration)
+Ideal for daily development with hot-reloading.
+1.  **Start the Backend**: `make local-backend` (port 8000).
+2.  **Start the Frontend**: `make react-ui` (port 5173).
+3.  **Access**: `http://localhost:5173`. Requests to `/api/*` are proxied to port 8000.
+
+#### 2. Container Mode (Production Parity)
+Ideal for verifying the final build and deployment configuration.
+1.  **Build**: `make docker-build`.
+2.  **Run**: `make docker-run`.
+3.  **Access**: `http://localhost:8080`. Port 8080 serves both the UI and the API.
 
 ## Use Cases
 

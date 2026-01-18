@@ -9,6 +9,8 @@ from contextlib import asynccontextmanager
 
 import google.auth
 from fastapi import Depends, FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from google.adk.cli.fast_api import get_fast_api_app
 from google.adk.sessions import InMemorySessionService
 from google.cloud import firestore
@@ -64,7 +66,7 @@ async def lifespan(app: FastAPI):
 
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
-    web=True,
+    web=False,
     artifact_service_uri=artifact_service_uri,
     allow_origins=allow_origins,
     session_service_uri=session_service_uri,
@@ -98,6 +100,28 @@ async def list_blogs(service: BlogService = Depends(get_blog_service)):
 async def list_experience(service: ExperienceService = Depends(get_experience_service)):
     """List all work experience."""
     return await service.list()
+
+
+# --- Static File Serving (Unified Origin) ---
+
+# Mount static files if they exist (production/container mode)
+frontend_dist = os.path.join(AGENT_DIR, "frontend", "dist")
+if os.path.exists(frontend_dist):
+    # Mount assets folder for images, css, js
+    assets_dir = os.path.join(frontend_dist, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        """Catch-all route to serve the React SPA."""
+        # Check if the requested path is a specific file in the dist folder (e.g. favicon.ico)
+        file_path = os.path.join(frontend_dist, full_path)
+        if full_path and os.path.isfile(file_path):
+            return FileResponse(file_path)
+
+        # Default to index.html for React Router (client-side routing)
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
 
 
 # Main execution
