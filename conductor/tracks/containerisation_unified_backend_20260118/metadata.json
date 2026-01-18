@@ -1,0 +1,8 @@
+{
+  "track_id": "containerisation_unified_backend_20260118",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-01-18T18:50:00Z",
+  "updated_at": "2026-01-18T18:50:00Z",
+  "description": "Create the container image with unified backend and frontend, prefix API with /api, and update docs."
+}

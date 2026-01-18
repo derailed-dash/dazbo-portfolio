@@ -102,6 +102,8 @@ direnv allow
 | `make deploy-cloud-run` | Deploy agent to Cloud Run                                     |
 | `make local-backend`    | Launch local development server with hot-reload               |
 | `make react-ui`         | Launch React frontend development server                      |
+| `make docker-build`     | Build the unified production container image                  |
+| `make docker-run`       | Run the unified container locally                             |
 | `make tf-plan`          | Plan Terraform deployment                                     |
 | `make tf-apply`         | Deploy environment resources using Terraform                  |
 
@@ -123,29 +125,17 @@ See [deployment/README.md](deployment/README.md) for instructions.
 
 ### Running in a Local Container
 
+The application is unified into a single container image. To build and run it:
+
 ```bash
-# from project root directory
+# Build the image
+make docker-build
 
-# Get a unique version to tag our image
-export VERSION=$(git rev-parse --short HEAD)
-
-# To build as a container image
-docker build -t $SERVICE_NAME:$VERSION .
-
-# To run as a local container
-# We need to pass environment variables to the container
-# and the Google Application Default Credentials (ADC)
-docker run --rm -p 8080:8080 \
-  -e GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT -e GOOGLE_CLOUD_REGION=$GOOGLE_CLOUD_REGION \
-  -e LOG_LEVEL=$LOG_LEVEL \
-  -e APP_NAME=$APP_NAME \
-  -e AGENT_NAME=$AGENT_NAME \
-  -e GOOGLE_GENAI_USE_VERTEXAI=$GOOGLE_GENAI_USE_VERTEXAI \
-  -e MODEL=$MODEL \
-  -e GOOGLE_APPLICATION_CREDENTIALS="/app/.config/gcloud/application_default_credentials.json" \
-  --mount type=bind,source=${HOME}/.config/gcloud,target=/app/.config/gcloud \
-   $SERVICE_NAME:$VERSION
+# Run the container (includes credential mounting for Firestore access)
+make docker-run
 ```
+
+Access the application at `http://localhost:8080`.
 
 ### Production Deployment
 

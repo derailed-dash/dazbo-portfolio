@@ -7,8 +7,11 @@ How: Configures FastAPI with ADK integration, Telemetry, and Firestore services.
 import os
 from contextlib import asynccontextmanager
 
+import anyio
 import google.auth
 from fastapi import Depends, FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from google.adk.cli.fast_api import get_fast_api_app
 from google.adk.sessions import InMemorySessionService
 from google.cloud import firestore
@@ -64,7 +67,7 @@ async def lifespan(app: FastAPI):
 
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
-    web=True,
+    web=False,
     artifact_service_uri=artifact_service_uri,
     allow_origins=allow_origins,
     session_service_uri=session_service_uri,
@@ -75,29 +78,50 @@ app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
 
 
-@app.post("/feedback")
+@app.post("/api/feedback")
 def collect_feedback(feedback: Feedback) -> dict[str, str]:
     """Collect and log feedback."""
     logger.log_struct(feedback.model_dump(), severity="INFO")
     return {"status": "success"}
 
 
-@app.get("/projects", response_model=list[Project])
+@app.get("/api/projects", response_model=list[Project])
 async def list_projects(service: ProjectService = Depends(get_project_service)):
     """List all projects."""
     return await service.list()
 
 
-@app.get("/blogs", response_model=list[Blog])
+@app.get("/api/blogs", response_model=list[Blog])
 async def list_blogs(service: BlogService = Depends(get_blog_service)):
     """List all blog posts."""
     return await service.list()
 
 
-@app.get("/experience", response_model=list[Experience])
+@app.get("/api/experience", response_model=list[Experience])
 async def list_experience(service: ExperienceService = Depends(get_experience_service)):
     """List all work experience."""
     return await service.list()
+
+
+# --- Static File Serving (Unified Origin) ---
+
+# Mount static files if they exist (production/container mode)
+frontend_dist = os.path.join(AGENT_DIR, "frontend", "dist")
+if os.path.exists(frontend_dist):
+    # Mount assets folder for images, css, js
+    assets_dir = os.path.join(frontend_dist, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        # Check if a static file exists (e.g. favicon.ico, manifest.json)
+        file_path = os.path.join(frontend_dist, full_path)
+        if full_path and await anyio.to_thread.run_sync(os.path.isfile, file_path):
+            return FileResponse(file_path)
+
+        # Default to index.html for React Router (client-side routing)
+        return FileResponse(os.path.join(frontend_dist, "index.html"))
 
 
 # Main execution

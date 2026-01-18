@@ -8,7 +8,7 @@
 - [x] Deploy with Terraform
 - [x] Establish how to ingest/point to source blogs, repos, etc
 - [x] Create React UI with carousel for blogs, GitHub repos, applications, etc.
-- [ ] Build container image and test locally.
+- [x] Build container image and test locally.
 - [ ] Deploy and test on Cloud Run.
 - [ ] Add conversational agent using Dazbo persona. Store the persona as a Google Secret.
 - [ ] UI experimentation / aesthetics.

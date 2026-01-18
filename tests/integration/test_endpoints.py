@@ -24,7 +24,7 @@ def test_get_projects():
 
     try:
         with TestClient(app) as client:
-            response = client.get("/projects")
+            response = client.get("/api/projects")
             assert response.status_code == 200
     finally:
         app.dependency_overrides.clear()
@@ -39,7 +39,7 @@ def test_get_blogs():
 
     try:
         with TestClient(app) as client:
-            response = client.get("/blogs")
+            response = client.get("/api/blogs")
             assert response.status_code == 200
     finally:
         app.dependency_overrides.clear()
@@ -54,7 +54,7 @@ def test_get_experience():
 
     try:
         with TestClient(app) as client:
-            response = client.get("/experience")
+            response = client.get("/api/experience")
             assert response.status_code == 200
     finally:
         app.dependency_overrides.clear()
