@@ -7,9 +7,9 @@ This plan outlines the steps to implement the React-based frontend for the Dazbo
     - [x] Run Vite initialization in `frontend/` directory with TypeScript template
     - [x] Install core dependencies: `react-bootstrap`, `bootstrap`, `react-router-dom`, `lucide-react`, `axios`
     - [x] Configure `vite.config.ts` for proxying API requests to FastAPI backend
-- [ ] Task: Define Base Project Structure
-    - [ ] Organize directories: `src/components`, `src/pages`, `src/services`, `src/styles`, `src/hooks`
-    - [ ] Setup global CSS variables for Material Design (colors, shadows, spacing)
+- [x] Task: Define Base Project Structure [commit: ceee1eb]
+    - [x] Organize directories: `src/components`, `src/pages`, `src/services`, `src/styles`, `src/hooks`
+    - [x] Setup global CSS variables for Material Design (colors, shadows, spacing)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup' (Protocol in workflow.md)
 
 ## Phase 2: Core Layout & Styling
