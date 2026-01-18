@@ -5,7 +5,9 @@ How: Uses httpx to call Dev.to API and maps results to Blog model.
 """
 
 import httpx
+
 from app.models.blog import Blog
+
 
 class DevToConnector:
     def __init__(self, base_url: str = "https://dev.to/api"):
@@ -34,8 +36,8 @@ class DevToConnector:
                 platform="Dev.to",
                 url=article.get("url"),
                 source_platform="devto_api",
-                is_manual=False
+                is_manual=False,
             )
             blogs.append(blog)
-        
+
         return blogs

@@ -4,12 +4,13 @@ Why: Verifies that the Medium connector correctly fetches posts via RSS and maps
 How: Mocks httpx.AsyncClient responses with RSS XML and asserts on the resulting Blog objects.
 """
 
-import pytest
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import httpx
-from unittest.mock import AsyncMock, patch, MagicMock
-from app.models.blog import Blog
+import pytest
 
 # from app.services.connectors.medium_connector import MediumConnector
+
 
 @pytest.mark.asyncio
 async def test_fetch_posts():
@@ -34,15 +35,15 @@ async def test_fetch_posts():
     """
 
     connector = MediumConnector()
-    
+
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
         mock_response = MagicMock(spec=httpx.Response)
         mock_response.status_code = 200
         mock_response.text = mock_rss
         mock_get.return_value = mock_response
-        
+
         blogs = await connector.fetch_posts("derailed.dash")
-        
+
         assert len(blogs) == 1
         blog = blogs[0]
         assert blog.title == "Test Blog Post"

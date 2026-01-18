@@ -35,6 +35,73 @@ The application follows a clean, layered architecture to ensure separation of co
 
 *   **Pydantic Models**: Located in `app/models/`, these define the schema for data entities (`Project`, `Blog`, `Experience`) and ensure type safety and validation between the API and Firestore.
 
+
+## Solution Architecture
+
+The following diagram illustrates the relationship between the application's runtime components, the ingestion scripts, and the shared code modules.
+
+```mermaid
+graph TD
+    subgraph "Cloud Run / Local Runtime"
+        API["FastAPI App<br/>(app/fast_api_app.py)"]
+        Agent["Gemini Agent<br/>(app/agent.py)"]
+        Dep["Dependencies<br/>(app/dependencies.py)"]
+        
+        API -->|Mounts| Agent
+        API -->|Uses| Dep
+    end
+
+    subgraph "CLI / Scripts"
+        CLI["Ingest Tool<br/>(app/tools/ingest.py)"]
+    end
+
+    subgraph "Service Layer (Shared)"
+        PS["ProjectService"]
+        BS["BlogService"]
+        ES["ExperienceService"]
+        FS["FirestoreService<br/>(Generic Base)"]
+        
+        PS --> FS
+        BS --> FS
+        ES --> FS
+    end
+
+    subgraph "Data Layer (Shared)"
+        Models["Pydantic Models<br/>(app/models/*)"];
+    end
+
+    subgraph "Infrastructure"
+        Firestore["Google Firestore"]
+        GCS["Google Cloud Storage"]
+    end
+
+    %% Relationships
+    Dep -->|Injects| PS
+    Dep -->|Injects| BS
+    Dep -->|Injects| ES
+    CLI -->|Instantiates| PS
+    CLI -->|Instantiates| BS
+    CLI -->|Instantiates| ES
+    FS -->|Reads/Writes| Firestore
+    FS -->|Validates| Models
+    
+    %% User Interactions
+    User["User / Web Frontend"] -->|HTTP Requests| API
+    User -->|Chat| Agent
+    
+    %% Ingestion Flow
+    Dev["Developer"] -->|Runs| CLI
+```
+
+### Module & Service Relationships
+
+The architecture is designed to maximize code reuse between the runtime API and the offline ingestion tools.
+
+1.  **Shared Service Layer**: Both the FastAPI application (`app/fast_api_app.py`) and the Ingestion CLI (`app/tools/ingest.py`) rely on the same Service Layer (`app/services/`). This ensures that business logic, such as data validation or Firestore interactions, remains consistent regardless of whether data is being accessed by a user or written by a script.
+2.  **Dependency Injection**: The FastAPI app uses `app/dependencies.py` to inject these services into route handlers. This decouples the routes from the concrete service implementation, facilitating testing and loose coupling.
+3.  **Generic Data Access**: The `FirestoreService` (`app/services/firestore_base.py`) provides a generic implementation of CRUD operations using Python 3.12+ type parameters. Domain-specific services (`ProjectService`, etc.) inherit from this base, reducing boilerplate code.
+4.  **Agent Integration**: The Gemini Agent (`app/agent.py`) is integrated directly into the FastAPI application. It shares the same runtime environment and can potentially access the same services (via tools) to answer user queries about the portfolio content.
+
 ## Use Cases
 
 *   **Portfolio Browsing**: Users can retrieve lists of projects, blog posts, and work experience.

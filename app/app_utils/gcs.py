@@ -6,6 +6,7 @@ How: Uses google-cloud-storage library.
 
 from google.cloud import storage
 
+
 class GCSClient:
     def __init__(self, project_id: str, bucket_name: str):
         self.project_id = project_id

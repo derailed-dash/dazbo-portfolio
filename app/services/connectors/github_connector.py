@@ -5,7 +5,9 @@ How: Uses httpx to call GitHub API and maps results to Project model.
 """
 
 import httpx
+
 from app.models.project import Project
+
 
 class GitHubConnector:
     def __init__(self, base_url: str = "https://api.github.com"):
@@ -30,12 +32,12 @@ class GitHubConnector:
                 repo_url=repo.get("html_url"),
                 tags=repo.get("topics") or [],
                 source_platform="github",
-                is_manual=False
+                is_manual=False,
             )
             # Add language to tags if present
             if repo.get("language") and repo.get("language") not in project.tags:
                 project.tags.append(repo.get("language").lower())
-            
+
             projects.append(project)
-        
+
         return projects

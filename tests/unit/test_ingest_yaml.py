@@ -4,7 +4,8 @@ Why: Verifies that the CLI tool correctly parses YAML files and creates/updates 
 How: Mocks file reading and Firestore services.
 """
 
-from unittest.mock import AsyncMock, patch, mock_open
+from unittest.mock import AsyncMock, mock_open, patch
+
 import pytest
 from typer.testing import CliRunner
 
@@ -27,6 +28,7 @@ blogs:
     metadata_only: true
 """
 
+
 @patch("app.tools.ingest.ProjectService")
 @patch("app.tools.ingest.BlogService")
 @patch("app.tools.ingest.firestore.AsyncClient")
@@ -41,7 +43,7 @@ def test_ingest_yaml(mock_firestore, mock_blog_service, mock_project_service):
     mock_blog_svc.create = AsyncMock()
     mock_blog_svc.list = AsyncMock(return_value=[])
     mock_blog_svc.update = AsyncMock()
-    
+
     # Import app inside to ensure mocks are applied if needed, though patch handles it
     try:
         from app.tools.ingest import app
@@ -51,16 +53,16 @@ def test_ingest_yaml(mock_firestore, mock_blog_service, mock_project_service):
     with patch("builtins.open", mock_open(read_data=YAML_CONTENT)):
         # We need to invoke the app with --yaml-file
         result = runner.invoke(app, ["--yaml-file", "manual_resources.yaml"])
-        
+
     assert result.exit_code == 0
-    
+
     # Verify Project creation
     assert mock_proj_svc.create.called
     call_args = mock_proj_svc.create.call_args[0][0]
     assert call_args.title == "Manual Project"
     assert call_args.is_manual is True
     assert call_args.metadata_only is True
-    
+
     # Verify Blog creation
     assert mock_blog_svc.create.called
     call_args_blog = mock_blog_svc.create.call_args[0][0]

@@ -4,12 +4,13 @@ Why: Verifies that the Dev.to connector correctly fetches posts via API and maps
 How: Mocks httpx.AsyncClient responses with JSON and asserts on the resulting Blog objects.
 """
 
-import pytest
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import httpx
-from unittest.mock import AsyncMock, patch, MagicMock
-from app.models.blog import Blog
+import pytest
 
 # from app.services.connectors.devto_connector import DevToConnector
+
 
 @pytest.mark.asyncio
 async def test_fetch_posts():
@@ -26,20 +27,20 @@ async def test_fetch_posts():
             "description": "A description of the Dev.to post",
             "published_at": "2026-01-18T10:00:00Z",
             "url": "https://dev.to/user/test-devto-post",
-            "tag_list": ["python", "webdev"]
+            "tag_list": ["python", "webdev"],
         }
     ]
 
     connector = DevToConnector()
-    
+
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
         mock_response = MagicMock(spec=httpx.Response)
         mock_response.status_code = 200
         mock_response.json.return_value = mock_json
         mock_get.return_value = mock_response
-        
+
         blogs = await connector.fetch_posts("deraileddash")
-        
+
         assert len(blogs) == 1
         blog = blogs[0]
         assert blog.title == "Test Dev.to Post"

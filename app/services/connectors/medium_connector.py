@@ -4,10 +4,13 @@ Why: Fetches blog post metadata from Medium RSS feed to populate the portfolio.
 How: Uses httpx to fetch RSS and xml.etree.ElementTree to parse XML.
 """
 
-import httpx
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
+
+import httpx
+
 from app.models.blog import Blog
+
 
 class MediumConnector:
     def __init__(self, feed_url_template: str = "https://medium.com/feed/@{username}"):
@@ -31,7 +34,7 @@ class MediumConnector:
             title = item.find("title").text if item.find("title") is not None else "Untitled"
             link = item.find("link").text if item.find("link") is not None else ""
             pub_date_raw = item.find("pubDate").text if item.find("pubDate") is not None else ""
-            
+
             # Convert RFC 2822 to ISO 8601
             try:
                 date_dt = parsedate_to_datetime(pub_date_raw)
@@ -52,7 +55,7 @@ class MediumConnector:
                 platform="Medium",
                 url=link,
                 source_platform="medium_rss",
-                is_manual=False
+                is_manual=False,
             )
             blogs.append(blog)
 
