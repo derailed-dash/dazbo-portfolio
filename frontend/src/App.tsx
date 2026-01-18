@@ -21,9 +21,9 @@ function App() {
           </div>
         </div>
 
-        <AppsCarousel />
         <BlogCarousel />
         <ProjectCarousel />
+        <AppsCarousel />
       </MainLayout>
     </BrowserRouter>
   )
