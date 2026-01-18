@@ -4,6 +4,7 @@ Why: Fetches blog post metadata from Medium RSS feed to populate the portfolio.
 How: Uses httpx to fetch RSS and xml.etree.ElementTree to parse XML.
 """
 
+import re
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
 
@@ -42,11 +43,19 @@ class MediumConnector:
             except Exception:
                 date_iso = ""
 
-            # Summary - often in content:encoded, we can take a snippet
-            # content_encoded = item.find("{http://purl.org/rss/1.0/modules/content/}encoded")
-            # summary = content_encoded.text[:200] if content_encoded is not None else ""
-            # For simplicity, we'll just set a placeholder or leave empty for now
-            summary = "Blog post from Medium"
+            # Summary - extract from content:encoded
+            content_encoded = item.find("{http://purl.org/rss/1.0/modules/content/}encoded")
+            summary = ""
+            if content_encoded is not None and content_encoded.text:
+                # Simple HTML strip
+                clean_text = re.sub(r"<[^>]+>", "", content_encoded.text)
+                # Collapse whitespace
+                clean_text = " ".join(clean_text.split())
+                # Truncate to ~200 chars
+                summary = clean_text[:200] + "..." if len(clean_text) > 200 else clean_text
+
+            if not summary:
+                summary = "Blog post from Medium"
 
             blog = Blog(
                 title=title,

@@ -153,14 +153,28 @@ async def ingest_resources(
                     elif p.title in existing_titles:
                         match_id = existing_titles[p.title]
 
+                    desired_id = None
+                    if p.id:
+                        desired_id = p.id
+                    elif p.repo_url:
+                        # try to get slug from repo url
+                        desired_id = slugify(p.repo_url.split("/")[-1])
+                    else:
+                        console.print(
+                            f"[yellow]Warning: No 'id' or 'repo_url' for manual project '{p.title}'. Using title slug as ID. This may not be stable.[/yellow]"
+                        )
+                        desired_id = slugify(p.title)
+
                     if match_id:
+                        # Existing item found by repo_url or title lookup
+                        # We use the EXISTING ID to update it
                         p.id = match_id
                         await project_service.update(p.id, p.model_dump(exclude={"id"}))
                         console.print(f"Updated Manual: {p.title}")
                     else:
-                        slug = slugify(p.title)
-                        await project_service.create(p, item_id=slug)
-                        console.print(f"Created Manual: {p.title} (ID: {slug})")
+                        # Create new with our desired ID
+                        await project_service.create(p, item_id=desired_id)
+                        console.print(f"Created Manual: {p.title} (ID: {desired_id})")
 
             # Process Blogs
             manual_blogs = data.get("blogs", [])
@@ -179,14 +193,25 @@ async def ingest_resources(
                         console.print(f"[red]Validation Error for blog {blog_data.get('title')}: {validation_err}[/red]")
                         continue
 
+                    desired_id = None
+                    if b.id:
+                        desired_id = b.id
+                    elif b.url:
+                        # try to get slug from url
+                        desired_id = slugify(b.url.split("/")[-1])
+                    else:
+                        console.print(
+                            f"[yellow]Warning: No 'id' or 'url' for manual blog '{b.title}'. Using title slug as ID. This may not be stable.[/yellow]"
+                        )
+                        desired_id = slugify(b.title)
+
                     if b.url in existing_urls:
                         b.id = existing_urls[b.url]
                         await blog_service.update(b.id, b.model_dump(exclude={"id"}))
                         console.print(f"Updated Manual: {b.title}")
                     else:
-                        slug = slugify(b.title)
-                        await blog_service.create(b, item_id=slug)
-                        console.print(f"Created Manual: {b.title} (ID: {slug})")
+                        await blog_service.create(b, item_id=desired_id)
+                        console.print(f"Created Manual: {b.title} (ID: {desired_id})")
 
         except Exception as e:
             console.print(f"[bold red]Error processing YAML:[/bold red] {e}")

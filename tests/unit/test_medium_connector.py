@@ -46,5 +46,6 @@ async def test_fetch_posts():
         assert blog.platform == "Medium"
         assert blog.source_platform == "medium_rss"
         assert blog.is_manual is False
+        assert blog.summary == "A summary of the post..."
         # Date should be ISO formatted
         assert blog.date.startswith("2026-01-18")
