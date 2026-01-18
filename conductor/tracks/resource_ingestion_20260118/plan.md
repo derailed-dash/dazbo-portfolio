@@ -15,7 +15,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Models' (Protocol in workflow.md) f36df99
 
 ## Phase 2: Ingestion Connectors
-- [ ] Task: Implement GitHub Connector
+- [x] Task: Implement GitHub Connector [27fec3d]
     - [ ] Create `GitHubConnector` to fetch repos using `PyGithub` or `httpx`
     - [ ] Implement mapping from GitHub API response to `Project` model
     - [ ] Write unit tests with mocked API responses
