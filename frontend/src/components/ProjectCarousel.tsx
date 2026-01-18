@@ -23,7 +23,7 @@ const ProjectCarousel: React.FC = () => {
         }));
         setProjects(mapped);
       })
-      .catch(err => setError('Failed to load projects.'))
+      .catch(() => setError('Failed to load projects.'))
       .finally(() => setLoading(false));
   }, []);
 

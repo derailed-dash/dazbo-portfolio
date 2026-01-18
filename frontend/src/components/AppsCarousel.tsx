@@ -49,7 +49,7 @@ const AppsCarousel: React.FC = () => {
         }));
         setApps(mapped);
       })
-      .catch(err => setError('Failed to load applications.'))
+      .catch(() => setError('Failed to load applications.'))
       .finally(() => setLoading(false));
   }, []);
 

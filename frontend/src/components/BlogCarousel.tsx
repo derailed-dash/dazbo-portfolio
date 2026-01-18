@@ -23,7 +23,7 @@ const BlogCarousel: React.FC = () => {
         }));
         setBlogs(mapped);
       })
-      .catch(err => setError('Failed to load blogs.'))
+      .catch(() => setError('Failed to load blogs.'))
       .finally(() => setLoading(false));
   }, []);
 
