@@ -28,11 +28,7 @@ deploy-cloud-run:
 		--source . \
 		--memory "4Gi" \
 		--project $$PROJECT_ID \
-		--region "europe-west1" \
-		--no-allow-unauthenticated \
-		--no-cpu-throttling \
-		--labels "created-by=adk" \
-		--update-build-env-vars "AGENT_VERSION=$(shell awk -F'"' '/^version = / {print $$2}' pyproject.toml || echo '0.0.0')" \
+		--region $$GOOGLE_CLOUD_LOCATION \
 		--update-env-vars \
 		"COMMIT_SHA=$(shell git rev-parse HEAD)" \
 		$(if $(IAP),--iap) \
@@ -48,8 +44,8 @@ docker-run:
 		-e GOOGLE_CLOUD_PROJECT=$$(gcloud config get-value project) \
 		-e FIRESTORE_DATABASE_ID="(default)" \
 		-e GEMINI_API_KEY="$${GEMINI_API_KEY}" \
-		-e MODEL="$${MODEL}" \
 		-e GOOGLE_GENAI_USE_VERTEXAI="$${GOOGLE_GENAI_USE_VERTEXAI}" \
+		-e MODEL="$${MODEL}" \
 		-e GOOGLE_APPLICATION_CREDENTIALS="/code/.config/gcloud/application_default_credentials.json" \
 		--mount type=bind,source=$${HOME}/.config/gcloud,target=/code/.config/gcloud \
 		dazbo-portfolio:latest

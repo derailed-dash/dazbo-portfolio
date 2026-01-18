@@ -8,8 +8,6 @@
 # - Injects environment variables for runtime configuration (e.g., Log Bucket).
 # - Ties the service to its dedicated Service Account.
 
-
-
 resource "google_cloud_run_v2_service" "app" {
   name                = var.project_name
   location            = var.region
