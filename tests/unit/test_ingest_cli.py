@@ -26,12 +26,38 @@ def test_ingest_command(
     except ImportError:
         pytest.fail("Could not import ingest app")
 
+    from app.models.blog import Blog
+    from app.models.project import Project
+
     # Setup mocks
     mock_gh_instance = mock_github.return_value
-    mock_gh_instance.fetch_repositories = AsyncMock(return_value=[])
+    mock_gh_instance.fetch_repositories = AsyncMock(
+        return_value=[
+            Project(
+                title="Test Repo",
+                description="Desc",
+                repo_url="http://gh.com/repo",
+                tags=["test"],
+                source_platform="github",
+                is_manual=False,
+            )
+        ]
+    )
 
     mock_med_instance = mock_medium.return_value
-    mock_med_instance.fetch_posts = AsyncMock(return_value=[])
+    mock_med_instance.fetch_posts = AsyncMock(
+        return_value=[
+            Blog(
+                title="Test Blog",
+                summary="Sum",
+                date="2026-01-01",
+                platform="Medium",
+                url="http://med.com/post",
+                source_platform="medium_rss",
+                is_manual=False,
+            )
+        ]
+    )
 
     mock_dev_instance = mock_devto.return_value
     mock_dev_instance.fetch_posts = AsyncMock(return_value=[])
@@ -51,3 +77,15 @@ def test_ingest_command(
     mock_gh_instance.fetch_repositories.assert_called_once_with("testuser")
     mock_med_instance.fetch_posts.assert_called_once_with("testuser")
     mock_dev_instance.fetch_posts.assert_called_once_with("testuser")
+
+    # Verify GitHub create called with slug
+    # We expect create(project, item_id="test-repo")
+    args, kwargs = mock_proj_svc_instance.create.call_args
+    assert args[0].title == "Test Repo"
+    assert kwargs.get("item_id") == "test-repo"
+
+    # Verify Medium create called with slug
+    # We expect create(blog, item_id="test-blog")
+    args, kwargs = mock_blog_svc_instance.create.call_args
+    assert args[0].title == "Test Blog"
+    assert kwargs["item_id"] == "test-blog"

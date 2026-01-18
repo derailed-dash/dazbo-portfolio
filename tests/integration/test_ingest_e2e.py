@@ -90,9 +90,10 @@ def test_e2e_ingestion_flow(mock_firestore, mock_devto, mock_medium, mock_github
     mock_col.stream.return_value = async_iter()
 
     # Mock add (create)
+    # Mock add (create) - now using document().set()
     mock_doc_ref = MagicMock()
-    mock_doc_ref.id = "new-id"
-    mock_col.add = AsyncMock(return_value=(None, mock_doc_ref))
+    mock_doc_ref.set = AsyncMock()
+    mock_col.document.return_value = mock_doc_ref
 
     # Invoke CLI
     result = runner.invoke(ingest_module.app, ["--github-user", "user", "--medium-user", "user", "--devto-user", "user"])
@@ -105,8 +106,6 @@ def test_e2e_ingestion_flow(mock_firestore, mock_devto, mock_medium, mock_github
     assert mock_dev_instance.fetch_posts.called
 
     # Verify Firestore calls
-    # We expect 3 create calls (1 project, 2 blogs)
-    # The service calls collection("projects") and collection("blogs")
-    # Our mock_db.collection returns the SAME mock object for any name unless we differentiate
-    # But checking call count is good enough for E2E sanity here
-    assert mock_col.add.call_count >= 3
+    # We expect 3 create calls (1 project, 2 blogs), which now use document().set()
+    # The service calls collection("projects").document(slug).set(...)
+    assert mock_doc_ref.set.call_count >= 3

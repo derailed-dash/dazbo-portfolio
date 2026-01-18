@@ -5,6 +5,7 @@ How: Uses Typer for CLI, and service connectors for data fetching.
 """
 
 import asyncio
+import re
 
 import typer
 import yaml
@@ -22,6 +23,16 @@ from app.services.project_service import ProjectService
 
 app = typer.Typer(help="Ingest portfolio resources from external platforms.")
 console = Console()
+
+
+def slugify(text: str) -> str:
+    """
+    Generate a slug from a string.
+    """
+    text = text.lower()
+    text = re.sub(r"[^a-z0-9]+", "-", text)
+    text = text.strip("-")
+    return text
 
 
 async def ingest_resources(
@@ -51,8 +62,9 @@ async def ingest_resources(
                     await project_service.update(p.id, p.model_dump(exclude={"id"}))
                     console.print(f"Updated: {p.title}")
                 else:
-                    await project_service.create(p)
-                    console.print(f"Created: {p.title}")
+                    slug = slugify(p.title)
+                    await project_service.create(p, item_id=slug)
+                    console.print(f"Created: {p.title} (ID: {slug})")
 
         except Exception as e:
             console.print(f"[bold red]Error fetching GitHub:[/bold red] {e}")
@@ -74,8 +86,9 @@ async def ingest_resources(
                     await blog_service.update(b.id, b.model_dump(exclude={"id"}))
                     console.print(f"Updated: {b.title}")
                 else:
-                    await blog_service.create(b)
-                    console.print(f"Created: {b.title}")
+                    slug = slugify(b.title)
+                    await blog_service.create(b, item_id=slug)
+                    console.print(f"Created: {b.title} (ID: {slug})")
 
         except Exception as e:
             console.print(f"[bold red]Error fetching Medium:[/bold red] {e}")
@@ -97,8 +110,9 @@ async def ingest_resources(
                     await blog_service.update(b.id, b.model_dump(exclude={"id"}))
                     console.print(f"Updated: {b.title}")
                 else:
-                    await blog_service.create(b)
-                    console.print(f"Created: {b.title}")
+                    slug = slugify(b.title)
+                    await blog_service.create(b, item_id=slug)
+                    console.print(f"Created: {b.title} (ID: {slug})")
 
         except Exception as e:
             console.print(f"[bold red]Error fetching Dev.to:[/bold red] {e}")
@@ -144,8 +158,9 @@ async def ingest_resources(
                         await project_service.update(p.id, p.model_dump(exclude={"id"}))
                         console.print(f"Updated Manual: {p.title}")
                     else:
-                        await project_service.create(p)
-                        console.print(f"Created Manual: {p.title}")
+                        slug = slugify(p.title)
+                        await project_service.create(p, item_id=slug)
+                        console.print(f"Created Manual: {p.title} (ID: {slug})")
 
             # Process Blogs
             manual_blogs = data.get("blogs", [])
@@ -169,8 +184,9 @@ async def ingest_resources(
                         await blog_service.update(b.id, b.model_dump(exclude={"id"}))
                         console.print(f"Updated Manual: {b.title}")
                     else:
-                        await blog_service.create(b)
-                        console.print(f"Created Manual: {b.title}")
+                        slug = slugify(b.title)
+                        await blog_service.create(b, item_id=slug)
+                        console.print(f"Created Manual: {b.title} (ID: {slug})")
 
         except Exception as e:
             console.print(f"[bold red]Error processing YAML:[/bold red] {e}")

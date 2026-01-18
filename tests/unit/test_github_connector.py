@@ -29,7 +29,18 @@ async def test_fetch_repositories():
             "stargazers_count": 10,
             "language": "Python",
             "topics": ["python", "ai"],
-        }
+            "private": False,
+        },
+        {
+            "id": 124,
+            "name": "private-repo",
+            "description": "A private repository",
+            "html_url": "https://github.com/user/private-repo",
+            "stargazers_count": 5,
+            "language": "Go",
+            "topics": ["go"],
+            "private": True,
+        },
     ]
 
     connector = GitHubConnector()

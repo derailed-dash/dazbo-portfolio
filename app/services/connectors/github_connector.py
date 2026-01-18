@@ -18,13 +18,17 @@ class GitHubConnector:
         Fetches public repositories for a given GitHub username.
         """
         url = f"{self.base_url}/users/{username}/repos"
+        params = {"type": "public"}
         async with httpx.AsyncClient() as client:
-            response = await client.get(url)
+            response = await client.get(url, params=params)
             response.raise_for_status()
             repos_data = response.json()
 
         projects = []
         for repo in repos_data:
+            if repo.get("private"):
+                continue
+
             # Basic mapping
             project = Project(
                 title=repo.get("name"),
