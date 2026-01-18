@@ -40,11 +40,11 @@ This plan outlines the steps to implement the React-based frontend for the Dazbo
     - [x] Setup `BrowserRouter` in `App.tsx`
     - [x] Create `HomePage` (Landing Page)
     - [x] Create `DetailPlaceholderPage` for item deep-dives
-- [ ] Task: Implement Chat Widget Shell
-    - [ ] Write tests for Chat Widget toggle behavior
-    - [ ] Implement `ChatWidget` fixed floating button
-    - [ ] Create `ChatWindow` UI shell with message area and input field (visuals only)
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Navigation' (Protocol in workflow.md)
+- [x] Task: Implement Chat Widget Shell [commit: 1357da7]
+    - [x] Write tests for Chat Widget toggle behavior
+    - [x] Implement `ChatWidget` fixed floating button
+    - [x] Create `ChatWindow` UI shell with message area and input field (visuals only)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Navigation' (Protocol in workflow.md) [commit: 1357da7]
 
 ## Phase 5: Verification & Polishing
 - [ ] Task: End-to-End Visual Review
