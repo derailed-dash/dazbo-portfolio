@@ -454,6 +454,7 @@ dependencies = [
     { name = "google-cloud-storage" },
     { name = "httpx" },
     { name = "opentelemetry-instrumentation-google-genai" },
+    { name = "pyyaml" },
     { name = "typer" },
     { name = "uvicorn" },
 ]
@@ -488,6 +489,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "jupyter", marker = "extra == 'jupyter'", specifier = ">=1.0.0,<2.0.0" },
     { name = "opentelemetry-instrumentation-google-genai", specifier = ">=0.1.0,<1.0.0" },
+    { name = "pyyaml", specifier = ">=6.0.0" },
     { name = "ruff", marker = "extra == 'lint'", specifier = ">=0.4.6,<1.0.0" },
     { name = "ty", marker = "extra == 'lint'", specifier = ">=0.0.1a0" },
     { name = "typer", specifier = ">=0.12.0" },
