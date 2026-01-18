@@ -181,7 +181,7 @@ This tool allows the developer to trigger synchronization from external sources 
 
 **Usage:**
 ```bash
-燬 run python -m app.tools.ingest \
+uv run python -m app.tools.ingest \
   --github-user <user-name> \
   --medium-user <user-name> \
   --devto-user <user-name> \
