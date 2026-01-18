@@ -1,0 +1,23 @@
+:root {
+  /* Material Design Color Palette */
+  --md-sys-color-primary: #6200ee;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #e8def8;
+  --md-sys-color-on-primary-container: #21005d;
+  
+  --md-sys-color-secondary: #03dac6;
+  --md-sys-color-on-secondary: #000000;
+  
+  --md-sys-color-background: #ffffff;
+  --md-sys-color-on-background: #000000;
+  
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-on-surface: #000000;
+
+  /* Elevations */
+  --md-sys-elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  --md-sys-elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  --md-sys-elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  --md-sys-elevation-4: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  --md-sys-elevation-5: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
