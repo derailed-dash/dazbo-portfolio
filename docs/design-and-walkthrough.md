@@ -39,3 +39,49 @@ The application follows a clean, layered architecture to ensure separation of co
 
 *   **Portfolio Browsing**: Users can retrieve lists of projects, blog posts, and work experience.
 *   **Agent Interaction**: Users can chat with the Gemini-powered agent to ask questions about the portfolio owner's skills and background.
+
+## Resource Ingestion Architecture
+
+The portfolio populates its content (Projects and Blogs) through a hybrid ingestion system, designed to be run "out-of-band" via a CLI tool.
+
+### 1. The Ingestion CLI (`app/tools/ingest.py`)
+
+This tool allows the developer to trigger synchronization from external sources or ingest manually defined resources from a YAML file.
+
+**Usage:**
+```bash
+uv run python -m app.tools.ingest \
+  --github-user derailed-dash \
+  --medium-user derailed-dash \
+  --devto-user derailed-dash \
+  --yaml-file manual_resources.yaml
+```
+
+### 2. Connectors
+
+The system uses modular "Connectors" to fetch data:
+*   **GitHub Connector:** Uses the GitHub API to fetch public repositories. Maps `html_url` to `repo_url`, `topics` to `tags`, and `description` to `description`.
+*   **Medium Connector:** Parses the user's Medium RSS feed. Maps posts to `Blog` entries.
+*   **Dev.to Connector:** Uses the Dev.to API to fetch published articles. Maps articles to `Blog` entries.
+*   **Manual YAML:** Parses a local YAML file for "Metadata Only" entries (e.g., private projects, external links, paywalled articles).
+
+### 3. Data Persistence & Idempotency
+
+*   **Destination:** All data is stored in **Google Firestore**.
+*   **Idempotency (Upsert Logic):** The ingestion process is designed to be safe to re-run.
+    *   It checks if an entry already exists based on a unique key (typically `repo_url` for projects or `url` for blogs).
+    *   If the entry exists, it **updates** the record with the latest metadata from the source.
+    *   If it does not exist, it **creates** a new document.
+    *   **Note:** This means you can run the ingestion tool repeatedly to sync updates (e.g., star counts, description changes) without creating duplicate entries.
+
+### 4. Static Assets (Images)
+
+*   **Storage:** Images (project screenshots, thumbnails) are stored in a public **Google Cloud Storage (GCS)** bucket (e.g., `<project-id>-assets`).
+*   **Ingestion:** Currently, images must be uploaded manually to the GCS bucket (e.g., via `gsutil` or Cloud Console).
+*   **Linking:** The public URL of the image (e.g., `https://storage.googleapis.com/<bucket>/<image.png>`) is manually added to the `image_url` field in the `manual_resources.yaml` file or updated in the Firestore document directly.
+*   **Future:** Automated image scraping and uploading may be added in future phases.
+
+### 5. Data Management
+
+*   **Deletions:** The ingestion tool currently supports **create** and **update** operations. It does *not* delete entries that have been removed from the source.
+    *   **To Delete:** Use the **Google Cloud Console (Firestore)** to manually delete obsolete documents. This is a safety design choice to prevent accidental bulk deletion.
