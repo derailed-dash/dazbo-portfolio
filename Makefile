@@ -46,8 +46,8 @@ docker-run:
 		-e GEMINI_API_KEY="$${GEMINI_API_KEY}" \
 		-e GOOGLE_GENAI_USE_VERTEXAI="$${GOOGLE_GENAI_USE_VERTEXAI}" \
 		-e MODEL="$${MODEL}" \
-		-e GOOGLE_APPLICATION_CREDENTIALS="/code/.config/gcloud/application_default_credentials.json" \
-		--mount type=bind,source=$${HOME}/.config/gcloud,target=/code/.config/gcloud \
+		-e GOOGLE_APPLICATION_CREDENTIALS="/code/application_default_credentials.json" \
+		--mount type=bind,source=$${HOME}/.config/gcloud/application_default_credentials.json,target=/code/application_default_credentials.json,readonly \
 		dazbo-portfolio:latest
 
 # Set up development environment resources using Terraform
