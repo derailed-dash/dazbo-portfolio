@@ -22,7 +22,7 @@ This plan outlines the steps to implement the React-based frontend for the Dazbo
     - [x] Create shared UI components (Buttons, Cards) with Material attributes
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Layout' (Protocol in workflow.md) [commit: 4849d31]
 
-## Phase 3: Content Carousels
+## Phase 3: Content Carousels [checkpoint: e95e2b4]
 - [x] Task: Create Generic Carousel Component [commit: c5dd60b]
     - [x] Write unit tests for Carousel rendering and responsiveness
     - [x] Implement `ShowcaseCarousel` using React Bootstrap `Carousel`
@@ -33,7 +33,7 @@ This plan outlines the steps to implement the React-based frontend for the Dazbo
     - [x] Implement `BlogCarousel` with card-based items
     - [x] Implement `ProjectCarousel` for GitHub repositories
     - [x] Implement `AppsCarousel` for featured applications
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Carousels' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Carousels' (Protocol in workflow.md) [commit: e95e2b4]
 
 ## Phase 4: Navigation & Chat Widget
 - [ ] Task: Configure Routing
