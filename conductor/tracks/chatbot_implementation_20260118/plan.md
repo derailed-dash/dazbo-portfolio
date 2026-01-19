@@ -49,7 +49,11 @@ This plan outlines the steps to implement the "Dazbo" portfolio chatbot, includi
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Frontend Integration' (Protocol in workflow.md)
 
 ## Phase 5: Documentation & Roadmap
-- [ ] Task: Update Roadmap & Design Docs
-    - [ ] Append future RAG/Vector Search tasks to `TODO.md`
-    - [ ] Update `docs/design-and-walkthrough.md` with the RAG roadmap details (Vertex AI + Firestore Vector Search)
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Documentation' (Protocol in workflow.md)
+
+- [x] Task: Update Roadmap & Design Docs
+
+    - [x] Append future RAG/Vector Search tasks to `TODO.md`
+
+    - [x] Update `docs/design-and-walkthrough.md` with the RAG roadmap details (Vertex AI + Firestore Vector Search)
+
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Documentation' (Protocol in workflow.md)

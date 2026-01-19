@@ -30,6 +30,12 @@ resource "google_cloud_run_v2_service" "app" {
         cpu_idle = false
       }
 
+
+      env {
+        name  = "LOGS_BUCKET_NAME"
+        value = google_storage_bucket.logs_data_bucket[var.project_id].name
+      }
+
       env {
         name = "DAZBO_SYSTEM_PROMPT"
         value_source {

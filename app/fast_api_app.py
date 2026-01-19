@@ -106,6 +106,11 @@ async def chat_stream(request: ChatRequest):
             session_id=session.id,
             run_config=RunConfig(streaming_mode=StreamingMode.SSE),
         ):
+            # ADK may yield a final non-partial event containing the full response.
+            # We only want deltas (partial=True) to avoid duplication.
+            if not getattr(event, "partial", False):
+                continue
+
             # Extract text from the event (ModelResponse)
             text_chunk = ""
             try:
@@ -122,6 +127,8 @@ async def chat_stream(request: ChatRequest):
                         for part in candidate.content.parts:
                             if hasattr(part, 'text') and part.text:
                                 text_chunk += part.text
+                elif hasattr(event, 'text') and event.text:
+                     text_chunk = event.text
             except Exception as e:
                 logger.log_text(f"Error parsing event: {e}", severity="ERROR")
 

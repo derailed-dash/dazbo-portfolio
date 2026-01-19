@@ -34,29 +34,32 @@ async def search_portfolio(query: str) -> str:
     for p in projects:
         # Check title
         if query_lower in p.title.lower():
-            results.append(f"[Project] {p.title}: {p.description} (Tags: {', '.join(p.tags)})")
+            url = p.repo_url or p.demo_url or "No URL"
+            results.append(f"[Project] {p.title}: {p.description} (URL: {url}, Tags: {', '.join(p.tags)})")
             continue
         # Check tags
         if any(query_lower in t.lower() for t in p.tags):
-            results.append(f"[Project] {p.title}: {p.description} (Tags: {', '.join(p.tags)})")
+            url = p.repo_url or p.demo_url or "No URL"
+            results.append(f"[Project] {p.title}: {p.description} (URL: {url}, Tags: {', '.join(p.tags)})")
             continue
         # Check description
         if p.description and query_lower in p.description.lower():
-            results.append(f"[Project] {p.title}: {p.description} (Tags: {', '.join(p.tags)})")
+            url = p.repo_url or p.demo_url or "No URL"
+            results.append(f"[Project] {p.title}: {p.description} (URL: {url}, Tags: {', '.join(p.tags)})")
             continue
 
     for b in blogs:
         # Check title
         if query_lower in b.title.lower():
-            results.append(f"[Blog] {b.title}: {b.summary} (Tags: {', '.join(b.tags)})")
+            results.append(f"[Blog] {b.title}: {b.summary} (URL: {b.url}, Tags: {', '.join(b.tags or [])})")
             continue
         # Check tags
-        if any(query_lower in t.lower() for t in b.tags):
-            results.append(f"[Blog] {b.title}: {b.summary} (Tags: {', '.join(b.tags)})")
+        if b.tags and any(query_lower in t.lower() for t in b.tags):
+            results.append(f"[Blog] {b.title}: {b.summary} (URL: {b.url}, Tags: {', '.join(b.tags)})")
             continue
         # Check summary
         if b.summary and query_lower in b.summary.lower():
-            results.append(f"[Blog] {b.title}: {b.summary} (Tags: {', '.join(b.tags)})")
+            results.append(f"[Blog] {b.title}: {b.summary} (URL: {b.url}, Tags: {', '.join(b.tags or [])})")
             continue
 
     if not results:
