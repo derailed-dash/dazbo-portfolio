@@ -18,11 +18,6 @@ from app.tools.portfolio_search import search_portfolio
 
 _, project_id = google.auth.default()
 
-# Set defaults
-os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
-os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
-os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
-
 # Ensure critical environment variables are set for the underlying SDKs (GenAI, Auth)
 # based on our loaded settings.
 if settings.google_cloud_project:
