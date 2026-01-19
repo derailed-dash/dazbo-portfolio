@@ -6,17 +6,17 @@ How: Queries ProjectService and BlogService by ID.
 
 from google.cloud import firestore
 
-from app.services.project_service import ProjectService
 from app.services.blog_service import BlogService
+from app.services.project_service import ProjectService
 
 
 async def get_content_details(item_id: str) -> str:
     """
     Retrieves full details for a specific project or blog by its ID.
-    
+
     Args:
         item_id: The ID of the project or blog (e.g., "python-automation", "learning-python").
-        
+
     Returns:
         A detailed string representation of the item, or a not found message.
     """
@@ -28,7 +28,7 @@ async def get_content_details(item_id: str) -> str:
     project = await project_service.get(item_id)
     if project:
         details = [
-            f"Type: Project",
+            "Type: Project",
             f"Title: {project.title}",
             f"Description: {project.description}",
             f"Tags: {', '.join(project.tags)}",
@@ -39,14 +39,14 @@ async def get_content_details(item_id: str) -> str:
             details.append(f"Demo URL: {project.demo_url}")
         if project.image_url:
             details.append(f"Image URL: {project.image_url}")
-            
+
         return "\n".join(details)
 
     # Try finding in blogs
     blog = await blog_service.get(item_id)
     if blog:
         details = [
-            f"Type: Blog",
+            "Type: Blog",
             f"Title: {blog.title}",
             f"Summary: {blog.summary}",
             f"Platform: {blog.platform}",

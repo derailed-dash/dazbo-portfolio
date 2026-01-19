@@ -4,8 +4,9 @@ Why: Initializes the web server, middleware, routes, and application lifespan ev
 How: Configures FastAPI with ADK integration, Telemetry, and Firestore services. Uses a lifespan context manager for startup/shutdown logic.
 """
 
-import os
 import json
+import logging
+import os
 from contextlib import asynccontextmanager
 
 import anyio
@@ -36,6 +37,11 @@ from app.models.project import Project
 from app.services.blog_service import BlogService
 from app.services.experience_service import ExperienceService
 from app.services.project_service import ProjectService
+
+# Suppress noisy OpenTelemetry attribute warnings
+os.environ["OTEL_PYTHON_LOG_LEVEL"] = "ERROR"
+# Also suppress the specific opentelemetry attributes logger if needed
+logging.getLogger("opentelemetry.attributes").setLevel(logging.ERROR)
 
 _, project_id = google.auth.default()
 logging_client = google_cloud_logging.Client()
@@ -115,20 +121,18 @@ async def chat_stream(request: ChatRequest):
             text_chunk = ""
             try:
                 # Check for direct content (ADK/GenAI flat structure)
-                if hasattr(event, 'content') and event.content and event.content.parts:
-                    for part in event.content.parts:
-                        if hasattr(part, 'text') and part.text:
-                            text_chunk += part.text
-                
-                # Fallback for candidates structure (if used in other contexts)
-                elif hasattr(event, 'candidates') and event.candidates:
+                parts = []
+                if hasattr(event, "content") and event.content and event.content.parts:
+                    parts = event.content.parts
+                # Fallback for candidates structure
+                elif hasattr(event, "candidates") and event.candidates:
                     candidate = event.candidates[0]
                     if candidate.content and candidate.content.parts:
-                        for part in candidate.content.parts:
-                            if hasattr(part, 'text') and part.text:
-                                text_chunk += part.text
-                elif hasattr(event, 'text') and event.text:
-                     text_chunk = event.text
+                        parts = candidate.content.parts
+
+                for part in parts:
+                    if hasattr(part, "text") and part.text:
+                        text_chunk += part.text
             except Exception as e:
                 logger.log_text(f"Error parsing event: {e}", severity="ERROR")
 
@@ -137,6 +141,7 @@ async def chat_stream(request: ChatRequest):
                 yield f"data: {json.dumps(payload)}\n\n"
 
     from fastapi.responses import StreamingResponse
+
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 

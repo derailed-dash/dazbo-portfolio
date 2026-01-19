@@ -12,13 +12,12 @@
 - [x] Deploy and test on Cloud Run.
 - [x] Add conversational agent using Dazbo persona. Store the persona as a Google Secret.
 - [x] Check `app_name` is being used in the agent from the env vars.
-- [ ] UI experimentation / aesthetics.
 - [x] Persona can answer portfolio questions and questions about me.
+- [ ] UI experimentation / aesthetics.
 - [ ] Implement RAG with Vector Search:
     - [ ] Generate embeddings for Blogs and Projects using Vertex AI Embeddings.
     - [ ] Store embeddings in Firestore Vector Search.
     - [ ] Implement vector search tool for the agent.
-- [ ] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
 - [ ] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
 - [ ] Add rate limiting.
 - [ ] Add SEO.

@@ -6,17 +6,17 @@ How: Fetches all items from Firestore and filters them in-memory (for now).
 
 from google.cloud import firestore
 
-from app.services.project_service import ProjectService
 from app.services.blog_service import BlogService
+from app.services.project_service import ProjectService
 
 
 async def search_portfolio(query: str) -> str:
     """
     Searches for projects and blogs matching the query (title, description, tags).
-    
+
     Args:
         query: The search term (e.g., "python", "react").
-        
+
     Returns:
         A formatted string of matching items.
     """
