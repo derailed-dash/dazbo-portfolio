@@ -12,7 +12,7 @@ from contextlib import asynccontextmanager
 import anyio
 import google.auth
 from fastapi import Depends, FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.cli.fast_api import get_fast_api_app
@@ -139,8 +139,6 @@ async def chat_stream(request: ChatRequest):
             if text_chunk:
                 payload = {"content": text_chunk}
                 yield f"data: {json.dumps(payload)}\n\n"
-
-    from fastapi.responses import StreamingResponse
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
