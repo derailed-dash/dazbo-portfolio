@@ -31,8 +31,10 @@ if settings.google_cloud_region:
     os.environ["GOOGLE_CLOUD_REGION"] = settings.google_cloud_region
 
 # For Gemini model access, we use the location defined for the agent (e.g. "global" or "us-central1")
+# We set this AFTER region to ensure it takes precedence in some SDK versions
 if settings.google_cloud_location:
     os.environ["GOOGLE_CLOUD_LOCATION"] = settings.google_cloud_location
+
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = str(settings.google_genai_use_vertexai)
 if settings.gemini_api_key:
     os.environ["GEMINI_API_KEY"] = settings.gemini_api_key

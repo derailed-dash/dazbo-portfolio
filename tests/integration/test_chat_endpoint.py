@@ -1,11 +1,21 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from fastapi.testclient import TestClient
+from google.genai import types
 
+from app.agent import PortfolioAgent
 from app.fast_api_app import app
 
 
 def test_chat_streaming_endpoint():
+    # Mock the Gemini model response
+    mock_response = MagicMock()
+    mock_response.content = types.Content(role="model", parts=[types.Part.from_text(text="I am Dazbo's assistant.")])
+    mock_response.partial = True
+
+    async def mock_run_async(*args, **kwargs):
+        yield mock_response
+
     # Mock the Firestore services to avoid needing a live DB during integration test
     with (
         patch("app.fast_api_app.ProjectService") as MockProjectService,
@@ -14,6 +24,7 @@ def test_chat_streaming_endpoint():
         patch("app.tools.portfolio_search.ProjectService") as ToolMockProjectService,
         patch("app.tools.portfolio_search.BlogService") as ToolMockBlogService,
         patch("app.fast_api_app.firestore.AsyncClient", new_callable=AsyncMock) as MockFirestoreClient,
+        patch.object(PortfolioAgent, "run_async", side_effect=mock_run_async),
     ):
         # Setup mocks to return awaitable AsyncMocks
         MockProjectService.return_value.list = AsyncMock(return_value=[])

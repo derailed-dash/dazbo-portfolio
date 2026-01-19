@@ -8,7 +8,8 @@ import pytest
 @pytest.fixture
 def mock_env_prompt():
     prompt = "You are Dazbo, a coding architect."
-    with patch.dict(os.environ, {"DAZBO_SYSTEM_PROMPT": prompt}):
+    # Also patch APP_NAME to ensure it's a valid identifier, overriding any shell pollution
+    with patch.dict(os.environ, {"DAZBO_SYSTEM_PROMPT": prompt, "APP_NAME": "dazbo_portfolio"}):
         yield prompt
 
 

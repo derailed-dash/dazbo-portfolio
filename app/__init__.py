@@ -1,8 +1,6 @@
 """
 Description: Application package initialization.
-Why: Exposes the main application instance for easy import.
+Why: Initializes the application package.
 """
 
-from .agent import app
-
-__all__ = ["app"]
+__all__ = ["agent", "config", "models", "services", "tools"]
