@@ -14,8 +14,8 @@ This plan outlines the steps to implement the "Dazbo" portfolio chatbot, includi
     - [ ] Run `make tf-apply` to provision resources and update Cloud Run
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure' (Protocol in workflow.md)
 
-## Phase 2: Agent Tooling & Logic
-- [ ] Task: Implement Portfolio Search Tool [2e50bd9]
+## Phase 2: Agent Tooling & Logic [checkpoint: 47cbdae]
+- [x] Task: Implement Portfolio Search Tool [2e50bd9]
     - [x] Write unit tests for `search_portfolio` tool
     - [x] Implement `search_portfolio` in `app/agent.py` or a new tools module
     - [x] Tool should query Firestore `projects` and `blogs` collections based on query/tags
@@ -26,7 +26,7 @@ This plan outlines the steps to implement the "Dazbo" portfolio chatbot, includi
     - [x] Update `app/config.py` to include the environment variable name
     - [x] Modify `app/agent.py` to read the system prompt from the `DAZBO_SYSTEM_PROMPT` environment variable at runtime
     - [x] Ensure `InMemorySessionService` is correctly integrated for history persistence
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Agent Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Agent Logic' (Protocol in workflow.md)
 
 ## Phase 3: Backend API & Streaming
 - [ ] Task: Implement Streaming Endpoint in FastAPI
