@@ -28,6 +28,12 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "location" {
+  type        = string
+  description = "Google Cloud location used by Gemini model."
+  default     = "global"
+}
+
 variable "host_connection_name" {
   description = "Name of the host connection to create in Cloud Build"
   type        = string

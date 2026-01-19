@@ -72,6 +72,7 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
     _LOGS_BUCKET_NAME_PROD       = resource.google_storage_bucket.logs_data_bucket[var.project_id].name
     _APP_SERVICE_ACCOUNT         = google_service_account.app_sa.email
     _REGION                      = var.region
+    _LOCATION                    = var.location
     _ARTIFACT_REGISTRY_REPO_NAME = resource.google_artifact_registry_repository.repo-artifacts-genai.repository_id
     _SERVICE_NAME                = var.service_name
     _AGENT_NAME                  = var.agent_name

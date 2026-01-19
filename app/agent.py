@@ -17,14 +17,20 @@ from app.tools.content_details import get_content_details
 from app.config import settings
 
 _, project_id = google.auth.default()
-os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
-os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
+
+# Set defaults
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
+os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
+os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
 
 # Ensure critical environment variables are set for the underlying SDKs (GenAI, Auth)
 # based on our loaded settings.
 if settings.google_cloud_project:
     os.environ["GOOGLE_CLOUD_PROJECT"] = settings.google_cloud_project
+if settings.google_cloud_region:
+    os.environ["GOOGLE_CLOUD_REGION"] = settings.google_cloud_region
+
+# For Gemini model access, we use the location defined for the agent (e.g. "global" or "us-central1")
 if settings.google_cloud_location:
     os.environ["GOOGLE_CLOUD_LOCATION"] = settings.google_cloud_location
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = str(settings.google_genai_use_vertexai)

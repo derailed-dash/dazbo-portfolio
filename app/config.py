@@ -26,12 +26,13 @@ class Settings(BaseSettings):
 
     # Infrastructure
     google_cloud_project: str = "dazbo-portfolio"
-    google_cloud_location: str = "europe-west1"
+    google_cloud_region: str = "europe-west1"    
     
     # GenAI / Vertex AI Configuration
     # These are often used by the underlying Google SDKs
     google_genai_use_vertexai: bool = False
-    gemini_api_key: str | None = None
+    google_cloud_location: str = "global" # Used by Gemini model
+    gemini_api_key: str | None = None # Used when google_genai_use_vertexai is False
 
     # Firestore
     firestore_database_id: str = "(default)"
