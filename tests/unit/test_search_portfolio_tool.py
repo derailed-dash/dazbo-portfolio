@@ -57,7 +57,7 @@ def mock_blogs():
 async def test_search_portfolio_by_tag(mock_projects, mock_blogs):
     with patch("app.tools.portfolio_search.ProjectService") as MockProjectService, \
          patch("app.tools.portfolio_search.BlogService") as MockBlogService, \
-         patch("app.tools.portfolio_search.firestore.AsyncClient", new_callable=AsyncMock):
+         patch("app.tools.portfolio_search.firestore.AsyncClient"):
         
         # Setup mocks
         proj_service = AsyncMock()
@@ -79,7 +79,7 @@ async def test_search_portfolio_by_tag(mock_projects, mock_blogs):
 async def test_search_portfolio_by_text(mock_projects, mock_blogs):
     with patch("app.tools.portfolio_search.ProjectService") as MockProjectService, \
          patch("app.tools.portfolio_search.BlogService") as MockBlogService, \
-         patch("app.tools.portfolio_search.firestore.AsyncClient", new_callable=AsyncMock):
+         patch("app.tools.portfolio_search.firestore.AsyncClient"):
         
         proj_service = AsyncMock()
         proj_service.list.return_value = mock_projects
@@ -99,7 +99,7 @@ async def test_search_portfolio_by_text(mock_projects, mock_blogs):
 async def test_search_portfolio_no_results(mock_projects, mock_blogs):
     with patch("app.tools.portfolio_search.ProjectService") as MockProjectService, \
          patch("app.tools.portfolio_search.BlogService") as MockBlogService, \
-         patch("app.tools.portfolio_search.firestore.AsyncClient", new_callable=AsyncMock):
+         patch("app.tools.portfolio_search.firestore.AsyncClient"):
         
         proj_service = AsyncMock()
         proj_service.list.return_value = mock_projects
@@ -117,7 +117,7 @@ async def test_search_portfolio_no_results(mock_projects, mock_blogs):
 async def test_search_portfolio_case_insensitive(mock_projects, mock_blogs):
     with patch("app.tools.portfolio_search.ProjectService") as MockProjectService, \
          patch("app.tools.portfolio_search.BlogService") as MockBlogService, \
-         patch("app.tools.portfolio_search.firestore.AsyncClient", new_callable=AsyncMock):
+         patch("app.tools.portfolio_search.firestore.AsyncClient"):
         
         proj_service = AsyncMock()
         proj_service.list.return_value = mock_projects
