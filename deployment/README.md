@@ -73,6 +73,10 @@ You may notice similar variables in `env.tfvars` and your local `.env` file. The
     ```bash
     gcloud auth application-default login
     ```
+4.  **GCS Bucket for Terraform State:**
+    ```bash
+    gcloud storage buckets create -p $GOOGLE_CLOUD_PROJECT gs://${GOOGLE_CLOUD_PROJECT}-tf-state
+    ```
 
 ## Deployment Instructions
 
@@ -81,7 +85,7 @@ The easiest way to manage the infrastructure is using the provided `Makefile` in
 ### Quick Start (Makefile)
 
 ```bash
-# Plan changes for your project
+# Plan
 make tf-plan
 
 # Apply changes
@@ -94,9 +98,6 @@ If you prefer to run Terraform directly:
 
 ```bash
 cd deployment/terraform
-
-# Initialize Terraform
-terraform init
 
 # Plan changes
 terraform plan -var-file="vars/env.tfvars"
