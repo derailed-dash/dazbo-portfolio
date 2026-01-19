@@ -90,4 +90,24 @@ describe('ChatWidget', () => {
         expect(screen.getByText(/Hello World/i)).toBeInTheDocument();
     });
   });
+
+  it('displays error message on 429 Rate Limit Exceeded', async () => {
+    render(<ChatWidget />);
+    fireEvent.click(screen.getByLabelText(/Toggle chat/i));
+
+    (globalThis.fetch as any).mockResolvedValue({
+      ok: false,
+      status: 429,
+    });
+
+    const input = screen.getByPlaceholderText(/Type a message/i);
+    fireEvent.change(input, { target: { value: 'Spam' } });
+    
+    const sendButton = screen.getByLabelText(/Send message/i);
+    fireEvent.click(sendButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/You're sending messages too fast/i)).toBeInTheDocument();
+    });
+  });
 });
