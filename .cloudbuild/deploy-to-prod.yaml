@@ -36,6 +36,11 @@ steps:
       - "--service-account=$_APP_SERVICE_ACCOUNT"
       - "--allow-unauthenticated" # Allow unauthenticated invocations - end user will perform OAuth
 
+logsBucket: gs://${_LOGS_BUCKET_NAME_PROD}/build-logs
+options:
+  substitutionOption: ALLOW_LOOSE
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+
 substitutions:
   _REGION: "europe-west1"
   _LOCATION: "global"
@@ -47,8 +52,5 @@ substitutions:
   _MAX_INSTANCES: "1"
   _LOG_LEVEL: INFO
   _APP_SERVICE_ACCOUNT: $_SERVICE_NAME-app@${PROJECT_ID}.iam.gserviceaccount.com
+  _LOGS_BUCKET_NAME_PROD: "${PROJECT_ID}-logs"
 
-logsBucket: gs://${PROJECT_ID}-dazbo-portfolio-logs/build-logs
-options:
-  substitutionOption: ALLOW_LOOSE
-  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

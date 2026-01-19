@@ -62,6 +62,40 @@ You may notice similar variables in `env.tfvars` and your local `.env` file. The
     -   The `deploy-cloud-run` target uses conditional assignment (`NAME ?= value`).
     -   It allows you to use your local `.env` values (via `source .env`) to perform manual deployments that match the production configuration.
 
+### Terraform vs. Cloud Build Responsibilities
+
+We use a **Hybrid Deployment Pattern**:
+
+1.  **Terraform** defines the "Shell":
+    -   Creates the Cloud Run service resource.
+    -   Sets IAM policies (who can invoke it).
+    -   Configures networking and base resource limits.
+    -   Deploys a placeholder image (e.g., `hello-world`) initially.
+    -   *Crucially*, it is configured to **ignore changes** to the container image and environment variables (via `lifecycle { ignore_changes = [...] }`).
+
+2.  **Cloud Build** manages the "Content":
+    -   Builds the actual application Docker image.
+    -   Deploys the new image to the Cloud Run service.
+    -   Injects runtime configuration as Environment Variables (e.g., `MODEL`, `COMMIT_SHA`).
+
+This separation allows Terraform to manage the stable infrastructure while Cloud Build handles the dynamic application deployment without Terraform trying to "revert" the active configuration.
+
+#### Why Include it in Terraform?
+
+It might seem redundant to define the service in Terraform if Cloud Build deploys it, but this setup provides critical benefits:
+
+1.  **Anchor for Dependencies**: Other resources need the Service to exist *before* deployment.
+    -   **IAM & Permissions**: Terraform needs the service identity (`google_cloud_run_v2_service.app.name`) to create IAM bindings (e.g., granting `roles/run.invoker` to `allUsers`).
+    -   **Service Accounts**: Binding the custom Service Account to the Cloud Run service happens at creation time.
+
+2.  **Infrastructure vs. Application Code**:
+    -   Terraform builds the "House" (Permissions, Networking, Resource Limits).
+    -   Cloud Build provides the "Furniture" (Container Image, Application Code).
+    -   Without Terraform, you'd have no "house" to deploy into, forcing you to script complex infrastructure setup into your CI/CD pipeline.
+
+3.  **Drift Detection**: Terraform protects the *configuration*.
+    -   If someone manually changes critical settings (e.g., Memory Limits, Ingress restrictions) in the Cloud Console, Terraform will detect this deviation during the next plan/apply cycle. Cloud Build only cares about the image, not the infrastructure settings.
+
 ## Prerequisites
 
 1.  **GCP Projects:**

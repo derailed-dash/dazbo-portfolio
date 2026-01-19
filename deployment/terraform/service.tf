@@ -66,11 +66,14 @@ resource "google_cloud_run_v2_service" "app" {
     percent = 100
   }
 
-  # This lifecycle block prevents Terraform from overwriting the container image when it's
-  # updated by Cloud Run deployments outside of Terraform (e.g., via CI/CD pipelines)
+  # This lifecycle block prevents Terraform from overwriting fields managed by Cloud Build
+  # (image, environment variables, client metadata) during deployments.
   lifecycle {
     ignore_changes = [
+      client,
+      client_version,
       template[0].containers[0].image,
+      template[0].containers[0].env,
     ]
   }
 
