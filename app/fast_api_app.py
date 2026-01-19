@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 
 import anyio
 import google.auth
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from google.adk.agents.run_config import RunConfig, StreamingMode
@@ -21,6 +21,9 @@ from google.adk.sessions import InMemorySessionService
 from google.cloud import logging as google_cloud_logging
 from google.genai import types
 from pydantic import BaseModel
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from app.agent import app as adk_app
 from app.app_utils.typing import Feedback
@@ -42,6 +45,9 @@ from app.services.project_service import ProjectService
 os.environ["OTEL_PYTHON_LOG_LEVEL"] = "ERROR"
 # Also suppress the specific opentelemetry attributes logger if needed
 logging.getLogger("opentelemetry.attributes").setLevel(logging.ERROR)
+
+# Rate Limiter Initialization
+limiter = Limiter(key_func=get_remote_address)
 
 _, project_id = google.auth.default()
 logging_client = google_cloud_logging.Client()
@@ -80,6 +86,10 @@ app: FastAPI = get_fast_api_app(
 )
 app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
+
+# Add Limiter to app state and exception handler
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 class ChatRequest(BaseModel):
@@ -154,19 +164,22 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
 
 
 @app.get("/api/projects", response_model=list[Project])
-async def list_projects(service: ProjectService = Depends(get_project_service)):
+@limiter.limit("60/minute")
+async def list_projects(request: Request, service: ProjectService = Depends(get_project_service)):
     """List all projects."""
     return await service.list()
 
 
 @app.get("/api/blogs", response_model=list[Blog])
-async def list_blogs(service: BlogService = Depends(get_blog_service)):
+@limiter.limit("60/minute")
+async def list_blogs(request: Request, service: BlogService = Depends(get_blog_service)):
     """List all blog posts."""
     return await service.list()
 
 
 @app.get("/api/experience", response_model=list[Experience])
-async def list_experience(service: ExperienceService = Depends(get_experience_service)):
+@limiter.limit("60/minute")
+async def list_experience(request: Request, service: ExperienceService = Depends(get_experience_service)):
     """List all work experience."""
     return await service.list()
 
