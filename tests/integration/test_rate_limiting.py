@@ -31,3 +31,24 @@ def test_global_rate_limit():
             assert "Rate limit exceeded" in response.text
     finally:
         app.dependency_overrides.clear()
+
+def test_chat_rate_limit():
+    """
+    Test that the chat endpoint rate limit (5/minute) is enforced.
+    """
+    # Use a mock payload
+    payload = {"user_id": "test_user", "message": "Hello"}
+
+    # No dependency overrides needed for simple 429 check if we hit logic errors first
+    # But ideally we mock session service to avoid side effects
+    
+    with TestClient(app) as client:
+        # First 5 requests should succeed (or at least not be 429)
+        for _ in range(5):
+            response = client.post("/api/chat/stream", json=payload)
+            assert response.status_code != 429
+
+        # The 6th request should fail with 429
+        response = client.post("/api/chat/stream", json=payload)
+        assert response.status_code == 429
+        assert "Rate limit exceeded" in response.text

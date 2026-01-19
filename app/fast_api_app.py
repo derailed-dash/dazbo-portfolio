@@ -98,30 +98,31 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/api/chat/stream")
-async def chat_stream(request: ChatRequest):
+@limiter.limit("5/minute")
+async def chat_stream(request: Request, chat_request: ChatRequest):
     """
     Streaming chat endpoint for the portfolio agent.
     """
     session_service = app.state.session_service
 
     # Get or create a session for the user
-    sessions = await session_service.list_sessions(user_id=request.user_id, app_name=settings.app_name)
+    sessions = await session_service.list_sessions(user_id=chat_request.user_id, app_name=settings.app_name)
     if sessions.sessions:
         session = sessions.sessions[0]
     else:
-        session = await session_service.create_session(user_id=request.user_id, app_name=settings.app_name)
+        session = await session_service.create_session(user_id=chat_request.user_id, app_name=settings.app_name)
 
     runner = Runner(app=adk_app, session_service=session_service)
 
     msg = types.Content(
         role="user",
-        parts=[types.Part.from_text(text=f"<user_query>{request.message}</user_query>")],
+        parts=[types.Part.from_text(text=f"<user_query>{chat_request.message}</user_query>")],
     )
 
     async def event_generator():
         async for event in runner.run_async(
             new_message=msg,
-            user_id=request.user_id,
+            user_id=chat_request.user_id,
             session_id=session.id,
             run_config=RunConfig(streaming_mode=StreamingMode.SSE),
         ):
