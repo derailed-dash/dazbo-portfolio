@@ -3,7 +3,7 @@
 This plan outlines the steps to integrate `slowapi` for backend rate limiting and update the React frontend to handle rate limit errors gracefully.
 
 ## Phase 1: Backend Rate Limiting Implementation
-- [ ] Task: Integrate `slowapi` and Configure Global Limits
+- [x] Task: Integrate `slowapi` and Configure Global Limits [commit: ee488fc]
     - [ ] Add `slowapi` to `pyproject.toml` dependencies
     - [ ] Write unit/integration tests for global rate limiting in `tests/integration/test_endpoints.py`
     - [ ] Initialize `Limiter` and add `SlowAPI` middleware in `app/fast_api_app.py`
