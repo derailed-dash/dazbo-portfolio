@@ -62,7 +62,7 @@ async def test_search_portfolio_by_tag(mock_projects, mock_blogs):
     with (
         patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
         patch("app.tools.portfolio_search.BlogService") as MockBlogService,
-        patch("app.tools.portfolio_search.firestore.AsyncClient"),
+        patch("app.tools.portfolio_search.get_client"),
     ):
         # Setup mocks
         proj_service = AsyncMock()
@@ -86,7 +86,7 @@ async def test_search_portfolio_by_text(mock_projects, mock_blogs):
     with (
         patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
         patch("app.tools.portfolio_search.BlogService") as MockBlogService,
-        patch("app.tools.portfolio_search.firestore.AsyncClient"),
+        patch("app.tools.portfolio_search.get_client"),
     ):
         proj_service = AsyncMock()
         proj_service.list.return_value = mock_projects
@@ -108,7 +108,7 @@ async def test_search_portfolio_no_results(mock_projects, mock_blogs):
     with (
         patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
         patch("app.tools.portfolio_search.BlogService") as MockBlogService,
-        patch("app.tools.portfolio_search.firestore.AsyncClient"),
+        patch("app.tools.portfolio_search.get_client"),
     ):
         proj_service = AsyncMock()
         proj_service.list.return_value = mock_projects
@@ -128,7 +128,7 @@ async def test_search_portfolio_case_insensitive(mock_projects, mock_blogs):
     with (
         patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
         patch("app.tools.portfolio_search.BlogService") as MockBlogService,
-        patch("app.tools.portfolio_search.firestore.AsyncClient"),
+        patch("app.tools.portfolio_search.get_client"),
     ):
         proj_service = AsyncMock()
         proj_service.list.return_value = mock_projects

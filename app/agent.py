@@ -39,8 +39,6 @@ os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = str(settings.google_genai_use_vertexai
 if settings.gemini_api_key:
     os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
 
-_, project_id = google.auth.default()
-
 
 class PortfolioAgent(Agent):
     """Custom Agent subclass to fix ADK app name inference.

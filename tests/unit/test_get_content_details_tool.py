@@ -41,7 +41,7 @@ async def test_get_content_details_found_in_projects(mock_project):
     with (
         patch("app.tools.content_details.ProjectService") as MockProjectService,
         patch("app.tools.content_details.BlogService") as MockBlogService,
-        patch("app.tools.content_details.firestore.AsyncClient"),
+        patch("app.tools.content_details.get_client"),
     ):
         proj_service = AsyncMock()
         proj_service.get.return_value = mock_project
@@ -64,7 +64,7 @@ async def test_get_content_details_found_in_blogs(mock_blog):
     with (
         patch("app.tools.content_details.ProjectService") as MockProjectService,
         patch("app.tools.content_details.BlogService") as MockBlogService,
-        patch("app.tools.content_details.firestore.AsyncClient"),
+        patch("app.tools.content_details.get_client"),
     ):
         proj_service = AsyncMock()
         proj_service.get.return_value = None
@@ -86,7 +86,7 @@ async def test_get_content_details_not_found():
     with (
         patch("app.tools.content_details.ProjectService") as MockProjectService,
         patch("app.tools.content_details.BlogService") as MockBlogService,
-        patch("app.tools.content_details.firestore.AsyncClient"),
+        patch("app.tools.content_details.get_client"),
     ):
         proj_service = AsyncMock()
         proj_service.get.return_value = None

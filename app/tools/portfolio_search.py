@@ -4,9 +4,8 @@ Why: Allows the agent to find projects and blogs based on user queries.
 How: Fetches all items from Firestore and filters them in-memory (for now).
 """
 
-from google.cloud import firestore
-
 from app.services.blog_service import BlogService
+from app.services.firestore import get_client
 from app.services.project_service import ProjectService
 
 
@@ -20,7 +19,7 @@ async def search_portfolio(query: str) -> str:
     Returns:
         A formatted string of matching items.
     """
-    db = firestore.AsyncClient()
+    db = get_client()
     project_service = ProjectService(db)
     blog_service = BlogService(db)
 

@@ -23,7 +23,7 @@ def test_chat_streaming_endpoint():
         patch("app.fast_api_app.ExperienceService") as MockExperienceService,
         patch("app.tools.portfolio_search.ProjectService") as ToolMockProjectService,
         patch("app.tools.portfolio_search.BlogService") as ToolMockBlogService,
-        patch("app.fast_api_app.firestore.AsyncClient", new_callable=AsyncMock) as MockFirestoreClient,
+        patch("app.fast_api_app.get_client", new_callable=MagicMock) as MockGetClient,
         patch.object(PortfolioAgent, "run_async", side_effect=mock_run_async),
     ):
         # Setup mocks to return awaitable AsyncMocks
@@ -34,8 +34,12 @@ def test_chat_streaming_endpoint():
         ToolMockProjectService.return_value.list = AsyncMock(return_value=[])
         ToolMockBlogService.return_value.list = AsyncMock(return_value=[])
 
+        # Setup MockGetClient to return an AsyncMock for the db client
+        mock_db_client = AsyncMock()
+        MockGetClient.return_value = mock_db_client
+
         # Mock the client close method to be synchronous (as per recent change)
-        MockFirestoreClient.return_value.close.return_value = None
+        mock_db_client.close.return_value = None
 
         # Use TestClient as a context manager to trigger lifespan events
         with TestClient(app) as client:

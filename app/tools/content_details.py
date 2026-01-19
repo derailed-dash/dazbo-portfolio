@@ -4,9 +4,8 @@ Why: Allows the agent to retrieve full details for a specific project or blog by
 How: Queries ProjectService and BlogService by ID.
 """
 
-from google.cloud import firestore
-
 from app.services.blog_service import BlogService
+from app.services.firestore import get_client
 from app.services.project_service import ProjectService
 
 
@@ -20,7 +19,7 @@ async def get_content_details(item_id: str) -> str:
     Returns:
         A detailed string representation of the item, or a not found message.
     """
-    db = firestore.AsyncClient()
+    db = get_client()
     project_service = ProjectService(db)
     blog_service = BlogService(db)
 

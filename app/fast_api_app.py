@@ -18,7 +18,6 @@ from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.cli.fast_api import get_fast_api_app
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
-from google.cloud import firestore
 from google.cloud import logging as google_cloud_logging
 from google.genai import types
 from pydantic import BaseModel
@@ -36,6 +35,7 @@ from app.models.experience import Experience
 from app.models.project import Project
 from app.services.blog_service import BlogService
 from app.services.experience_service import ExperienceService
+from app.services.firestore import close_client, get_client
 from app.services.project_service import ProjectService
 
 # Suppress noisy OpenTelemetry attribute warnings
@@ -56,7 +56,7 @@ session_service_uri = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize Firestore client
-    db = firestore.AsyncClient(project=settings.google_cloud_project, database=settings.firestore_database_id)
+    db = get_client()
     app.state.firestore_db = db
 
     # Initialize Services
@@ -67,7 +67,7 @@ async def lifespan(app: FastAPI):
 
     yield
     # Clean up
-    db.close()
+    close_client()
 
 
 app: FastAPI = get_fast_api_app(
