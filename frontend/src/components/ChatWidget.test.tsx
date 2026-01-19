@@ -4,7 +4,7 @@ import ChatWidget from './ChatWidget';
 
 describe('ChatWidget', () => {
   beforeEach(() => {
-    global.fetch = vi.fn();
+    globalThis.fetch = vi.fn();
     // Mock scrollIntoView
     window.HTMLElement.prototype.scrollIntoView = vi.fn();
   });
@@ -54,7 +54,7 @@ describe('ChatWidget', () => {
       getReader: () => mockReader,
     };
 
-    (global.fetch as any).mockResolvedValue({
+    (globalThis.fetch as any).mockResolvedValue({
       ok: true,
       body: mockStream,
     });
@@ -78,7 +78,7 @@ describe('ChatWidget', () => {
     fireEvent.click(sendButton);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/api/chat/stream', expect.objectContaining({
+      expect(globalThis.fetch).toHaveBeenCalledWith('/api/chat/stream', expect.objectContaining({
         method: 'POST',
         body: expect.stringContaining('"message":"Hi"'),
       }));

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Card, Form, InputGroup, Spinner } from 'react-bootstrap';
 import { MessageSquare, Send, X, Bot, User } from 'lucide-react';
-import { ChatMessage } from '../types';
+import type { ChatMessage } from '../types';
 
 const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
