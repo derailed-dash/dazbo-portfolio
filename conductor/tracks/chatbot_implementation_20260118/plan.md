@@ -43,7 +43,7 @@ This plan outlines the steps to implement the "Dazbo" portfolio chatbot, includi
     - [x] Implement SSE listener in `frontend/src/components/ChatWidget.tsx`
     - [x] Update UI state to handle streaming chunks and display message history
     - [x] Add "typing" indicator and auto-scroll to bottom
-- [x] Task: Verify UI/UX [manual-verification]
+- [x] Task: Verify UI/UX [70755c1]
     - [x] Run `make react-ui` and `make local-backend`
     - [x] Confirm chat feels responsive and correctly reflects the Dazbo persona
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Frontend Integration' (Protocol in workflow.md)
