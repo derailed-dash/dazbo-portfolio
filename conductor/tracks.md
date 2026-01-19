@@ -7,6 +7,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Link: [./tracks/containerisation_unified_backend_20260118/](./tracks/containerisation_unified_backend_20260118/)*
 
 ---
-
-- [x] **Track: Implement the Chatbot**
-*Link: [./tracks/chatbot_implementation_20260118/](./tracks/chatbot_implementation_20260118/)*
