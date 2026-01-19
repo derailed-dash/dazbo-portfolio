@@ -45,6 +45,9 @@ steps:
         uv run pytest tests/integration
     env:
       - 'PATH=/usr/local/bin:/usr/bin:~/.local/bin'
+      - 'GOOGLE_CLOUD_PROJECT=${PROJECT_ID}'
+      - 'GOOGLE_CLOUD_LOCATION=global'
+      - 'GOOGLE_GENAI_USE_VERTEXAI=true'
 
 logsBucket: gs://${PROJECT_ID}-logs/build-logs
 options:
