@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     firestore_database_id: str = "(default)"
 
     # Agent
+    app_name: str = "dazbo-portfolio"
     agent_name: str = "dazbo-portfolio"
     log_level: str = "INFO"
     model: str = "gemini-2.5-flash"
