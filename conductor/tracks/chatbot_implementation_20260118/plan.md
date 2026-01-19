@@ -22,10 +22,10 @@ This plan outlines the steps to implement the "Dazbo" portfolio chatbot, includi
 - [x] Task: Implement Content Detail Tool [b8078da]
     - [x] Write unit tests for `get_content_details` tool
     - [x] Implement `get_content_details` to fetch a full document from Firestore by ID
-- [ ] Task: Refine Agent Persona & System Prompt Handling
-    - [ ] Update `app/config.py` to include the environment variable name
-    - [ ] Modify `app/agent.py` to read the system prompt from the `DAZBO_SYSTEM_PROMPT` environment variable at runtime
-    - [ ] Ensure `InMemorySessionService` is correctly integrated for history persistence
+- [x] Task: Refine Agent Persona & System Prompt Handling [69691f7]
+    - [x] Update `app/config.py` to include the environment variable name
+    - [x] Modify `app/agent.py` to read the system prompt from the `DAZBO_SYSTEM_PROMPT` environment variable at runtime
+    - [x] Ensure `InMemorySessionService` is correctly integrated for history persistence
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Agent Logic' (Protocol in workflow.md)
 
 ## Phase 3: Backend API & Streaming
