@@ -22,7 +22,9 @@ def test_agent_uses_system_prompt_from_env(mock_env_prompt):
 
     importlib.reload(app.agent)
 
-    assert app.agent.root_agent.instruction == mock_env_prompt
+    assert isinstance(app.agent.root_agent.instruction, str)
+    assert mock_env_prompt in app.agent.root_agent.instruction
+    assert "<user_query>" in app.agent.root_agent.instruction
 
     # Clean up (reload without the env var to avoid polluting other tests)
     # Note: unittest.mock.patch.dict handles the env var cleanup,

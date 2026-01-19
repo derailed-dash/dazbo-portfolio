@@ -103,7 +103,10 @@ async def chat_stream(request: ChatRequest):
 
     runner = Runner(app=adk_app, session_service=session_service)
 
-    msg = types.Content(role="user", parts=[types.Part.from_text(text=request.message)])
+    msg = types.Content(
+        role="user",
+        parts=[types.Part.from_text(text=f"<user_query>{request.message}</user_query>")],
+    )
 
     async def event_generator():
         async for event in runner.run_async(
