@@ -17,6 +17,12 @@ from google.adk.sessions import InMemorySessionService
 from google.cloud import firestore
 from google.cloud import logging as google_cloud_logging
 
+from google.adk.agents.run_config import RunConfig, StreamingMode
+from google.adk.runners import Runner
+from google.genai import types
+from pydantic import BaseModel
+
+from app.agent import root_agent
 from app.app_utils.telemetry import setup_telemetry
 from app.app_utils.typing import Feedback
 from app.config import settings
@@ -76,6 +82,43 @@ app: FastAPI = get_fast_api_app(
 )
 app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
+
+
+class ChatRequest(BaseModel):
+    user_id: str
+    message: str
+
+
+@app.post("/api/chat/stream")
+async def chat_stream(request: ChatRequest):
+    """
+    Streaming chat endpoint for the portfolio agent.
+    """
+    session_service = app.state.session_service
+    
+    # Get or create a session for the user
+    sessions = await session_service.list_sessions(user_id=request.user_id, app_name="dazbo-portfolio")
+    if sessions.sessions:
+        session = sessions.sessions[0]
+    else:
+        session = await session_service.create_session(user_id=request.user_id, app_name="dazbo-portfolio")
+
+    runner = Runner(agent=root_agent, session_service=session_service, app_name="dazbo-portfolio")
+    
+    msg = types.Content(role="user", parts=[types.Part.from_text(text=request.message)])
+
+    async def event_generator():
+        async for event in runner.run_async(
+            new_message=msg,
+            user_id=request.user_id,
+            session_id=session.id,
+            run_config=RunConfig(streaming_mode=StreamingMode.SSE),
+        ):
+            # Format as SSE
+            yield f"data: {event.model_dump_json()}\n\n"
+
+    from fastapi.responses import StreamingResponse
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 @app.post("/api/feedback")
