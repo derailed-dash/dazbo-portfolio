@@ -21,6 +21,18 @@ os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
 os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
 
+# Ensure critical environment variables are set for the underlying SDKs (GenAI, Auth)
+# based on our loaded settings.
+if settings.google_cloud_project:
+    os.environ["GOOGLE_CLOUD_PROJECT"] = settings.google_cloud_project
+if settings.google_cloud_location:
+    os.environ["GOOGLE_CLOUD_LOCATION"] = settings.google_cloud_location
+os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = str(settings.google_genai_use_vertexai)
+if settings.gemini_api_key:
+    os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
+
+_, project_id = google.auth.default()
+
 root_agent = Agent(
     name="root_agent",
     model=Gemini(

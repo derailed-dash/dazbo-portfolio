@@ -19,10 +19,22 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | The container will be deployed to Cloud Run. | Cloud Run is a fully-managed, serverless compute platform that lets you run containers directly on Google Cloud infrastructure. |
 | Use InMemorySessionService for session management | There is no need for session persistence across restarts for this application. |
 | Use Python 3.12+ Type Parameters | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
+| GCP_REGION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
+| GOOGLE_CLOUD_LOCATION = "europe-west1" | Used for deploying resources. |
 
 ## Application Design
 
 The application follows a clean, layered architecture to ensure separation of concerns and testability.
+
+### Configuration Management
+
+The application uses `pydantic-settings` to manage configuration in a centralized and type-safe manner.
+
+*   **Settings Model**: Defined in `app/config.py`, the `Settings` class declares all configurable parameters (e.g., Project ID, Model Name, API Keys).
+*   **Loading Strategy**:
+    1.  **Environment Variables**: In production environments (like Cloud Run), settings are injected as environment variables. This is the primary method for configuration.
+    2.  **`.env` File**: For local development, settings are loaded from a `.env` file in the project root. This file is excluded from version control.
+*   **Usage**: The `settings` object is imported and used throughout the application (e.g., in `app/agent.py`), ensuring that hardcoded values are avoided.
 
 ### 1. Presentation Layer (React + FastAPI)
 
