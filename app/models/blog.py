@@ -17,6 +17,7 @@ class Blog(BaseModel):
     platform: str
     url: str
     source_platform: str | None = None
+    tags: list[str] = Field(default_factory=list)
     is_manual: bool = True
     metadata_only: bool = False
     created_at: datetime = Field(default_factory=datetime.now)

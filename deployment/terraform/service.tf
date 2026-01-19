@@ -36,6 +36,16 @@ resource "google_cloud_run_v2_service" "app" {
       }
 
       env {
+        name = "DAZBO_SYSTEM_PROMPT"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.dazbo_system_prompt.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
         name  = "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"
         value = "NO_CONTENT"
       }

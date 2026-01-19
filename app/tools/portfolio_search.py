@@ -48,11 +48,15 @@ async def search_portfolio(query: str) -> str:
     for b in blogs:
         # Check title
         if query_lower in b.title.lower():
-            results.append(f"[Blog] {b.title}: {b.summary}")
+            results.append(f"[Blog] {b.title}: {b.summary} (Tags: {', '.join(b.tags)})")
+            continue
+        # Check tags
+        if any(query_lower in t.lower() for t in b.tags):
+            results.append(f"[Blog] {b.title}: {b.summary} (Tags: {', '.join(b.tags)})")
             continue
         # Check summary
         if b.summary and query_lower in b.summary.lower():
-            results.append(f"[Blog] {b.title}: {b.summary}")
+            results.append(f"[Blog] {b.title}: {b.summary} (Tags: {', '.join(b.tags)})")
             continue
 
     if not results:
