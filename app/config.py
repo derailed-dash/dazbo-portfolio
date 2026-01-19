@@ -20,7 +20,8 @@ class Settings(BaseSettings):
     # Agent
     agent_name: str = "dazbo-portfolio"
     log_level: str = "INFO"
-    model: str = "gemini-3-flash-preview"
+    model: str = "gemini-2.5-flash"
+    dazbo_system_prompt: str = "You are Dazbo's portfolio assistant."
     google_genai_use_vertexai: bool = False
     gemini_api_key: str | None = None
 
