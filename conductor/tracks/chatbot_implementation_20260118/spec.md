@@ -27,7 +27,7 @@ Implement the "Dazbo" portfolio chatbot, a persistent assistant that can answer 
 
 ## Technical Constraints & Decisions
 - **Framework:** Google ADK and `google-genai` SDK.
-- **Models:** `gemini-2.5-flash` for the agent.
+- **Models:** Specified in the environment variable `MODEL`. Note that the variable `GCP_REGION` is used for the model; this is not the same as `GOOGLE_CLOUD_LOCATION` which is used for deploying resources.
 - **Infrastructure:**
     - Terraform for Secret Manager resource and Cloud Run environment variable configuration.
     - Update Service Account roles to include `roles/secretmanager.secretAccessor`.

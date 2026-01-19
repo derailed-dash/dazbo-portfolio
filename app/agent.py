@@ -35,6 +35,7 @@ _, project_id = google.auth.default()
 
 root_agent = Agent(
     name="root_agent",
+    description="You are Dazbo's helpful assistant. You can search for content in his portfolio", 
     model=Gemini(
         model=settings.model,
         retry_options=types.HttpRetryOptions(attempts=3),
