@@ -39,7 +39,7 @@ This plan outlines the steps to implement the "Dazbo" portfolio chatbot, includi
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Backend Streaming' (Protocol in workflow.md)
 
 ## Phase 4: Frontend Integration
-- [ ] Task: Connect ChatWidget to Backend
+- [~] Task: Connect ChatWidget to Backend
     - [ ] Implement SSE listener in `frontend/src/components/ChatWidget.tsx`
     - [ ] Update UI state to handle streaming chunks and display message history
     - [ ] Add "typing" indicator and auto-scroll to bottom

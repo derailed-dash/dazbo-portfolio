@@ -11,6 +11,7 @@
 - [x] Build container image and test locally.
 - [x] Deploy and test on Cloud Run.
 - [~] Add conversational agent using Dazbo persona. Store the persona as a Google Secret.
+- [ ] Check `app_name` is being used in the agent from the env vars.
 - [ ] UI experimentation / aesthetics.
 - [ ] Persona can answer portfolio questions and questions about me. Evaluate if we should use RAG in Firestore.
 - [ ] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
