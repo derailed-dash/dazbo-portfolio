@@ -4,7 +4,7 @@
 - **Language:** Python 3.12+ (Backend logic and Agent development).
 - **Agent Framework:** Google Agent Development Kit (ADK) — Powers the interactive chat and agentic features.
 - **Backend Framework:** FastAPI — High-performance web framework for the API layer.
-- **Frontend Framework:** React — Building the user interface for the portfolio and chat interaction.
+- **Frontend Framework:** React (with `react-markdown`) — Building the user interface for the portfolio and chat interaction.
 
 ## Data & Storage
 - **Primary Database:** Google Firestore — Serverless, NoSQL document database for managing portfolio content and agent session data.

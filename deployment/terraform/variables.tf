@@ -28,6 +28,12 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "location" {
+  type        = string
+  description = "Google Cloud location used by Gemini model."
+  default     = "global"
+}
+
 variable "host_connection_name" {
   description = "Name of the host connection to create in Cloud Build"
   type        = string
@@ -50,6 +56,7 @@ variable "app_sa_roles" {
     "roles/cloudtrace.agent",
     "roles/storage.objectAdmin",
     "roles/serviceusage.serviceUsageConsumer",
+    "roles/secretmanager.secretAccessor",
     "roles/datastore.user",
   ]
 }
@@ -79,19 +86,16 @@ variable "cicd_sa_deployment_required_roles" {
   ]
 }
 
-
 variable "repository_owner" {
   description = "Owner of the Git repository - username or organization"
   type        = string
 }
-
 
 variable "github_app_installation_id" {
   description = "GitHub App Installation ID for Cloud Build"
   type        = string
   default     = null
 }
-
 
 variable "github_pat_secret_id" {
   description = "GitHub PAT Secret ID created by gcloud CLI"
@@ -111,13 +115,11 @@ variable "create_repository" {
   default     = false
 }
 
-
 variable "feedback_logs_filter" {
   type        = string
   description = "Log Sink filter for capturing feedback data. Captures logs where the `log_type` field is `feedback`."
   default     = "jsonPayload.log_type=\"feedback\" jsonPayload.service_name=\"dazbo-portfolio\""
 }
-
 
 variable "service_name" {
   description = "Name of the Cloud Run service"

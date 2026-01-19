@@ -30,14 +30,20 @@ resource "google_cloud_run_v2_service" "app" {
         cpu_idle = false
       }
 
+
       env {
         name  = "LOGS_BUCKET_NAME"
         value = google_storage_bucket.logs_data_bucket[var.project_id].name
       }
 
       env {
-        name  = "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"
-        value = "NO_CONTENT"
+        name = "DAZBO_SYSTEM_PROMPT"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.dazbo_system_prompt.secret_id
+            version = "latest"
+          }
+        }
       }
     }
 
@@ -45,8 +51,7 @@ resource "google_cloud_run_v2_service" "app" {
     max_instance_request_concurrency = 40
 
     scaling {
-      min_instance_count = 1
-      max_instance_count = 2
+      max_instance_count = 1
     }
 
     session_affinity = true
@@ -57,11 +62,14 @@ resource "google_cloud_run_v2_service" "app" {
     percent = 100
   }
 
-  # This lifecycle block prevents Terraform from overwriting the container image when it's
-  # updated by Cloud Run deployments outside of Terraform (e.g., via CI/CD pipelines)
+  # This lifecycle block prevents Terraform from overwriting fields managed by Cloud Build
+  # (image, environment variables, client metadata) during deployments.
   lifecycle {
     ignore_changes = [
+      client,
+      client_version,
       template[0].containers[0].image,
+      template[0].containers[0].env,
     ]
   }
 

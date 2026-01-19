@@ -19,10 +19,22 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | The container will be deployed to Cloud Run. | Cloud Run is a fully-managed, serverless compute platform that lets you run containers directly on Google Cloud infrastructure. |
 | Use InMemorySessionService for session management | There is no need for session persistence across restarts for this application. |
 | Use Python 3.12+ Type Parameters | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
+| GOOGLE_CLOUD_LOCATION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
+| GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
 
 ## Application Design
 
 The application follows a clean, layered architecture to ensure separation of concerns and testability.
+
+### Configuration Management
+
+The application uses `pydantic-settings` to manage configuration in a centralized and type-safe manner.
+
+*   **Settings Model**: Defined in `app/config.py`, the `Settings` class declares all configurable parameters (e.g., Project ID, Model Name, API Keys).
+*   **Loading Strategy**:
+    1.  **Environment Variables**: In production environments (like Cloud Run), settings are injected as environment variables. This is the primary method for configuration.
+    2.  **`.env` File**: For local development, settings are loaded from a `.env` file in the project root. This file is excluded from version control.
+*   **Usage**: The `settings` object is imported and used throughout the application (e.g., in `app/agent.py`), ensuring that hardcoded values are avoided.
 
 ### 1. Presentation Layer (React + FastAPI)
 
@@ -290,5 +302,39 @@ blogs:
 ```
 
 **Fields:**
+
 *   **Projects:** `title` (required), `description`, `repo_url`, `demo_url`, `image_url`, `tags` (list), `featured` (bool), `metadata_only` (bool).
+
 *   **Blogs:** `title` (required), `summary`, `date` (ISO 8601), `platform` (e.g., "External", "Substack"), `url` (required), `metadata_only` (bool).
+
+
+
+## Future Enhancements: RAG & Vector Search
+
+
+
+To improve the chatbot's ability to answer specific questions about the portfolio content, we plan to implement Retrieval-Augmented Generation (RAG) using Vector Search.
+
+
+
+### Architecture
+
+*   **Embeddings Model:** Google Vertex AI Embeddings (e.g., `text-embedding-004`).
+
+*   **Vector Store:** Google Firestore Vector Search (using `KNN_VECTOR` fields and vector indexes).
+
+*   **Ingestion Pipeline Update:**
+
+    1.  When a project or blog is ingested/updated, generate a text embedding for its description/summary.
+
+    2.  Store the embedding vector in a new field (e.g., `embedding`) in the Firestore document.
+
+*   **Agent Tooling:**
+
+    1.  Create a new tool `search_portfolio_vector` (or update existing).
+
+    2.  The tool will generate an embedding for the user's query.
+
+    3.  Perform a vector similarity search (cosine distance) in Firestore to find the most relevant documents.
+
+    4.  Pass the retrieved context to the Gemini model for answer generation.

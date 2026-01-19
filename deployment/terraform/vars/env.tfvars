@@ -21,7 +21,8 @@ repository_name = "dazbo-portfolio"
 region = "europe-west1"
 
 # Service Configuration
-service_name = "dazbo-portfolio"
-agent_name = "dazbo-portfolio"
+service_name = "dazbo_portfolio"
+agent_name = "dazbo_portfolio_chat_agent"
 google_genai_use_vertexai = "true"
-model = "gemini-2.5-flash"
+model = "gemini-3-flash-preview"
+location = "global"

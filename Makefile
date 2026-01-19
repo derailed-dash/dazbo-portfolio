@@ -1,9 +1,11 @@
 # Assign env variables if they are not already set
 GOOGLE_GENAI_USE_VERTEXAI = true
-SERVICE_NAME ?= dazbo-portfolio
-AGENT_NAME ?= dazbo-portfolio
+SERVICE_NAME ?= dazbo_portfolio
+AGENT_NAME ?= dazbo_portfolio_chat_agent
+APP_NAME ?= dazbo_portfolio
 MODEL ?= gemini-2.5-flash
-REGION ?= europe-west1
+GOOGLE_CLOUD_REGION ?= europe-west1
+GOOGLE_CLOUD_LOCATION ?= global
 
 # Install dependencies using uv package manager
 install:
@@ -27,18 +29,21 @@ local-backend:
 react-ui:
 	cd frontend && npm run dev
 
-# Deploy the agent remotely (Manual / Development)
+# Build and deploy the agent to Cloud Run (Manual / Development)
+# Builds directly from source; not from Google Artifact Registry
 # Usage: make deploy-cloud-run [IAP=true]
 deploy-cloud-run:
 	PROJECT_ID=$$(gcloud config get-value project) && \
 	gcloud run deploy $(SERVICE_NAME) \
 		--source . \
 		--memory "4Gi" \
-		--project $$PROJECT_ID \
-		--region $(REGION) \
+		--project $$GOOGLE_CLOUD_PROJECT \
+		--region $(GOOGLE_CLOUD_REGION) \
 		--service-account="$$SERVICE_SA_EMAIL" \
+		--max-instances=1 \
+		--cpu-boost \
 		--allow-unauthenticated \
-		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(SERVICE_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),LOG_LEVEL=DEBUG" \
+		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(SERVICE_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION),LOG_LEVEL=DEBUG" \
 		$(if $(IAP),--iap)
 
 # Build the unified container image

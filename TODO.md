@@ -10,9 +10,14 @@
 - [x] Create React UI with carousel for blogs, GitHub repos, applications, etc.
 - [x] Build container image and test locally.
 - [x] Deploy and test on Cloud Run.
-- [ ] Add conversational agent using Dazbo persona. Store the persona as a Google Secret.
-- [ ] UI experimentation / aesthetics.
-- [ ] Persona can answer portfolio questions and questions about me. Evaluate if we should use RAG in Firestore.
-- [ ] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
+- [x] Add conversational agent using Dazbo persona. Store the persona as a Google Secret.
+- [x] Check `app_name` is being used in the agent from the env vars.
+- [x] Persona can answer portfolio questions and questions about me.
 - [ ] Add rate limiting.
+- [ ] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
+- [ ] UI experimentation / aesthetics.
+- [ ] Implement RAG with Vector Search:
+    - [ ] Generate embeddings for Blogs and Projects using Vertex AI Embeddings.
+    - [ ] Store embeddings in Firestore Vector Search.
+    - [ ] Implement vector search tool for the agent.
 - [ ] Add SEO.
