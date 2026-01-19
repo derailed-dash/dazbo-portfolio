@@ -18,7 +18,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """
     Application settings model.
-    
+
     Fields defined here are automatically populated from environment variables
     (case-insensitive) or the .env file.
     """
@@ -26,8 +26,8 @@ class Settings(BaseSettings):
 
     # Infrastructure
     google_cloud_project: str = "dazbo-portfolio"
-    google_cloud_region: str = "europe-west1"    
-    
+    google_cloud_region: str = "europe-west1"
+
     # GenAI / Vertex AI Configuration
     # These are often used by the underlying Google SDKs
     google_genai_use_vertexai: bool = False
@@ -38,8 +38,8 @@ class Settings(BaseSettings):
     firestore_database_id: str = "(default)"
 
     # Agent
-    app_name: str = "dazbo-portfolio"
-    agent_name: str = "dazbo-portfolio"
+    app_name: str = "dazbo_portfolio" # must use underscores, not hyphens
+    agent_name: str = "dazbo_portfolio_chat_agent"
     log_level: str = "INFO"
     model: str = "gemini-2.5-flash"
     dazbo_system_prompt: str = "You are Dazbo's portfolio assistant. You help visitors navigate his projects and blogs."

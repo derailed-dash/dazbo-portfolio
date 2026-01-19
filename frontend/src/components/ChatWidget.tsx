@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Card, Form, InputGroup, Spinner } from 'react-bootstrap';
 import { MessageSquare, Send, X, Bot, User } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import type { ChatMessage } from '../types';
 
 const ChatWidget: React.FC = () => {
@@ -127,7 +128,11 @@ const ChatWidget: React.FC = () => {
                   className={`p-3 rounded-3 shadow-sm ${msg.role === 'user' ? 'bg-primary text-white' : 'bg-white'}`} 
                   style={{ maxWidth: '85%', fontSize: '0.9rem' }}
                 >
-                  <p className="mb-0">{msg.content}</p>
+                  {msg.role === 'user' ? (
+                    <p className="mb-0">{msg.content}</p>
+                  ) : (
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  )}
                 </div>
                 <div className="text-muted smallest px-2 mt-1" style={{ fontSize: '0.7rem' }}>
                   {msg.role === 'bot' ? <Bot size={12} className="me-1" /> : <User size={12} className="me-1" />}

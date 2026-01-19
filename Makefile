@@ -1,8 +1,8 @@
 # Assign env variables if they are not already set
 GOOGLE_GENAI_USE_VERTEXAI = true
-SERVICE_NAME ?= dazbo-portfolio
-AGENT_NAME ?= dazbo-portfolio
-APP_NAME ?= dazbo-portfolio
+SERVICE_NAME ?= dazbo_portfolio
+AGENT_NAME ?= dazbo_portfolio_chat_agent
+APP_NAME ?= dazbo_portfolio
 MODEL ?= gemini-2.5-flash
 GOOGLE_CLOUD_REGION ?= europe-west1
 GOOGLE_CLOUD_LOCATION ?= global

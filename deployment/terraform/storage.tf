@@ -12,7 +12,7 @@ provider "google" {
   user_project_override = true
 }
 
-# We'll create the state bucket manually
+# We'll create the state bucket manually - a pre-req to using this Terraform configuration
 # resource "google_storage_bucket" "tf_state_bucket" {
 #   name                        = "${var.project_id}-tf-state"
 #   location                    = var.region
@@ -22,17 +22,6 @@ provider "google" {
 
 #   depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
 # }
-
-resource "google_storage_bucket" "logs_data_bucket" {
-  for_each                    = toset(local.all_project_ids)
-  name                        = "${each.value}-logs"
-  location                    = var.region
-  project                     = each.value
-  uniform_bucket_level_access = true
-  force_destroy               = true
-
-  depends_on = [resource.google_project_service.cicd_services, resource.google_project_service.deploy_project_services]
-}
 
 resource "google_storage_bucket" "assets_bucket" {
   name                        = "${var.project_id}-assets"

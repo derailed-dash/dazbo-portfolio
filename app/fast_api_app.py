@@ -5,6 +5,7 @@ How: Configures FastAPI with ADK integration, Telemetry, and Firestore services.
 """
 
 import os
+import json
 from contextlib import asynccontextmanager
 
 import anyio
@@ -12,18 +13,16 @@ import google.auth
 from fastapi import Depends, FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.cli.fast_api import get_fast_api_app
+from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.cloud import firestore
 from google.cloud import logging as google_cloud_logging
-
-from google.adk.agents.run_config import RunConfig, StreamingMode
-from google.adk.runners import Runner
 from google.genai import types
 from pydantic import BaseModel
 
-from app.agent import root_agent
-from app.app_utils.telemetry import setup_telemetry
+from app.agent import app as adk_app
 from app.app_utils.typing import Feedback
 from app.config import settings
 from app.dependencies import (
@@ -38,20 +37,14 @@ from app.services.blog_service import BlogService
 from app.services.experience_service import ExperienceService
 from app.services.project_service import ProjectService
 
-setup_telemetry()
 _, project_id = google.auth.default()
 logging_client = google_cloud_logging.Client()
 logger = logging_client.logger(__name__)
 allow_origins = os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
 
-# Artifact bucket for ADK (created by Terraform, passed via env var)
-logs_bucket_name = os.environ.get("LOGS_BUCKET_NAME")
-
 AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # In-memory session configuration - no persistent storage
 session_service_uri = None
-
-artifact_service_uri = f"gs://{logs_bucket_name}" if logs_bucket_name else None
 
 
 @asynccontextmanager
@@ -74,10 +67,9 @@ async def lifespan(app: FastAPI):
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
     web=False,
-    artifact_service_uri=artifact_service_uri,
     allow_origins=allow_origins,
     session_service_uri=session_service_uri,
-    otel_to_cloud=True,
+    otel_to_cloud=False,
     lifespan=lifespan,
 )
 app.title = "dazbo-portfolio"
@@ -95,16 +87,16 @@ async def chat_stream(request: ChatRequest):
     Streaming chat endpoint for the portfolio agent.
     """
     session_service = app.state.session_service
-    
+
     # Get or create a session for the user
-    sessions = await session_service.list_sessions(user_id=request.user_id, app_name="dazbo-portfolio")
+    sessions = await session_service.list_sessions(user_id=request.user_id, app_name=settings.app_name)
     if sessions.sessions:
         session = sessions.sessions[0]
     else:
-        session = await session_service.create_session(user_id=request.user_id, app_name="dazbo-portfolio")
+        session = await session_service.create_session(user_id=request.user_id, app_name=settings.app_name)
 
-    runner = Runner(agent=root_agent, session_service=session_service, app_name="dazbo-portfolio")
-    
+    runner = Runner(app=adk_app, session_service=session_service)
+
     msg = types.Content(role="user", parts=[types.Part.from_text(text=request.message)])
 
     async def event_generator():
@@ -114,8 +106,28 @@ async def chat_stream(request: ChatRequest):
             session_id=session.id,
             run_config=RunConfig(streaming_mode=StreamingMode.SSE),
         ):
-            # Format as SSE
-            yield f"data: {event.model_dump_json()}\n\n"
+            # Extract text from the event (ModelResponse)
+            text_chunk = ""
+            try:
+                # Check for direct content (ADK/GenAI flat structure)
+                if hasattr(event, 'content') and event.content and event.content.parts:
+                    for part in event.content.parts:
+                        if hasattr(part, 'text') and part.text:
+                            text_chunk += part.text
+                
+                # Fallback for candidates structure (if used in other contexts)
+                elif hasattr(event, 'candidates') and event.candidates:
+                    candidate = event.candidates[0]
+                    if candidate.content and candidate.content.parts:
+                        for part in candidate.content.parts:
+                            if hasattr(part, 'text') and part.text:
+                                text_chunk += part.text
+            except Exception as e:
+                logger.log_text(f"Error parsing event: {e}", severity="ERROR")
+
+            if text_chunk:
+                payload = {"content": text_chunk}
+                yield f"data: {json.dumps(payload)}\n\n"
 
     from fastapi.responses import StreamingResponse
     return StreamingResponse(event_generator(), media_type="text/event-stream")

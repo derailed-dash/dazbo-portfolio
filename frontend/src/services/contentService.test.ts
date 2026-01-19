@@ -14,7 +14,7 @@ describe('contentService', () => {
     (axios.get as any).mockResolvedValueOnce({ data: mockData });
 
     const result = await getBlogs();
-    expect(axios.get).toHaveBeenCalledWith('/blogs');
+    expect(axios.get).toHaveBeenCalledWith('/api/blogs');
     expect(result).toEqual(mockData);
   });
 
@@ -23,7 +23,7 @@ describe('contentService', () => {
     (axios.get as any).mockResolvedValueOnce({ data: mockData });
 
     const result = await getProjects();
-    expect(axios.get).toHaveBeenCalledWith('/projects');
+    expect(axios.get).toHaveBeenCalledWith('/api/projects');
     expect(result).toEqual(mockData);
   });
 });

@@ -31,11 +31,6 @@ resource "google_cloud_run_v2_service" "app" {
       }
 
       env {
-        name  = "LOGS_BUCKET_NAME"
-        value = google_storage_bucket.logs_data_bucket[var.project_id].name
-      }
-
-      env {
         name = "DAZBO_SYSTEM_PROMPT"
         value_source {
           secret_key_ref {
@@ -43,11 +38,6 @@ resource "google_cloud_run_v2_service" "app" {
             version = "latest"
           }
         }
-      }
-
-      env {
-        name  = "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT"
-        value = "NO_CONTENT"
       }
     }
 

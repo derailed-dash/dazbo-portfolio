@@ -39,7 +39,13 @@ if settings.gemini_api_key:
 
 _, project_id = google.auth.default()
 
-root_agent = Agent(
+class PortfolioAgent(Agent):
+    """Custom Agent subclass to fix ADK app name inference.
+    The agent's class is now defined in our codebase. The ADK sees this and no longer flags
+    it as a mismatch with the library's default name."""
+    pass
+
+root_agent = PortfolioAgent(
     name="root_agent",
     description="You are Dazbo's helpful assistant. You can search for content in his portfolio", 
     model=Gemini(
@@ -50,4 +56,4 @@ root_agent = Agent(
     tools=[search_portfolio, get_content_details],
 )
 
-app = App(root_agent=root_agent, name="app")
+app = App(root_agent=root_agent, name=settings.app_name)

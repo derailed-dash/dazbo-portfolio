@@ -1,7 +1,9 @@
+# ==============================================================================
 # Terraform backend configuration
-#
+# ==============================================================================
+
 # Expects the bucket has already been created, e.g.
-# gcloud storage buckets create -p $GOOGLE_CLOUD_PROJECT gs://${GOOGLE_CLOUD_PROJECT}-tf-state
+# gcloud storage buckets create gs://${GOOGLE_CLOUD_PROJECT}-tf-state
 #
 # To migrate from local state to this GCS backend state, simply re-run terraform init
 # and answer 'yes' to the prompt to copy the existing state to the new backend.
