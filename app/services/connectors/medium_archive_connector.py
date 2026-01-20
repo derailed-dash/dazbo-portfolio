@@ -4,6 +4,7 @@ Why: Parses Medium export zip files to retrieve full blog history and content.
 How: Uses zipfile, BeautifulSoup for HTML parsing, and markdownify for markdown conversion.
 """
 
+import logging
 import zipfile
 from collections.abc import AsyncGenerator
 from datetime import datetime
@@ -13,6 +14,8 @@ from markdownify import markdownify as md
 
 from app.models.blog import Blog
 from app.services.content_enrichment_service import ContentEnrichmentService
+
+logger = logging.getLogger(__name__)
 
 
 class MediumArchiveConnector:
@@ -54,12 +57,12 @@ class MediumArchiveConnector:
                             yield status, blog, post_file
 
                     except Exception as e:
-                        print(f"Error processing file {post_file}: {e}")
+                        logger.error(f"Error processing file {post_file}: {e}")
                         yield "error", None, post_file
                         continue
 
         except Exception as e:
-            print(f"Error reading Medium archive {zip_path}: {e}")
+            logger.error(f"Error reading Medium archive {zip_path}: {e}")
             # Ensure we stop if the zip itself fails
             pass
 
