@@ -1,12 +1,12 @@
 # Implementation Plan: Comprehensive Medium Blog Ingestion
 
-## Phase 1: Model Updates and AI Tooling
+## Phase 1: Model Updates and AI Tooling [checkpoint: 8861ec7]
 - [x] Task: Update `Blog` model
     - [x] Task: Add `is_private` (bool), `markdown_content` (str), `ai_summary` (str) fields to `app/models/blog.py`.
 - [x] Task: Create AI Summarization Service
     - [x] Task: Implement a helper function/service that accepts text and returns a Gemini-generated summary.
     - [x] Task: Create tests for this service (mocking the LLM response).
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Model Updates and AI Tooling' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Model Updates and AI Tooling' (Protocol in workflow.md)
 
 ## Phase 2: Medium Archive Parser & Markdown Converter
 - [ ] Task: Create tests for `MediumArchiveConnector` and Markdown conversion
