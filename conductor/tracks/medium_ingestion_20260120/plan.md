@@ -19,7 +19,7 @@
     - [x] Task: Integrate the AI Summarization Service to generate summaries for each post.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Medium Archive Parser & Markdown Converter' (Protocol in workflow.md)
 
-## Phase 3: CLI Integration and Hybrid Logic
+## Phase 3: CLI Integration and Hybrid Logic [checkpoint: c4d154b]
 - [x] Task: Update Ingestion Logic (`app/tools/ingest.py`)
     - [x] Task: Add `--medium-zip` argument.
     - [x] Task: Implement the priority logic: Use RSS for latest metadata, but enrich *all* matching posts (RSS or Zip) with the Markdown content from the Zip if available.
@@ -28,7 +28,7 @@
 - [x] Task: Integration Tests
     - [x] Task: Verify that a post existing in both RSS and Zip gets the correct merged data (fresh date from RSS, full content from Zip).
     - [x] Task: Verify that Firestore documents are correctly updated with the new fields.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: CLI Integration and Hybrid Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: CLI Integration and Hybrid Logic' (Protocol in workflow.md)
 
 ## Phase 4: UI Updates and Documentation
 - [ ] Task: Update Frontend Blog Display
