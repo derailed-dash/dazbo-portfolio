@@ -33,12 +33,17 @@ class ContentEnrichmentService:
         truncated_text = text[:15000]
 
         prompt = (
-            "You are a professional technical writer. Analyze the following blog post content.\n"
-            "1. Generate a comprehensive summary (max 225 words) focusing on key technical takeaways.\n"
-            "2. Propose 5 relevant technical tags.\n\n"
-            "Return the result as a valid JSON object with keys 'summary' and 'tags'.\n"
-            'Example format: {"summary": "Actual summary text here", "tags": ["tag1", "tag2"]}\n\n'
-            f"Content:\n{truncated_text}"
+            f"""You are a professional technical writer. Analyze the following blog post content.
+            1. Generate a comprehensive summary (max 225 words) focusing on key technical takeaways.
+               Do not include preamble text like "This article describes..." or "This article explains..."
+               I.e. instead of "This article describes the foo and bar", say "Describes the foo and bar"
+            2. Propose 5 relevant technical tags.
+
+            Return the result as a valid JSON object with keys 'summary' and 'tags'.
+            Example format: {{"summary": "Actual summary text here", "tags": ["tag1", "tag2"]}}
+
+            Content:
+            {truncated_text}"""
         )
 
         response = await self.client.aio.models.generate_content(
