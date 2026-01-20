@@ -1,6 +1,6 @@
 - [x] Create design-and-walkthrough doc
 - [x] Create testing doc
-- [x] Implement Conductorgoogle
+- [x] Implement Conductor
 - [x] Add Gemini PR GitHub Actions
 - [x] Add instruction for Firestore creation, and API enablement
 - [x] Ensure Firestore in Terraform deployment; remove any Cloud SQL
