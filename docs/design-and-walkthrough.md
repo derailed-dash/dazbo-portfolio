@@ -19,6 +19,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | The container will be deployed to Cloud Run. | Cloud Run is a fully-managed, serverless compute platform that lets you run containers directly on Google Cloud infrastructure. |
 | Use InMemorySessionService for session management | There is no need for session persistence across restarts for this application. |
 | Use Python 3.12+ Type Parameters | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
+| Use In-Memory Rate Limiting | Implemented via `slowapi` to control LLM costs and provide basic DoS protection without additional infrastructure like Redis. |
 | GOOGLE_CLOUD_LOCATION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
 | GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
 
@@ -62,6 +63,22 @@ The application employs a **Unified Origin Architecture**. In production, the Fa
 
 *   **Production**: Since the frontend and API share the same origin (protocol, host, and port), the browser's Same-Origin Policy is satisfied without any explicit CORS configuration.
 *   **Local Development**: To maintain a rapid developer loop, the React development server (`:5173`) and FastAPI backend (`:8000`) run as separate processes. Vite is configured to **proxy** requests from `/api` to the backend, mirroring the production environment's single-origin behavior. This avoids the need to enable permissive CORS headers on the backend.
+
+## Rate Limiting
+
+The application implements a multi-tier rate limiting strategy using `slowapi` (a Python port of `Flask-Limiter`) to protect against abuse and manage operational costs.
+
+### Backend Strategy
+
+*   **Global Limit**: A baseline limit of 60 requests per minute is applied to all endpoints under the `/api` prefix.
+*   **Strict Agent Limit**: The chat endpoint (`/api/chat/stream`) is restricted to 5 requests per minute per client IP to control LLM token usage and costs.
+*   **Exemptions**: Health checks (`/api/health`) and static assets served by the backend are exempt from rate limiting.
+*   **Storage**: Limits are tracked in-memory within the FastAPI process. Note that in a multi-instance Cloud Run deployment, limits are enforced per-instance.
+
+### Frontend Integration
+
+*   **Chat Feedback**: The `ChatWidget` component explicitly checks for HTTP 429 status codes. If a user exceeds the limit, it displays a friendly message: *"You're sending messages too fast. Please wait a moment before trying again."*
+*   **Global Handling**: A central Axios interceptor (`frontend/src/services/api.ts`) monitors all API responses. Any 429 error triggers a console warning to notify developers and users of rate limit exhaustion.
 
 ### 2. Service Layer
 

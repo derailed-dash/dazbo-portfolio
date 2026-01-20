@@ -5,9 +5,19 @@ How: Uses `TestClient` to simulate repeated requests and check for 429 status.
 """
 
 from unittest.mock import AsyncMock
+
+import pytest
 from fastapi.testclient import TestClient
+
 from app.dependencies import get_project_service
-from app.fast_api_app import app
+from app.fast_api_app import app, limiter
+
+
+@pytest.fixture(autouse=True)
+def reset_limiter():
+    """Reset the limiter storage before each test."""
+    limiter.reset()
+
 
 def test_global_rate_limit():
     """
@@ -32,6 +42,7 @@ def test_global_rate_limit():
     finally:
         app.dependency_overrides.clear()
 
+
 def test_chat_rate_limit():
     """
     Test that the chat endpoint rate limit (5/minute) is enforced.
@@ -41,7 +52,7 @@ def test_chat_rate_limit():
 
     # No dependency overrides needed for simple 429 check if we hit logic errors first
     # But ideally we mock session service to avoid side effects
-    
+
     with TestClient(app) as client:
         # First 5 requests should succeed (or at least not be 429)
         for _ in range(5):
