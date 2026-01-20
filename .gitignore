@@ -184,6 +184,7 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+sample_data/
 
 # System files
 .DS_Store

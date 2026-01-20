@@ -20,13 +20,13 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Medium Archive Parser & Markdown Converter' (Protocol in workflow.md)
 
 ## Phase 3: CLI Integration and Hybrid Logic
-- [ ] Task: Update Ingestion Logic (`app/tools/ingest.py`)
-    - [ ] Task: Add `--medium-zip` argument.
-    - [ ] Task: Implement the priority logic: Use RSS for latest metadata, but enrich *all* matching posts (RSS or Zip) with the Markdown content from the Zip if available.
-    - [ ] Task: **Explicitly persist updates to Firestore:** Ensure `BlogService.update` is called to save `markdown_content`, `ai_summary`, and `is_private` for existing and new records.
-- [ ] Task: Integration Tests
-    - [ ] Task: Verify that a post existing in both RSS and Zip gets the correct merged data (fresh date from RSS, full content from Zip).
-    - [ ] Task: Verify that Firestore documents are correctly updated with the new fields.
+- [x] Task: Update Ingestion Logic (`app/tools/ingest.py`)
+    - [x] Task: Add `--medium-zip` argument.
+    - [x] Task: Implement the priority logic: Use RSS for latest metadata, but enrich *all* matching posts (RSS or Zip) with the Markdown content from the Zip if available.
+    - [x] Task: **Explicitly persist updates to Firestore:** Ensure `BlogService.update` is called to save `markdown_content`, `ai_summary`, and `is_private` for existing and new records.
+- [x] Task: Integration Tests
+    - [x] Task: Verify that a post existing in both RSS and Zip gets the correct merged data (fresh date from RSS, full content from Zip).
+    - [x] Task: Verify that Firestore documents are correctly updated with the new fields.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: CLI Integration and Hybrid Logic' (Protocol in workflow.md)
 
 ## Phase 4: UI Updates and Documentation
