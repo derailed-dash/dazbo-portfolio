@@ -34,6 +34,10 @@
 
   /* Borders */
   --md-sys-color-outline-variant: #333333;
+
+  /* Custom Dimensions */
+  --md-custom-chat-widget-size: 60px;
+  --md-custom-chat-widget-gap: 20px;
 }
 
 /* Footer Styling */
@@ -45,7 +49,7 @@
 }
 
 .footer-icons {
-  padding-right: 80px;
+  padding-right: calc(var(--md-custom-chat-widget-size) + var(--md-custom-chat-widget-gap));
 }
 
 /* Base Styles */
@@ -199,8 +203,8 @@ body {
 }
 
 .chat-widget-toggle-btn {
-  width: 60px;
-  height: 60px;
+  width: var(--md-custom-chat-widget-size);
+  height: var(--md-custom-chat-widget-size);
   pointer-events: auto;
 }
 
