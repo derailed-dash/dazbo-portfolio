@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="py-5 mt-auto" style={{ backgroundColor: '#000000', borderTop: '1px solid #333', position: 'relative', zIndex: 10 }}>
+    <footer className="app-footer py-5 mt-auto">
       <Container>
         <Row className="align-items-center">
           <Col md={6} className="text-center text-md-start mb-3 mb-md-0">
@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
             </p>
           </Col>
           <Col md={6} className="text-center text-md-end">
-            <div className="d-flex justify-content-center justify-content-md-end gap-4" style={{ paddingRight: '80px' }}>
+            <div className="d-flex justify-content-center justify-content-md-end gap-4 footer-icons">
               <a 
                 href="https://github.com/derailed-dash" 
                 target="_blank" 
