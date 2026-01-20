@@ -150,8 +150,7 @@ dmypy.json
 *.tfstate
 *.tfstate.backup
 *.tfplan
-
-tmp*
+env.tfvars
 
 # Node
 **/node_modules
@@ -185,6 +184,7 @@ yarn-error.log
 testem.log
 /typings
 sample_data/
+tmp*
 
 # System files
 .DS_Store

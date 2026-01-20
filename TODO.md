@@ -15,8 +15,8 @@
 - [x] Persona can answer portfolio questions and questions about me.
 - [X] Add rate limiting.
 - [X] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
+- [~] Map to my domain name.
 - [ ] UI experimentation / aesthetics.
-- [ ] Map to my domain name.
 - [ ] Add SEO.
 - [ ] Implement RAG with Vector Search:
     - [ ] Generate embeddings for Blogs and Projects using Gemini Embeddings.

@@ -144,3 +144,8 @@ variable "model" {
   type        = string
   default     = "gemini-2.5-flash"
 }
+
+variable "app_domain_name" {
+  description = "A list of domain names to be mapped to the service"
+  type        = list(string)
+}
