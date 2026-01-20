@@ -110,6 +110,7 @@ direnv allow
 | `make deploy-cloud-run` | Deploy agent to Cloud Run                                     |
 | `make local-backend`    | Launch local development server with hot-reload               |
 | `make react-ui`         | Launch React frontend development server                      |
+| `make ui-test`          | Run frontend UI tests                                         |
 | `make docker-build`     | Build the unified production container image                  |
 | `make docker-run`       | Run the unified container locally                             |
 | `make tf-plan`          | Plan Terraform deployment                                     |

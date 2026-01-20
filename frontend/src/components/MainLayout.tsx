@@ -10,10 +10,10 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div className="d-flex flex-column min-vh-100 bg-light">
+    <div className="d-flex flex-column min-vh-100">
       <AppNavbar />
       <main className="flex-grow-1">
-        <Container className="py-4 app-container">
+        <Container className="pb-4 app-container" style={{ paddingTop: '12px' }}>
           {children}
         </Container>
       </main>

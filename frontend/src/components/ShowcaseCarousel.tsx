@@ -23,19 +23,19 @@ const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => 
     return chunks;
   };
 
-  const desktopChunks = chunkItems(items, 3);
+  const desktopChunks = chunkItems(items, 4);
 
   return (
     <div className="mb-5">
-      {title && <h2 className="h3 mb-4 fw-bold border-start border-primary border-4 ps-3">{title}</h2>}
+      {title && <h2 className="h3 mb-4 fw-bold text-center">{title}</h2>}
       
-      {/* Desktop/Tablet View: 3 items per slide */}
-      <Carousel interval={null} indicators={items.length > 3} className="pb-5 d-none d-md-block">
+      {/* Desktop/Tablet View: 4 items per slide */}
+      <Carousel interval={null} indicators={items.length > 4} className="pb-5 d-none d-md-block">
         {desktopChunks.map((chunk, idx) => (
           <Carousel.Item key={idx}>
-            <Row className="px-5">
+            <Row className="g-3" style={{ paddingLeft: '6%', paddingRight: '6%' }}>
               {chunk.map(item => (
-                <Col md={4} key={item.id} className="mb-3">
+                <Col md={3} key={item.id} className="mb-3">
                   <ShowcaseCard {...item} />
                 </Col>
               ))}

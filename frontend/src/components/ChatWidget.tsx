@@ -118,11 +118,10 @@ const ChatWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed-bottom p-4 d-flex flex-column align-items-end" style={{ zIndex: 1050 }}>
+    <div className="fixed-bottom p-4 d-flex flex-column align-items-end chat-widget-container">
       {isOpen && (
         <Card 
-          className="mb-3 shadow-lg border-primary" 
-          style={{ width: '350px', height: '500px', borderRadius: '16px', overflow: 'hidden' }}
+          className="mb-3 shadow-lg border-primary chat-widget-card" 
         >
           <Card.Header className="bg-primary text-white d-flex justify-content-between align-items-center py-3">
             <div className="d-flex align-items-center gap-2">
@@ -135,8 +134,7 @@ const ChatWidget: React.FC = () => {
             {messages.map((msg, idx) => (
               <div key={idx} className={`mb-3 d-flex flex-column ${msg.role === 'user' ? 'align-items-end' : 'align-items-start'}`}>
                 <div 
-                  className={`p-3 rounded-3 shadow-sm ${msg.role === 'user' ? 'bg-primary text-white' : 'bg-white'}`} 
-                  style={{ maxWidth: '85%', fontSize: '0.9rem' }}
+                  className={`p-3 rounded-3 shadow-sm chat-message-bubble ${msg.role === 'user' ? 'bg-primary text-white' : 'bg-white'}`} 
                 >
                   {msg.role === 'user' ? (
                     <p className="mb-0">{msg.content}</p>
@@ -144,7 +142,7 @@ const ChatWidget: React.FC = () => {
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   )}
                 </div>
-                <div className="text-muted smallest px-2 mt-1" style={{ fontSize: '0.7rem' }}>
+                <div className="text-muted smallest px-2 mt-1 chat-timestamp">
                   {msg.role === 'bot' ? <Bot size={12} className="me-1" /> : <User size={12} className="me-1" />}
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -152,7 +150,7 @@ const ChatWidget: React.FC = () => {
             ))}
             {isLoading && messages[messages.length - 1]?.role !== 'bot' && (
               <div className="mb-3">
-                <div className="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2" style={{ width: 'fit-content' }}>
+                <div className="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-2 chat-loading-dots">
                   <Spinner animation="grow" size="sm" variant="primary" />
                   <Spinner animation="grow" size="sm" variant="primary" />
                   <Spinner animation="grow" size="sm" variant="primary" />
@@ -187,8 +185,7 @@ const ChatWidget: React.FC = () => {
       
       <Button 
         variant="primary" 
-        className="rounded-circle shadow-lg d-flex align-items-center justify-content-center p-0" 
-        style={{ width: '60px', height: '60px' }}
+        className="rounded-circle shadow-lg d-flex align-items-center justify-content-center p-0 chat-widget-toggle-btn" 
         onClick={toggleChat}
         aria-label="Toggle chat"
       >

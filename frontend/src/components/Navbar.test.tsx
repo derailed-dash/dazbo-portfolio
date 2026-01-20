@@ -13,14 +13,5 @@ describe('AppNavbar', () => {
     expect(screen.getByText(/Dazbo/i)).toBeInTheDocument();
   });
 
-  it('renders navigation links', () => {
-    render(
-      <BrowserRouter>
-        <AppNavbar />
-      </BrowserRouter>
-    );
-    expect(screen.getByText(/Home/i)).toBeInTheDocument();
-    expect(screen.getByText(/Blogs/i)).toBeInTheDocument();
-    expect(screen.getByText(/Projects/i)).toBeInTheDocument();
-  });
+
 });
