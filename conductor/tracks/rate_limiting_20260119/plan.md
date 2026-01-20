@@ -14,11 +14,11 @@ This plan outlines the steps to integrate `slowapi` for backend rate limiting an
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Rate Limiting' (Protocol in workflow.md) [commit: b761624]
 
 ## Phase 2: Frontend Error Handling
-- [~] Task: Handle 429 in Chat Widget
-    - [ ] Write Vitest tests for `ChatWidget` error state handling
-    - [ ] Update `frontend/src/components/ChatWidget.tsx` to detect 429 status and display a friendly "Please wait" message
-- [ ] Task: Global API Error Handling
-    - [ ] Update frontend API services/interceptors to handle 429 status (e.g., via console warnings or toast notifications)
+- [x] Task: Handle 429 in Chat Widget
+    - [x] Write Vitest tests for ChatWidget error state handling
+    - [x] Update `frontend/src/components/ChatWidget.tsx` to detect 429 status and display a friendly "Please wait" message
+- [x] Task: Global API Error Handling
+    - [x] Update frontend API services/interceptors to handle 429 status (e.g., via console warnings or toast notifications)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Error Handling' (Protocol in workflow.md)
 
 ## Phase 3: Documentation & Verification

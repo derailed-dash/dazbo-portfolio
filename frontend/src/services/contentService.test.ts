@@ -1,8 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
 import { getBlogs, getProjects } from './contentService';
+import apiClient from './api';
 
-vi.mock('axios');
+// Mock the api module
+vi.mock('./api', () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
 
 describe('contentService', () => {
   beforeEach(() => {
@@ -11,19 +16,19 @@ describe('contentService', () => {
 
   it('getBlogs fetches data from /blogs', async () => {
     const mockData = [{ id: '1', title: 'Blog 1' }];
-    (axios.get as any).mockResolvedValueOnce({ data: mockData });
+    (apiClient.get as any).mockResolvedValueOnce({ data: mockData });
 
     const result = await getBlogs();
-    expect(axios.get).toHaveBeenCalledWith('/api/blogs');
+    expect(apiClient.get).toHaveBeenCalledWith('/api/blogs');
     expect(result).toEqual(mockData);
   });
 
   it('getProjects fetches data from /projects', async () => {
     const mockData = [{ id: '1', title: 'Project 1' }];
-    (axios.get as any).mockResolvedValueOnce({ data: mockData });
+    (apiClient.get as any).mockResolvedValueOnce({ data: mockData });
 
     const result = await getProjects();
-    expect(axios.get).toHaveBeenCalledWith('/api/projects');
+    expect(apiClient.get).toHaveBeenCalledWith('/api/projects');
     expect(result).toEqual(mockData);
   });
 });
