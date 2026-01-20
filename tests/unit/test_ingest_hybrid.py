@@ -19,8 +19,15 @@ from app.tools.ingest import ingest_resources
 @patch("app.tools.ingest.BlogService")
 @patch("app.tools.ingest.ProjectService")
 @patch("app.tools.ingest.firestore.AsyncClient")
+@patch("app.tools.ingest.ContentEnrichmentService")
 async def test_medium_hybrid_logic(
-    mock_firestore, mock_project_service, mock_blog_service, mock_archive_connector, mock_rss_connector, mock_zipfile
+    mock_enrichment_service,
+    mock_firestore,
+    mock_project_service,
+    mock_blog_service,
+    mock_archive_connector,
+    mock_rss_connector,
+    mock_zipfile,
 ):
     # Mock ZipFile to pass the file count check
     mock_zip = mock_zipfile.return_value.__enter__.return_value
