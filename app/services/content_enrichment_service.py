@@ -29,11 +29,9 @@ class ContentEnrichmentService:
         Returns: {"summary": str, "tags": list[str]}
         """
         # Limit input text to avoid overwhelming the model or hitting response limits
-        # 15000 chars is roughly 3000-4000 tokens, plenty for a summary.
-        truncated_text = text[:15000]
+        truncated_text = text[: settings.max_enrichment_input_chars]
 
-        prompt = (
-            f"""You are a professional technical writer. Analyze the following blog post content.
+        prompt = f"""You are a professional technical writer. Analyze the following blog post content.
             1. Generate a comprehensive summary (max 225 words) focusing on key technical takeaways.
                Do not include preamble text like "This article describes..." or "This article explains..."
                I.e. instead of "This article describes the foo and bar", say "Describes the foo and bar"
@@ -44,13 +42,12 @@ class ContentEnrichmentService:
 
             Content:
             {truncated_text}"""
-        )
 
         response = await self.client.aio.models.generate_content(
             model=self.model,
             contents=prompt,
             config=types.GenerateContentConfig(
-                temperature=0.2,
+                temperature=settings.gemini_temp,
                 max_output_tokens=2048,
                 response_mime_type="application/json",
             ),

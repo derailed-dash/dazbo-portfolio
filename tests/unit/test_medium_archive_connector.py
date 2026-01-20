@@ -4,7 +4,6 @@ Why: Verifies that Medium export zips are correctly parsed, converted to markdow
 How: Mocks zipfile and ContentEnrichmentService to test the ingestion logic.
 """
 
-import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -24,13 +23,13 @@ async def test_parse_archive_error(mock_ai_service, caplog):
     # Mock zipfile to raise exception
     with patch("zipfile.ZipFile") as MockZip:
         MockZip.side_effect = Exception("Zip error")
-        
+
         connector = MediumArchiveConnector(ai_service=mock_ai_service)
-        
+
         # Consume generator
         async for _ in connector.fetch_posts("bad.zip"):
             pass
-            
+
         assert "Error reading Medium archive bad.zip: Zip error" in caplog.text
 
 

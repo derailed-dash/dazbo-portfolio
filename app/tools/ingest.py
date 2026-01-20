@@ -30,6 +30,7 @@ from app.services.connectors.devto_connector import DevToConnector
 from app.services.connectors.github_connector import GitHubConnector
 from app.services.connectors.medium_archive_connector import MediumArchiveConnector
 from app.services.connectors.medium_connector import MediumConnector
+from app.services.content_enrichment_service import ContentEnrichmentService
 from app.services.project_service import ProjectService
 
 app = typer.Typer(help="Ingest portfolio resources from external platforms.")
@@ -115,7 +116,8 @@ async def ingest_resources(
 
         if medium_zip:
             console.print("[bold blue]Processing Medium archive...[/bold blue]")
-            archive_connector = MediumArchiveConnector()
+            enrichment_service = ContentEnrichmentService()
+            archive_connector = MediumArchiveConnector(ai_service=enrichment_service)
             try:
                 # Count total files first
                 total_files_in_zip = 0
