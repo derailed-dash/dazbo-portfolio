@@ -12,7 +12,18 @@ export interface ShowcaseItem {
 }
 
 export interface Project {
-  // ... (keep project as is)
+  id?: string;
+  title: string;
+  description: string;
+  repo_url?: string;
+  demo_url?: string;
+  image_url?: string;
+  tags: string[];
+  featured: boolean;
+  source_platform?: string;
+  is_manual: boolean;
+  metadata_only: boolean;
+  created_at?: string;
 }
 
 export interface Blog {
