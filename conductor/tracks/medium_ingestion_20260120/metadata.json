@@ -1,8 +1,0 @@
-{
-  "track_id": "medium_ingestion_20260120",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-20T00:00:00Z",
-  "updated_at": "2026-01-20T00:00:00Z",
-  "description": "Abiity to retrieve all my blogs from Medium. The RSS feed only retrieves the last 10. We should also mark whether they are private (paywalled) or public."
-}

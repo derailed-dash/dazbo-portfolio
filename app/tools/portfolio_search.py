@@ -64,10 +64,6 @@ async def search_portfolio(query: str) -> str:
         if b.ai_summary and query_lower in b.ai_summary.lower():
             results.append(f"[Blog] {b.title}: {b.ai_summary[:150]}... (URL: {b.url}, Tags: {', '.join(b.tags or [])})")
             continue
-        # Check markdown content
-        if b.markdown_content and query_lower in b.markdown_content.lower():
-            results.append(f"[Blog] {b.title}: {b.summary} (Found in content) (URL: {b.url}, Tags: {', '.join(b.tags or [])})")
-            continue
 
     if not results:
         return f"No projects or blogs found matching '{query}'."

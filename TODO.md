@@ -14,10 +14,12 @@
 - [x] Check `app_name` is being used in the agent from the env vars.
 - [x] Persona can answer portfolio questions and questions about me.
 - [X] Add rate limiting.
-- [~] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
+- [X] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
 - [ ] UI experimentation / aesthetics.
+- [ ] Map to my domain name.
+- [ ] Add SEO.
 - [ ] Implement RAG with Vector Search:
     - [ ] Generate embeddings for Blogs and Projects using Gemini Embeddings.
+    - [ ] Handle creating embeddings for existing records.
     - [ ] Store embeddings in Firestore Vector Search.
     - [ ] Implement vector search tool for the agent.
-- [ ] Add SEO.
