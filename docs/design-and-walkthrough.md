@@ -24,6 +24,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | AI-Powered Content Enrichment | Uses Gemini to generate concise technical summaries and structured Markdown from raw HTML. |
 | GOOGLE_CLOUD_LOCATION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
 | GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
+| Use Cloud Run Domain Mapping | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. See [Cloud Run Domain Mapping](https://docs.cloud.google.com/run/docs/mapping-custom-domains#run). |
 
 ## Application Design
 
