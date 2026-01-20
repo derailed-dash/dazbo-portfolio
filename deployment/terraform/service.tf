@@ -87,3 +87,17 @@ resource "google_cloud_run_service_iam_member" "public_access" {
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
+
+# Create domain mappings for all listed domains
+resource "google_cloud_run_domain_mapping" "app_prod_domain_mapping" {
+  for_each = toset(var.app_domain_name)
+  name     = each.key
+  project  = var.project_id
+  location = google_cloud_run_v2_service.app.location
+  metadata {
+    namespace = data.google_project.project.project_id
+  }
+  spec {
+    route_name = google_cloud_run_v2_service.app.name
+  }
+}
