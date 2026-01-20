@@ -5,17 +5,17 @@ import { NavLink } from 'react-router-dom';
 
 const AppNavbar: React.FC = () => {
   return (
-    <Navbar className="shadow-sm py-3 mb-0 sticky-top" style={{ backgroundColor: '#000000', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+    <Navbar className="shadow-sm py-3 mb-0 sticky-top">
       <Container>
-        <Navbar.Brand as={NavLink} to="/" className="d-flex align-items-center gap-2" style={{ fontSize: '1.5rem' }}>
+        <Navbar.Brand as={NavLink} to="/" className="d-flex align-items-center gap-2">
           {/* Styled Text moved from Hero Section */}
-          <span className="fw-bold" style={{ color: '#ffffff' }}>
-            <span style={{ color: '#BB86FC' }}>Dazbo's</span> Portfolio
+          <span className="fw-bold navbar-brand-text">
+            <span className="navbar-brand-accent">Dazbo's</span> Portfolio
           </span>
         </Navbar.Brand>
         
         {/* Tagline moved from Hero - Visible on Large screens only to prevent clutter */}
-        <div className="d-none d-lg-block text-end" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', maxWidth: '750px' }}>
+        <div className="d-none d-lg-block text-end navbar-tagline">
             A showcase of technical writing, open-source craftsmanship, and professional experience.
             <br />
             Powered by Python, React, and Gemini AI.

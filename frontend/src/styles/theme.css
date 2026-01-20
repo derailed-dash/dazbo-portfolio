@@ -19,6 +19,7 @@
   --md-sys-color-on-primary: #ffffff;
   --md-sys-color-primary-container: #3700b3;
   --md-sys-color-on-primary-container: #eaddff;
+  --md-sys-color-branding-accent: #BB86FC; /* Light purple for "Dazbo's" */
 
   --md-sys-color-secondary: #03DAC6; /* Teal accent */
   --md-sys-color-on-secondary: #000000;
@@ -106,8 +107,8 @@ body {
 
 /* Navbar Overrides */
 .navbar {
-  background-color: #000000 !important; /* Match body */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--md-sys-color-background) !important;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
 
 .nav-link {
@@ -121,8 +122,21 @@ body {
 }
 
 .navbar-brand {
-    color: #ffffff !important;
-    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-brand-text {
+    color: var(--md-sys-color-on-background);
+}
+
+.navbar-brand-accent {
+    color: var(--md-sys-color-branding-accent);
+}
+
+.navbar-tagline {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    max-width: 750px;
 }
 
 /* App Container */
@@ -147,6 +161,7 @@ body {
 /* Ensure controls are outside the cards if possible, or visible overlay */
 .carousel-control-prev, .carousel-control-next {
     width: 5%;
+    bottom: 3rem; /* Exclude the bottom padding (pb-5) area so arrows center on the tiles */
 }
 /* Hero Section Styling */
 .hero-wrapper {
