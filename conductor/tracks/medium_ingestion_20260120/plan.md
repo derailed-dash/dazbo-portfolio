@@ -8,7 +8,7 @@
     - [x] Task: Create tests for this service (mocking the LLM response).
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Model Updates and AI Tooling' (Protocol in workflow.md)
 
-## Phase 2: Medium Archive Parser & Markdown Converter
+## Phase 2: Medium Archive Parser & Markdown Converter [checkpoint: b314cc7]
 - [x] Task: Create tests for `MediumArchiveConnector` and Markdown conversion
     - [x] Task: Test HTML -> Markdown conversion logic (H1, H2, H3 rules).
     - [x] Task: Test Frontmatter extraction.
@@ -17,7 +17,7 @@
     - [x] Task: Implement `app/services/connectors/medium_archive_connector.py`.
     - [x] Task: Use a library like `markdownify` or `BeautifulSoup` to handle the conversion.
     - [x] Task: Integrate the AI Summarization Service to generate summaries for each post.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Medium Archive Parser & Markdown Converter' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Medium Archive Parser & Markdown Converter' (Protocol in workflow.md)
 
 ## Phase 3: CLI Integration and Hybrid Logic
 - [ ] Task: Update Ingestion Logic (`app/tools/ingest.py`)
