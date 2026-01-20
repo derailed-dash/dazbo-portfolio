@@ -16,10 +16,11 @@ const BlogCarousel: React.FC = () => {
         const mapped: ShowcaseItem[] = data.map((b) => ({
           id: b.id || b.url || 'unknown',
           title: b.title,
-          description: b.summary || b.description || '',
+          description: b.ai_summary || b.summary || '',
           imageUrl: b.image_url,
           tags: b.tags || [b.platform],
           linkUrl: b.url,
+          isPrivate: b.is_private,
           type: 'blog'
         }));
         setBlogs(mapped);

@@ -4,7 +4,7 @@ Why: Verifies that global and specific rate limits are enforced.
 How: Uses `TestClient` to simulate repeated requests and check for 429 status.
 """
 
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -43,23 +43,39 @@ def test_global_rate_limit():
         app.dependency_overrides.clear()
 
 
-def test_chat_rate_limit():
+@patch("app.services.firestore.get_client")
+def test_chat_rate_limit(mock_get_client):
     """
     Test that the chat endpoint rate limit (5/minute) is enforced.
     """
     # Use a mock payload
     payload = {"user_id": "test_user", "message": "Hello"}
 
-    # No dependency overrides needed for simple 429 check if we hit logic errors first
-    # But ideally we mock session service to avoid side effects
+    # Mock the firestore client to return a mock
+    mock_db = AsyncMock()
+    mock_get_client.return_value = mock_db
 
-    with TestClient(app) as client:
-        # First 5 requests should succeed (or at least not be 429)
-        for _ in range(5):
+    # Mock services to avoid DB hits from tools
+    mock_proj_service = AsyncMock()
+    mock_proj_service.list.return_value = []
+    mock_blog_service = AsyncMock()
+    mock_blog_service.list.return_value = []
+
+    from app.dependencies import get_blog_service, get_project_service
+
+    app.dependency_overrides[get_project_service] = lambda: mock_proj_service
+    app.dependency_overrides[get_blog_service] = lambda: mock_blog_service
+
+    try:
+        with TestClient(app) as client:
+            # First 5 requests should succeed (or at least not be 429)
+            for _ in range(5):
+                response = client.post("/api/chat/stream", json=payload)
+                assert response.status_code != 429
+
+            # The 6th request should fail with 429
             response = client.post("/api/chat/stream", json=payload)
-            assert response.status_code != 429
-
-        # The 6th request should fail with 429
-        response = client.post("/api/chat/stream", json=payload)
-        assert response.status_code == 429
-        assert "Rate limit exceeded" in response.text
+            assert response.status_code == 429
+            assert "Rate limit exceeded" in response.text
+    finally:
+        app.dependency_overrides.clear()

@@ -5,6 +5,7 @@
 - **Agent Framework:** Google Agent Development Kit (ADK) — Powers the interactive chat and agentic features.
 - **Backend Framework:** FastAPI — High-performance web framework for the API layer.
 - **Frontend Framework:** React (with `react-markdown`) — Building the user interface for the portfolio and chat interaction.
+- **AI Enrichment:** Gemini (via `google-genai` SDK) — Powers the `ContentEnrichmentService` for technical summarisation and tagging.
 
 ## Data & Storage
 - **Primary Database:** Google Firestore — Serverless, NoSQL document database for managing portfolio content and agent session data.
@@ -18,7 +19,7 @@
 
 ## Development & Quality Tools
 - **Package Manager:** `uv` — Fast Python package and environment management.
-- **Ingestion & CLI:** `typer`, `httpx`, `PyYAML` — Powering the hybrid resource ingestion system.
+- **Ingestion & CLI:** `typer`, `httpx`, `PyYAML`, `markdownify`, `beautifulsoup4` — Powering the hybrid resource ingestion system and HTML-to-Markdown conversion.
 - **Rate Limiting:** `slowapi` — In-memory rate limiting for FastAPI.
 - **Linting & Formatting:** `ruff` — Extremely fast Python linter and code formatter.
 - **Testing:** `pytest` — Feature-rich testing framework for unit and integration tests.

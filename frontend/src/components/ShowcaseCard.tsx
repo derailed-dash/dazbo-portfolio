@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink, Github, Lock } from 'lucide-react';
 
 interface ShowcaseCardProps {
   title: string;
@@ -9,6 +9,7 @@ interface ShowcaseCardProps {
   tags?: string[];
   linkUrl?: string;
   repoUrl?: string;
+  isPrivate?: boolean;
   type: 'blog' | 'project' | 'app';
 }
 
@@ -19,6 +20,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   tags = [],
   linkUrl,
   repoUrl,
+  isPrivate,
   type
 }) => {
   return (
@@ -34,12 +36,20 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
         </div>
       )}
       <Card.Body className="d-flex flex-column">
-        <div className="mb-2">
-          {tags.slice(0, 3).map(tag => (
-            <Badge key={tag} bg="light" text="dark" className="me-1 border text-uppercase" style={{ fontSize: '0.7rem' }}>
-              {tag}
+        <div className="d-flex justify-content-between align-items-start mb-2">
+          <div className="tags-container">
+            {tags.slice(0, 3).map(tag => (
+              <Badge key={tag} bg="light" text="dark" className="me-1 border text-uppercase" style={{ fontSize: '0.7rem' }}>
+                {tag}
+              </Badge>
+            ))}
+          </div>
+          {isPrivate && (
+            <Badge bg="warning" text="dark" className="d-flex align-items-center gap-1" style={{ fontSize: '0.7rem' }}>
+              <Lock size={10} />
+              <span>Member-only</span>
             </Badge>
-          ))}
+          )}
         </div>
         <Card.Title className="h5 mb-2 fw-bold">{title}</Card.Title>
         <Card.Text className="text-muted small flex-grow-1">

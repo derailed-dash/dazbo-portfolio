@@ -45,6 +45,7 @@ These tests verify that the API routes return the correct status codes and data 
 
 ### Agent & Server (`test_agent.py`, `test_server_e2e.py`, `test_rate_limiting.py`)
 *   **Agent Logic**: Verifies that the Agent can process inputs and generate responses using the configured tools and prompt.
+*   **Search Logic**: `tests/unit/test_search_portfolio_tool.py` verifies the priority logic (Title > Tags > Summary > AI Summary) and deduplication for the search tool.
 *   **Rate Limiting**: Verifies that global and agent-specific limits are enforced (returning HTTP 429).
 *   **E2E Server**: Tests the full server stack, including Server-Sent Events (SSE) for streaming agent responses.
 
