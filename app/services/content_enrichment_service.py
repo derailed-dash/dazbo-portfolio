@@ -5,6 +5,7 @@ How: Uses the google-genai SDK to call Gemini models.
 """
 
 import json
+import re
 
 from google.genai import Client, types
 
@@ -60,10 +61,7 @@ class ContentEnrichmentService:
             # Clean up potential markdown wrappers or extra whitespace
             cleaned_text = response.text.strip()
             if cleaned_text.startswith("```"):
-                import re
-
-                cleaned_text = re.sub(r"^```(?:json)?\n", "", cleaned_text)
-                cleaned_text = re.sub(r"\n```$", "", cleaned_text)
+                cleaned_text = re.sub(r"^```(?:json)?\s*|\s*```$", "", cleaned_text, flags=re.DOTALL)
 
             data = json.loads(cleaned_text)
 
