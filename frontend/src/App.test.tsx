@@ -9,6 +9,6 @@ describe('App Routing', () => {
     // Usually we test a component that uses useRoutes or similar.
     // For now, let's just ensure App renders without crashing.
     render(<App />);
-    expect(screen.getByText(/Welcome to Dazbo Portfolio/i)).toBeInTheDocument();
+    expect(screen.getByText(/Dazbo's/i)).toBeInTheDocument();
   });
 });

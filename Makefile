@@ -74,6 +74,10 @@ test:
 	uv sync --dev
 	uv run pytest tests/unit && uv run pytest tests/integration
 
+# Run frontend UI tests
+ui-test:
+	cd frontend && npm test -- --run
+
 # Run code quality checks (codespell, ruff, ty)
 lint:
 	uv sync --dev --extra lint

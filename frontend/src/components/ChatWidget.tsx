@@ -118,11 +118,11 @@ const ChatWidget: React.FC = () => {
   };
 
   return (
-    <div className="fixed-bottom p-4 d-flex flex-column align-items-end" style={{ zIndex: 1050 }}>
+    <div className="fixed-bottom p-4 d-flex flex-column align-items-end" style={{ zIndex: 1050, pointerEvents: 'none' }}>
       {isOpen && (
         <Card 
           className="mb-3 shadow-lg border-primary" 
-          style={{ width: '350px', height: '500px', borderRadius: '16px', overflow: 'hidden' }}
+          style={{ width: '350px', height: '500px', borderRadius: '16px', overflow: 'hidden', pointerEvents: 'auto' }}
         >
           <Card.Header className="bg-primary text-white d-flex justify-content-between align-items-center py-3">
             <div className="d-flex align-items-center gap-2">
@@ -188,7 +188,7 @@ const ChatWidget: React.FC = () => {
       <Button 
         variant="primary" 
         className="rounded-circle shadow-lg d-flex align-items-center justify-content-center p-0" 
-        style={{ width: '60px', height: '60px' }}
+        style={{ width: '60px', height: '60px', pointerEvents: 'auto' }}
         onClick={toggleChat}
         aria-label="Toggle chat"
       >

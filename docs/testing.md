@@ -18,7 +18,7 @@ This project uses a comprehensive suite of tools to ensure code quality and func
 
 *   `make test`: Runs unit and integration tests with warnings suppressed.
 *   `make lint`: Runs the full suite of code quality checks (codespell, ruff, ty).
-*   `cd frontend && npm run test`: Runs the frontend test suite.
+*   `make ui-test`: Runs the frontend test suite (Vitest).
 
 ## Unit Tests
 
