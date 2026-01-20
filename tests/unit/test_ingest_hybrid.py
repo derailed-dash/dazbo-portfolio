@@ -63,7 +63,7 @@ async def test_medium_hybrid_logic(
     # Another blog only in archive
     archive_only_blog = Blog(
         title="Archive Only",
-        summary=None,
+        summary="Archive AI Summary",  # Connector should now set this
         date="2025-01-01",
         platform="Medium",
         url="http://medium.com/archive-only",

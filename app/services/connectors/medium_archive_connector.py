@@ -159,6 +159,9 @@ class MediumArchiveConnector:
             if not tags and enrichment_data.get("tags"):
                 tags = enrichment_data.get("tags")
 
+        # Fallback to AI summary if subtitle is missing
+        final_summary = subtitle or ai_summary or None
+
         # Frontmatter
         frontmatter = "---\n"
         frontmatter += f"title: {title}\n"
@@ -166,8 +169,8 @@ class MediumArchiveConnector:
             frontmatter += f"date: {date_iso}\n"
         if url:
             frontmatter += f"url: {url}\n"
-        if subtitle:
-            frontmatter += f"subtitle: {subtitle}\n"
+        if final_summary:
+            frontmatter += f"subtitle: {final_summary}\n"
         if tags:
             frontmatter += f"tags: {', '.join(tags)}\n"
         frontmatter += "---\n\n"
@@ -176,7 +179,7 @@ class MediumArchiveConnector:
 
         blog = Blog(
             title=title,
-            summary=subtitle or None,
+            summary=final_summary,
             date=date_iso,
             platform="Medium",
             url=url,

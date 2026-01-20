@@ -191,10 +191,6 @@ async def ingest_resources(
                                     # Remove from map so we don't process it again
                                     del rss_map[blog.url]
 
-                                # Use AI summary if summary is missing
-                                if not blog.summary and blog.ai_summary:
-                                    blog.summary = blog.ai_summary
-
                                 # Persist immediately
                                 if blog.url in existing_urls:
                                     blog.id = existing_urls[blog.url]
