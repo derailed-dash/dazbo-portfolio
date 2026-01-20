@@ -1,6 +1,6 @@
 - [x] Create design-and-walkthrough doc
 - [x] Create testing doc
-- [x] Implement Conductor
+- [x] Implement Conductorgoogle
 - [x] Add Gemini PR GitHub Actions
 - [x] Add instruction for Firestore creation, and API enablement
 - [x] Ensure Firestore in Terraform deployment; remove any Cloud SQL
@@ -13,8 +13,8 @@
 - [x] Add conversational agent using Dazbo persona. Store the persona as a Google Secret.
 - [x] Check `app_name` is being used in the agent from the env vars.
 - [x] Persona can answer portfolio questions and questions about me.
-- [~] Add rate limiting.
-- [ ] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
+- [X] Add rate limiting.
+- [~] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
 - [ ] UI experimentation / aesthetics.
 - [ ] Implement RAG with Vector Search:
     - [ ] Generate embeddings for Blogs and Projects using Gemini Embeddings.
