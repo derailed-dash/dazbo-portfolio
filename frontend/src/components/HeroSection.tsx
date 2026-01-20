@@ -3,17 +3,9 @@ import { Container, Row, Col } from 'react-bootstrap';
 
 const HeroSection: React.FC = () => {
     return (
-        <div className="hero-wrapper position-relative text-white mb-5" style={{ zIndex: 1 }}>
+        <div className="hero-wrapper position-relative text-white mb-5">
             {/* Banner Background - No Overlay, clean image */}
-            <div
-                className="position-absolute top-0 start-0 w-100 h-100"
-                style={{
-                    backgroundImage: 'url("/images/dazbo-banner.png")',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    zIndex: -1
-                }}
-            ></div>
+            <div className="position-absolute top-0 start-0 w-100 h-100 hero-banner"></div>
 
             {/* Content Container */}
             <Container className="position-relative py-5">
@@ -24,15 +16,7 @@ const HeroSection: React.FC = () => {
                         <img
                             src="/images/dazbo-profile.png"
                             alt="Dazbo"
-                            className="shadow-lg"
-                            style={{
-                                width: '180px',
-                                height: '180px',
-                                objectFit: 'cover',
-                                border: '4px solid #ffffff', /* White border for contrast */
-                                borderRadius: '12px',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.5)' 
-                            }}
+                            className="shadow-lg hero-profile-img"
                         />
                     </Col>
 
