@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 
 import anyio
 import google.auth
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from google.adk.agents.run_config import RunConfig, StreamingMode
@@ -21,6 +21,9 @@ from google.adk.sessions import InMemorySessionService
 from google.cloud import logging as google_cloud_logging
 from google.genai import types
 from pydantic import BaseModel
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from app.agent import app as adk_app
 from app.app_utils.typing import Feedback
@@ -42,6 +45,9 @@ from app.services.project_service import ProjectService
 os.environ["OTEL_PYTHON_LOG_LEVEL"] = "ERROR"
 # Also suppress the specific opentelemetry attributes logger if needed
 logging.getLogger("opentelemetry.attributes").setLevel(logging.ERROR)
+
+# Rate Limiter Initialization
+limiter = Limiter(key_func=get_remote_address)
 
 _, project_id = google.auth.default()
 logging_client = google_cloud_logging.Client()
@@ -81,6 +87,10 @@ app: FastAPI = get_fast_api_app(
 app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
 
+# Add Limiter to app state and exception handler
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 
 class ChatRequest(BaseModel):
     user_id: str
@@ -88,30 +98,31 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/api/chat/stream")
-async def chat_stream(request: ChatRequest):
+@limiter.limit("5/minute")
+async def chat_stream(request: Request, chat_request: ChatRequest):
     """
     Streaming chat endpoint for the portfolio agent.
     """
     session_service = app.state.session_service
 
     # Get or create a session for the user
-    sessions = await session_service.list_sessions(user_id=request.user_id, app_name=settings.app_name)
+    sessions = await session_service.list_sessions(user_id=chat_request.user_id, app_name=settings.app_name)
     if sessions.sessions:
         session = sessions.sessions[0]
     else:
-        session = await session_service.create_session(user_id=request.user_id, app_name=settings.app_name)
+        session = await session_service.create_session(user_id=chat_request.user_id, app_name=settings.app_name)
 
     runner = Runner(app=adk_app, session_service=session_service)
 
     msg = types.Content(
         role="user",
-        parts=[types.Part.from_text(text=f"<user_query>{request.message}</user_query>")],
+        parts=[types.Part.from_text(text=f"<user_query>{chat_request.message}</user_query>")],
     )
 
     async def event_generator():
         async for event in runner.run_async(
             new_message=msg,
-            user_id=request.user_id,
+            user_id=chat_request.user_id,
             session_id=session.id,
             run_config=RunConfig(streaming_mode=StreamingMode.SSE),
         ):
@@ -154,19 +165,22 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
 
 
 @app.get("/api/projects", response_model=list[Project])
-async def list_projects(service: ProjectService = Depends(get_project_service)):
+@limiter.limit("60/minute")
+async def list_projects(request: Request, service: ProjectService = Depends(get_project_service)):
     """List all projects."""
     return await service.list()
 
 
 @app.get("/api/blogs", response_model=list[Blog])
-async def list_blogs(service: BlogService = Depends(get_blog_service)):
+@limiter.limit("60/minute")
+async def list_blogs(request: Request, service: BlogService = Depends(get_blog_service)):
     """List all blog posts."""
     return await service.list()
 
 
 @app.get("/api/experience", response_model=list[Experience])
-async def list_experience(service: ExperienceService = Depends(get_experience_service)):
+@limiter.limit("60/minute")
+async def list_experience(request: Request, service: ExperienceService = Depends(get_experience_service)):
     """List all work experience."""
     return await service.list()
 

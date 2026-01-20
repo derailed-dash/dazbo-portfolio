@@ -43,9 +43,33 @@ These tests verify that the API routes return the correct status codes and data 
     *   These overrides provide `AsyncMock` objects that simulate Service responses.
     *   This ensures we test the *API Layer* (routing, serialization) without the *Data Layer* (network calls, DB state).
 
-### Agent & Server (`test_agent.py`, `test_server_e2e.py`)
+### Agent & Server (`test_agent.py`, `test_server_e2e.py`, `test_rate_limiting.py`)
 *   **Agent Logic**: Verifies that the Agent can process inputs and generate responses using the configured tools and prompt.
+*   **Rate Limiting**: Verifies that global and agent-specific limits are enforced (returning HTTP 429).
 *   **E2E Server**: Tests the full server stack, including Server-Sent Events (SSE) for streaming agent responses.
+
+## Manual Verification
+
+While automated tests cover the core logic, some features (like rate limiting in a live environment) can be verified manually using `curl`.
+
+### Rate Limiting
+
+1.  **Global API Limit**:
+    ```bash
+    # Fire 70 requests rapidly to an API endpoint
+    for i in {1..70}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8000/api/projects; done
+    ```
+    Expected: 60 `200` responses followed by `429` (Too Many Requests).
+
+2.  **Strict Agent Limit**:
+    ```bash
+    # Fire 6 requests rapidly to the chat endpoint
+    for i in {1..6}; do curl -X POST http://localhost:8000/api/chat/stream \
+      -H "Content-Type: application/json" \
+      -d '{"user_id": "test", "message": "hi"}' \
+      -s -o /dev/null -w "%{http_code}\n"; done
+    ```
+    Expected: 5 `200` responses followed by `429`.
 
 ## Frontend Tests
 

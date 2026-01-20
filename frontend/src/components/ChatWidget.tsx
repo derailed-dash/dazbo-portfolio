@@ -51,6 +51,16 @@ const ChatWidget: React.FC = () => {
         })
       });
 
+      if (response.status === 429) {
+        setMessages(prev => [...prev, {
+          role: 'bot',
+          content: "You're sending messages too fast. Please wait a moment before trying again.",
+          timestamp: new Date()
+        }]);
+        setIsLoading(false);
+        return;
+      }
+
       if (!response.ok) throw new Error('Failed to send message');
 
       const reader = response.body?.getReader();
