@@ -30,7 +30,7 @@
     - [x] Task: Verify that Firestore documents are correctly updated with the new fields.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: CLI Integration and Hybrid Logic' (Protocol in workflow.md)
 
-## Phase 4: UI Updates and Documentation
+## Phase 4: UI Updates and Documentation [checkpoint: 9f2f702]
 - [x] Task: Update Frontend Blog Display
     - [x] Task: Update the Blog Card component to display the `ai_summary`.
     - [x] Task: Ensure the "Read More" link points to the original Medium URL.
@@ -41,4 +41,4 @@
         - [x] Detailed walkthrough of the `MediumArchiveConnector` and the ingestion pipeline.
         - [x] Explanation of how we establish when we should insert / upsert / skip (and why).
         - [x] How we're providing UI feedback in the console.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: UI Updates and Documentation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: UI Updates and Documentation' (Protocol in workflow.md)
