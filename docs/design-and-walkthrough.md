@@ -20,7 +20,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | Use InMemorySessionService for session management | There is no need for session persistence across restarts for this application. |
 | Use Python 3.12+ Type Parameters | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
 | Use In-Memory Rate Limiting | Implemented via `slowapi` to control LLM costs and provide basic DoS protection without additional infrastructure like Redis. |
-| Use Hybrid Ingestion for Medium | Combines RSS feed (latest) and Zip Archive (history) to overcome API/feed limitations. |
+| Use Hybrid Ingestion for Medium | Combines RSS feed (latest) and Zip Archive (history) to overcome the issue that Medium's RSS feed only returns the last 10 blogs, and there is no API. |
 | AI-Powered Content Enrichment | Uses Gemini to generate concise technical summaries and structured Markdown from raw HTML. |
 | GOOGLE_CLOUD_LOCATION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
 | GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
@@ -225,7 +225,9 @@ The frontend is a single-page application (SPA) built with React and Vite. It is
 There are two primary ways to run the application locally:
 
 #### 1. Process Mode (Rapid Frontend/Backend Iteration)
+
 Ideal for daily development with hot-reloading.
+
 1.  **Start the Backend**: `make local-backend` (port 8000).
 2.  **Start the Frontend**: `make react-ui` (port 5173).
 3.  **Access**: `http://localhost:5173`. Requests to `/api/*` are proxied to port 8000.
@@ -272,26 +274,44 @@ The system uses modular "Connectors" to fetch data:
 
 For enriched content (specifically from Medium archives), the ingestion pipeline performs the following steps:
 
-1.  **HTML to Markdown Conversion:** Raw HTML from the export is converted to structured Markdown using `markdownify`.
+1.  **Draft Filtering:** Files with "draft" in the name or title are automatically skipped to keep the portfolio clean.
+2.  **HTML to Markdown Conversion:** Raw HTML from the export is converted to structured Markdown using `markdownify`.
     -   **Title:** Forced to H1 (`#`).
     -   **Headings:** Mapped to H2 (`##`).
     -   **Subheadings:** Mapped to H3 (`###`).
-    -   **Frontmatter:** A YAML frontmatter block is prepended with `title`, `subtitle`, and `tags`.
-2.  **Paywall Detection:** A heuristic scanner checks for "Member-only story" markers in the content to flag paywalled posts (`is_private: true`).
-3.  **AI Summarization:** The `AiService` sends the extracted text to Gemini to generate a concise, one-paragraph technical summary. This summary is used in the Portfolio UI to provide high-level context before the user clicks through to the full post.
+    -   **Frontmatter:** A YAML frontmatter block is prepended with `title`, `subtitle`, `date`, `url`, and `tags`.
+3.  **Paywall Detection:** A heuristic scanner checks for "Member-only story" markers in the content to flag paywalled posts (`is_private: true`).
+4.  **AI Enrichment (ContentEnrichmentService):** The `ContentEnrichmentService` sends the extracted text to Gemini to:
+    -   Generate a comprehensive technical **summary** (up to 300 words).
+    -   Propose 5 relevant **technical tags**.
+    -   Return the result as structured JSON.
+    -   If the original HTML tags are missing, these AI-generated tags are used.
 
 ### 4. Data Persistence & Idempotency
 
 *   **Destination:** All data is stored in **Google Firestore**.
+*   **Sequential Processing:** The ingestion tool processes the archive file-by-file and persists to Firestore immediately. This allows the long-running process to be interrupted and resumed without data loss.
+*   **"Skip Existing" Optimization:** Before processing a file (and incurring the cost of AI enrichment), the system checks if the URL already exists in Firestore. If it does, the file is skipped (`skipped_existing`).
 *   **Hybrid Merge Strategy:** When a post exists in both the RSS feed and the Zip archive:
     -   **RSS** provides the latest `date` and `title`.
-    -   **Archive** provides the `markdown_content`, `ai_summary`, and `is_private` status.
-*   **Idempotency (Upsert Logic):** The ingestion process is designed to be safe to re-run.
-    *   It checks if an entry already exists based on a unique key (typically `repo_url` for projects or `url` for blogs).
-    *   If the entry exists, it **updates** the record with the latest metadata and enriched content.
-    *   If it does not exist, it **creates** a new document.
+    -   **Archive** provides the `markdown_content`, `ai_summary`, `tags`, and `is_private` status.
 
-### 5. Static Assets (Images)
+### 5. Ingestion Experience (CLI)
+
+The CLI tool (`app/tools/ingest.py`) provides rich visual feedback:
+*   **Progress Bar:** Shows the percentage complete, current file, and estimated time remaining.
+*   **Phase Reporting:** Indicates the current sub-task for each file (e.g., "Reading", "Parsing content", "Processing content").
+*   **Skip Notifications:** Explicitly logs why a file was ignored (e.g., "Skipping (draft)", "Skipping (not a blog)", "Skipping (existing)").
+*   **Summary Stats:** At the end, a detailed report shows counts for processed items, skipped drafts, skipped comments, and RSS-only updates.
+
+#### Console UX with Rich
+The application uses the `rich` library to enhance the CLI experience.
+-   **Progress Context:** Long-running operations (like zip parsing) are wrapped in a `Progress` context manager.
+-   **Custom Columns:** We use `SpinnerColumn`, `BarColumn`, and `TimeRemainingColumn` to provide real-time feedback.
+-   **Thread-Safe Logging:** The `console.log` method is used within the progress loop to print messages (like skip notifications) without breaking the progress bar layout.
+-   **Formatted Output:** `console.print` supports BBCode-like syntax (e.g., `[bold blue]...[/]`) for readable status updates.
+
+### 6. Static Assets (Images)
 
 *   **Storage:** Images (project screenshots, thumbnails) are stored in a public **Google Cloud Storage (GCS)** bucket (e.g., `<project-id>-assets`).
 *   **Ingestion:** Currently, images must be uploaded manually to the GCS bucket (e.g., via `gsutil` or Cloud Console).

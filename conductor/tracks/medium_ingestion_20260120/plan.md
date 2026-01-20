@@ -31,14 +31,14 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: CLI Integration and Hybrid Logic' (Protocol in workflow.md)
 
 ## Phase 4: UI Updates and Documentation
-- [ ] Task: Update Frontend Blog Display
-    - [ ] Task: Update the Blog Card component to display the `ai_summary`.
-    - [ ] Task: Ensure the "Read More" link points to the original Medium URL.
-    - [ ] Task: Display the "Member-only" badge.
-- [ ] Task: Update Documentation
-    - [ ] Task: Update `docs/design-and-walkthrough.md` with:
-        - [ ] New design decision (Hybrid Ingestion, AI Summarization).
-        - [ ] Detailed walkthrough of the `MediumArchiveConnector` and the ingestion pipeline.
-        - [ ] Explanation of how we establish when we should insert / upsert / skip (and why).
-        - [ ] How we're providing UI feedback in the console.
+- [x] Task: Update Frontend Blog Display
+    - [x] Task: Update the Blog Card component to display the `ai_summary`.
+    - [x] Task: Ensure the "Read More" link points to the original Medium URL.
+    - [x] Task: Display the "Member-only" badge.
+- [x] Task: Update Documentation
+    - [x] Task: Update `docs/design-and-walkthrough.md` with:
+        - [x] New design decision (Hybrid Ingestion, AI Summarization).
+        - [x] Detailed walkthrough of the `MediumArchiveConnector` and the ingestion pipeline.
+        - [x] Explanation of how we establish when we should insert / upsert / skip (and why).
+        - [x] How we're providing UI feedback in the console.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: UI Updates and Documentation' (Protocol in workflow.md)
