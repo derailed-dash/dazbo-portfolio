@@ -19,7 +19,7 @@
     - [x] Task: Integrate the AI Summarization Service to generate summaries for each post.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Medium Archive Parser & Markdown Converter' (Protocol in workflow.md)
 
-## Phase 3: CLI Integration and Hybrid Logic [checkpoint: c4d154b]
+## Phase 3: CLI Integration and Hybrid Logic [checkpoint: b4582da]
 - [x] Task: Update Ingestion Logic (`app/tools/ingest.py`)
     - [x] Task: Add `--medium-zip` argument.
     - [x] Task: Implement the priority logic: Use RSS for latest metadata, but enrich *all* matching posts (RSS or Zip) with the Markdown content from the Zip if available.
