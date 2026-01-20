@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class MediumArchiveConnector:
-    def __init__(self, ai_service: ContentEnrichmentService | None = None):
-        self.ai_service = ai_service or ContentEnrichmentService()
+    def __init__(self, ai_service: ContentEnrichmentService):
+        self.ai_service = ai_service
 
     async def fetch_posts(
         self, zip_path: str, existing_urls: set[str] | None = None, on_progress=None
