@@ -5,7 +5,9 @@ How: Uses Typer for CLI, and service connectors for data fetching.
 """
 
 import asyncio
+import os
 import re
+import zipfile
 
 import typer
 import yaml
@@ -86,84 +88,136 @@ async def ingest_resources(
     # --- Medium (Hybrid) ---
     if medium_user or medium_zip:
         console.print("[bold blue]Processing Medium content...[/bold blue]")
-        rss_blogs = []
-        archive_blogs = []
 
+        # 1. Fetch RSS feeds first (if enabled)
+        rss_map: dict[str, Blog] = {}
         if medium_user:
             console.print(f"Fetching RSS feed for {medium_user}...")
             rss_connector = MediumConnector()
             try:
-                rss_blogs = await rss_connector.fetch_posts(medium_user)
-                console.print(f"Found {len(rss_blogs)} Medium posts in RSS.")
+                rss_posts = await rss_connector.fetch_posts(medium_user)
+                for p in rss_posts:
+                    rss_map[p.url] = p
+                console.print(f"Found {len(rss_map)} Medium posts in RSS.")
             except Exception as e:
                 console.print(f"[bold red]Error fetching Medium RSS:[/bold red] {e}")
 
-        if medium_zip:
-            console.print(f"Parsing Medium archive: {medium_zip}...")
-            archive_connector = MediumArchiveConnector()
-            try:
-                with Progress(
-                    SpinnerColumn(),
-                    TextColumn("[progress.description]{task.description}"),
-                    BarColumn(),
-                    TaskProgressColumn(),
-                    TimeRemainingColumn(),
-                    console=console,
-                ) as progress:
-                    task_id = progress.add_task("Processing archive...", total=None)
-
-                    def update_progress(processed, total, current_file):
-                        progress.update(
-                            task_id,
-                            completed=processed,
-                            total=total,
-                            description=f"Processing {current_file}...",
-                        )
-
-                    archive_blogs = await archive_connector.fetch_posts(
-                        medium_zip, on_progress=update_progress
-                    )
-                console.print(f"Found {len(archive_blogs)} Medium posts in archive.")
-            except Exception as e:
-                console.print(f"[bold red]Error parsing Medium archive:[/bold red] {e}")
-
-        # Merge Logic
-        # Priority: RSS for latest metadata (date, title, URL), Zip for full content
-        combined_blogs: dict[str, Blog] = {}
-
-        # First, add archive blogs (for full history)
-        for b in archive_blogs:
-            combined_blogs[b.url] = b
-
-        # Then, overlay with RSS (for latest metadata)
-        for b in rss_blogs:
-            if b.url in combined_blogs:
-                # Update existing with RSS metadata but keep archive's markdown/ai_summary
-                existing = combined_blogs[b.url]
-                b.markdown_content = existing.markdown_content
-                b.ai_summary = existing.ai_summary
-                b.is_private = existing.is_private  # Heuristic from zip is likely better
-                combined_blogs[b.url] = b
-            else:
-                combined_blogs[b.url] = b
-
-        # Persist to Firestore
+        # 2. Pre-fetch existing Firestore blogs for efficient upsert
+        console.print("Fetching existing Firestore blogs...")
         existing_blogs = await blog_service.list()
         existing_urls = {b.url: b.id for b in existing_blogs if b.url}
 
-        for b in combined_blogs.values():
-            # For archive-only posts, use AI summary as general summary if missing
-            if not b.summary and b.ai_summary:
-                b.summary = b.ai_summary[:200] + "..." if len(b.ai_summary) > 200 else b.ai_summary
+        # 3. Process Archive (streaming)
+        processed_count = 0
+        skipped_count = 0
+        skipped_drafts_count = 0
+        skipped_existing_count = 0
 
-            if b.url in existing_urls:
-                b.id = existing_urls[b.url]
-                await blog_service.update(b.id, b.model_dump(exclude={"id"}))
-                console.print(f"Updated: {b.title}")
+        if medium_zip:
+            console.print("[bold blue]Processing Medium archive...[/bold blue]")
+            archive_connector = MediumArchiveConnector()
+            try:
+                # Count total files first
+                total_files_in_zip = 0
+                try:
+                    with zipfile.ZipFile(medium_zip, "r") as z:
+                        total_files_in_zip = len([f for f in z.namelist() if f.startswith("posts/") and f.endswith(".html")])
+                        if total_files_in_zip > 0:
+                            console.print(f"Found {total_files_in_zip} blog posts to process.")
+                        else:
+                            console.print("[yellow]No blog posts found in the archive.[/yellow]")
+                except FileNotFoundError:
+                    console.print(f"[bold red]Error: Zip file not found at {medium_zip}[/bold red]")
+                except Exception as e:
+                    console.print(f"[bold red]Error reading zip file metadata:[/bold red] {e}")
+
+                if total_files_in_zip > 0:
+                    with Progress(
+                        SpinnerColumn(),
+                        TextColumn("[progress.description]{task.description}"),
+                        BarColumn(bar_width=None),
+                        TaskProgressColumn(),
+                        TimeRemainingColumn(),
+                        console=console,
+                        redirect_stdout=False,
+                        redirect_stderr=False,
+                    ) as progress:
+                        task_id = progress.add_task("Processing...", total=total_files_in_zip)
+
+                        def update_progress(processed, total, current_file, phase):
+                            short_file = os.path.basename(current_file)
+                            if len(short_file) > 30:
+                                short_file = short_file[:27] + "..."
+                            progress.update(
+                                task_id,
+                                completed=processed,
+                                total=total,
+                                description=f"[cyan]{phase:18}[/cyan] [white]{short_file}[/white]",
+                            )
+
+                        # Stream results from generator
+                        async for status, blog, filename in archive_connector.fetch_posts(
+                            medium_zip, existing_urls=set(existing_urls.keys()), on_progress=update_progress
+                        ):
+                            if status == "skipped_draft":
+                                skipped_drafts_count += 1
+                                console.log(f"[yellow]Skipping (draft):[/yellow] {os.path.basename(filename)}")
+                                continue
+
+                            if status == "skipped_not_blog":
+                                skipped_count += 1
+                                console.log(f"[yellow]Skipping (not a blog):[/yellow] {os.path.basename(filename)}")
+                                continue
+
+                            if status == "skipped_existing":
+                                skipped_existing_count += 1
+                                console.log(f"[dim]Skipping (existing):[/dim] {os.path.basename(filename)}")
+                                continue
+
+                            if status == "error":
+                                console.log(f"[red]Error processing:[/red] {os.path.basename(filename)}")
+                                continue
+
+                            if status == "processed" and blog:
+                                processed_count += 1
+                                # Merge with RSS if available
+                                if blog.url in rss_map:
+                                    rss_blog = rss_map[blog.url]
+                                    # Update with RSS metadata (fresh date/title) but keep enriched content
+                                    blog.title = rss_blog.title
+                                    blog.date = rss_blog.date
+                                    # Remove from map so we don't process it again
+                                    del rss_map[blog.url]
+
+                                # Use AI summary if summary is missing
+                                if not blog.summary and blog.ai_summary:
+                                    blog.summary = blog.ai_summary
+
+                                # Persist immediately
+                                if blog.url in existing_urls:
+                                    blog.id = existing_urls[blog.url]
+                                    await blog_service.update(blog.id, blog.model_dump(exclude={"id"}))
+                                else:
+                                    slug = slugify(blog.title)
+                                    await blog_service.create(blog, item_id=slug)
+
+            except Exception as e:
+                console.print(f"[bold red]Error parsing Medium archive:[/bold red] {e}")
+
+        # 4. Process remaining RSS blogs (those not in archive)
+        for blog in rss_map.values():
+            if blog.url in existing_urls:
+                blog.id = existing_urls[blog.url]
+                await blog_service.update(blog.id, blog.model_dump(exclude={"id"}))
+                console.print(f"Updated (RSS): {blog.title}")
             else:
-                slug = slugify(b.title)
-                await blog_service.create(b, item_id=slug)
-                console.print(f"Created: {b.title} (ID: {slug})")
+                slug = slugify(blog.title)
+                await blog_service.create(blog, item_id=slug)
+                console.print(f"Created (RSS): {blog.title}")
+
+        console.print(
+            f"Finished. Processed {processed_count} archive posts, skipped {skipped_drafts_count} drafts, skipped {skipped_count} other/comments, skipped {skipped_existing_count} existing, and {len(rss_map)} RSS-only posts."
+        )
 
     # --- Dev.to ---
     if devto_user:

@@ -14,7 +14,7 @@ from app.services.connectors.medium_archive_connector import MediumArchiveConnec
 @pytest.fixture
 def mock_ai_service():
     service = MagicMock()
-    service.generate_summary = AsyncMock(return_value="Mocked summary")
+    service.enrich_content = AsyncMock(return_value={"summary": "Mocked summary", "tags": ["Python", "AI"]})
     return service
 
 
@@ -63,7 +63,10 @@ async def test_parse_archive(mock_ai_service):
         mock_zip_instance.open.return_value.__enter__.return_value.read.return_value = html_content.encode("utf-8")
 
         connector = MediumArchiveConnector(ai_service=mock_ai_service)
-        blogs = await connector.fetch_posts("dummy_zip_path.zip")
+        blogs = []
+        async for status, blog, _ in connector.fetch_posts("dummy_zip_path.zip"):
+            if status == "processed" and blog:
+                blogs.append(blog)
 
         assert len(blogs) == 1
         blog = blogs[0]

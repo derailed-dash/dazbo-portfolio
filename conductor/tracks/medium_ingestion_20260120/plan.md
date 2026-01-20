@@ -39,4 +39,6 @@
     - [ ] Task: Update `docs/design-and-walkthrough.md` with:
         - [ ] New design decision (Hybrid Ingestion, AI Summarization).
         - [ ] Detailed walkthrough of the `MediumArchiveConnector` and the ingestion pipeline.
+        - [ ] Explanation of how we establish when we should insert / upsert / skip (and why).
+        - [ ] How we're providing UI feedback in the console.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: UI Updates and Documentation' (Protocol in workflow.md)

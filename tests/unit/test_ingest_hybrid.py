@@ -13,14 +13,19 @@ from app.tools.ingest import ingest_resources
 
 
 @pytest.mark.asyncio
+@patch("app.tools.ingest.zipfile.ZipFile")
 @patch("app.tools.ingest.MediumConnector")
 @patch("app.tools.ingest.MediumArchiveConnector")
 @patch("app.tools.ingest.BlogService")
 @patch("app.tools.ingest.ProjectService")
 @patch("app.tools.ingest.firestore.AsyncClient")
 async def test_medium_hybrid_logic(
-    mock_firestore, mock_project_service, mock_blog_service, mock_archive_connector, mock_rss_connector
+    mock_firestore, mock_project_service, mock_blog_service, mock_archive_connector, mock_rss_connector, mock_zipfile
 ):
+    # Mock ZipFile to pass the file count check
+    mock_zip = mock_zipfile.return_value.__enter__.return_value
+    mock_zip.namelist.return_value = ["posts/test1.html", "posts/test2.html"]
+
     # Setup RSS blogs
     rss_blog = Blog(
         title="RSS Title",
@@ -61,8 +66,13 @@ async def test_medium_hybrid_logic(
         ai_summary="Archive AI Summary",
     )
 
+    # Define async generator for fetch_posts
+    async def mock_fetch_posts(*args, **kwargs):
+        yield "processed", archive_blog, "posts/test1.html"
+        yield "processed", archive_only_blog, "posts/test2.html"
+
     mock_archive_instance = mock_archive_connector.return_value
-    mock_archive_instance.fetch_posts = AsyncMock(return_value=[archive_blog, archive_only_blog])
+    mock_archive_instance.fetch_posts = mock_fetch_posts
 
     mock_blog_svc_instance = mock_blog_service.return_value
     mock_blog_svc_instance.list = AsyncMock(return_value=[])
