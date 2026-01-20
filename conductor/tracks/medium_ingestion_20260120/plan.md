@@ -1,11 +1,11 @@
 # Implementation Plan: Comprehensive Medium Blog Ingestion
 
 ## Phase 1: Model Updates and AI Tooling
-- [ ] Task: Update `Blog` model
-    - [ ] Task: Add `is_private` (bool), `markdown_content` (str), `ai_summary` (str) fields to `app/models/blog.py`.
-- [ ] Task: Create AI Summarization Service
-    - [ ] Task: Implement a helper function/service that accepts text and returns a Gemini-generated summary.
-    - [ ] Task: Create tests for this service (mocking the LLM response).
+- [x] Task: Update `Blog` model
+    - [x] Task: Add `is_private` (bool), `markdown_content` (str), `ai_summary` (str) fields to `app/models/blog.py`.
+- [x] Task: Create AI Summarization Service
+    - [x] Task: Implement a helper function/service that accepts text and returns a Gemini-generated summary.
+    - [x] Task: Create tests for this service (mocking the LLM response).
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Model Updates and AI Tooling' (Protocol in workflow.md)
 
 ## Phase 2: Medium Archive Parser & Markdown Converter
@@ -29,9 +29,13 @@
     - [ ] Task: Verify that Firestore documents are correctly updated with the new fields.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: CLI Integration and Hybrid Logic' (Protocol in workflow.md)
 
-## Phase 4: UI Updates
+## Phase 4: UI Updates and Documentation
 - [ ] Task: Update Frontend Blog Display
     - [ ] Task: Update the Blog Card component to display the `ai_summary`.
     - [ ] Task: Ensure the "Read More" link points to the original Medium URL.
     - [ ] Task: Display the "Member-only" badge.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: UI Updates' (Protocol in workflow.md)
+- [ ] Task: Update Documentation
+    - [ ] Task: Update `docs/design-and-walkthrough.md` with:
+        - [ ] New design decision (Hybrid Ingestion, AI Summarization).
+        - [ ] Detailed walkthrough of the `MediumArchiveConnector` and the ingestion pipeline.
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: UI Updates and Documentation' (Protocol in workflow.md)

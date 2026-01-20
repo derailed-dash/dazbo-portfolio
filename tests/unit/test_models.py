@@ -40,9 +40,15 @@ def test_blog_model():
         date="2026-01-17",
         platform="Medium",
         url="https://medium.com/test",
+        is_private=True,
+        markdown_content="# Test Blog\nContent",
+        ai_summary="AI Summary",
         created_at=datetime.now(UTC),
     )
     assert blog.title == "Test Blog"
+    assert blog.is_private is True
+    assert blog.markdown_content == "# Test Blog\nContent"
+    assert blog.ai_summary == "AI Summary"
 
 
 def test_experience_model():

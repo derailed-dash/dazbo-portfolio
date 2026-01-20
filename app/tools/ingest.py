@@ -18,6 +18,7 @@ from app.models.project import Project
 from app.services.blog_service import BlogService
 from app.services.connectors.devto_connector import DevToConnector
 from app.services.connectors.github_connector import GitHubConnector
+from app.services.connectors.medium_archive_connector import MediumArchiveConnector
 from app.services.connectors.medium_connector import MediumConnector
 from app.services.project_service import ProjectService
 
@@ -36,7 +37,12 @@ def slugify(text: str) -> str:
 
 
 async def ingest_resources(
-    github_user: str | None, medium_user: str | None, devto_user: str | None, yaml_file: str | None, project_id: str
+    github_user: str | None,
+    medium_user: str | None,
+    medium_zip: str | None,
+    devto_user: str | None,
+    yaml_file: str | None,
+    project_id: str,
 ):
     """
     Async logic for ingestion.
@@ -69,29 +75,67 @@ async def ingest_resources(
         except Exception as e:
             console.print(f"[bold red]Error fetching GitHub:[/bold red] {e}")
 
-    # --- Medium ---
-    if medium_user:
-        console.print(f"[bold blue]Fetching Medium posts for {medium_user}...[/bold blue]")
-        connector = MediumConnector()
-        try:
-            blogs = await connector.fetch_posts(medium_user)
-            console.print(f"Found {len(blogs)} Medium posts.")
+    # --- Medium (Hybrid) ---
+    if medium_user or medium_zip:
+        console.print("[bold blue]Processing Medium content...[/bold blue]")
+        rss_blogs = []
+        archive_blogs = []
 
-            existing_blogs = await blog_service.list()
-            existing_urls = {b.url: b.id for b in existing_blogs if b.url}
+        if medium_user:
+            console.print(f"Fetching RSS feed for {medium_user}...")
+            rss_connector = MediumConnector()
+            try:
+                rss_blogs = await rss_connector.fetch_posts(medium_user)
+                console.print(f"Found {len(rss_blogs)} Medium posts in RSS.")
+            except Exception as e:
+                console.print(f"[bold red]Error fetching Medium RSS:[/bold red] {e}")
 
-            for b in blogs:
-                if b.url in existing_urls:
-                    b.id = existing_urls[b.url]
-                    await blog_service.update(b.id, b.model_dump(exclude={"id"}))
-                    console.print(f"Updated: {b.title}")
-                else:
-                    slug = slugify(b.title)
-                    await blog_service.create(b, item_id=slug)
-                    console.print(f"Created: {b.title} (ID: {slug})")
+        if medium_zip:
+            console.print(f"Parsing Medium archive: {medium_zip}...")
+            archive_connector = MediumArchiveConnector()
+            try:
+                archive_blogs = await archive_connector.fetch_posts(medium_zip)
+                console.print(f"Found {len(archive_blogs)} Medium posts in archive.")
+            except Exception as e:
+                console.print(f"[bold red]Error parsing Medium archive:[/bold red] {e}")
 
-        except Exception as e:
-            console.print(f"[bold red]Error fetching Medium:[/bold red] {e}")
+        # Merge Logic
+        # Priority: RSS for latest metadata (date, title, URL), Zip for full content
+        combined_blogs: dict[str, Blog] = {}
+
+        # First, add archive blogs (for full history)
+        for b in archive_blogs:
+            combined_blogs[b.url] = b
+
+        # Then, overlay with RSS (for latest metadata)
+        for b in rss_blogs:
+            if b.url in combined_blogs:
+                # Update existing with RSS metadata but keep archive's markdown/ai_summary
+                existing = combined_blogs[b.url]
+                b.markdown_content = existing.markdown_content
+                b.ai_summary = existing.ai_summary
+                b.is_private = existing.is_private  # Heuristic from zip is likely better
+                combined_blogs[b.url] = b
+            else:
+                combined_blogs[b.url] = b
+
+        # Persist to Firestore
+        existing_blogs = await blog_service.list()
+        existing_urls = {b.url: b.id for b in existing_blogs if b.url}
+
+        for b in combined_blogs.values():
+            # For archive-only posts, use AI summary as general summary if missing
+            if not b.summary and b.ai_summary:
+                b.summary = b.ai_summary[:200] + "..." if len(b.ai_summary) > 200 else b.ai_summary
+
+            if b.url in existing_urls:
+                b.id = existing_urls[b.url]
+                await blog_service.update(b.id, b.model_dump(exclude={"id"}))
+                console.print(f"Updated: {b.title}")
+            else:
+                slug = slugify(b.title)
+                await blog_service.create(b, item_id=slug)
+                console.print(f"Created: {b.title} (ID: {slug})")
 
     # --- Dev.to ---
     if devto_user:
@@ -231,6 +275,7 @@ async def ingest_resources(
 def main(
     github_user: str = typer.Option(None, help="GitHub username"),
     medium_user: str = typer.Option(None, help="Medium username"),
+    medium_zip: str = typer.Option(None, help="Path to Medium export zip file"),
     devto_user: str = typer.Option(None, help="Dev.to username"),
     yaml_file: str = typer.Option(None, help="Path to manual resources YAML file"),
     project_id: str = typer.Option(settings.google_cloud_project, help="GCP Project ID"),
@@ -244,7 +289,7 @@ def main(
         )
         raise typer.Exit(code=1)
 
-    asyncio.run(ingest_resources(github_user, medium_user, devto_user, yaml_file, project_id))
+    asyncio.run(ingest_resources(github_user, medium_user, medium_zip, devto_user, yaml_file, project_id))
 
 
 if __name__ == "__main__":

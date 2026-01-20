@@ -20,4 +20,7 @@ class Blog(BaseModel):
     tags: list[str] = Field(default_factory=list)
     is_manual: bool = True
     metadata_only: bool = False
+    is_private: bool = False
+    markdown_content: str | None = None
+    ai_summary: str | None = None
     created_at: datetime = Field(default_factory=datetime.now)

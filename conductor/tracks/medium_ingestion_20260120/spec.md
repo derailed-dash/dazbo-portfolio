@@ -31,6 +31,8 @@ The goal of this track is to overcome the 10-post limitation of the Medium RSS f
     - Display the **AI-generated summary** in the portfolio interface.
     - Provide a clear link to the original Medium post for full reading.
     - Display a "Member-only" badge for paywalled content.
+- **Documentation:**
+    - Update `docs/design-and-walkthrough.md` to reflect the new hybrid ingestion architecture, design decisions, and a detailed walkthrough of the mechanism.
 
 ## Non-Functional Requirements
 - **Performance:** Zip parsing and AI summarization should handle rate limits gracefully.
@@ -42,3 +44,4 @@ The goal of this track is to overcome the 10-post limitation of the Medium RSS f
 - [ ] Each blog entry has an AI-generated summary stored in Firestore.
 - [ ] The Portfolio UI displays the AI Summary and links to the full post.
 - [ ] Member-only stories are correctly flagged and badged in the UI.
+- [ ] `docs/design-and-walkthrough.md` is updated with the new ingestion details.

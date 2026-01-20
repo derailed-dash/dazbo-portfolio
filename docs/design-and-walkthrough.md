@@ -20,6 +20,8 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | Use InMemorySessionService for session management | There is no need for session persistence across restarts for this application. |
 | Use Python 3.12+ Type Parameters | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
 | Use In-Memory Rate Limiting | Implemented via `slowapi` to control LLM costs and provide basic DoS protection without additional infrastructure like Redis. |
+| Use Hybrid Ingestion for Medium | Combines RSS feed (latest) and Zip Archive (history) to overcome API/feed limitations. |
+| AI-Powered Content Enrichment | Uses Gemini to generate concise technical summaries and structured Markdown from raw HTML. |
 | GOOGLE_CLOUD_LOCATION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
 | GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
 
@@ -252,6 +254,7 @@ This tool allows the developer to trigger synchronization from external sources 
 uv run python -m app.tools.ingest \
   --github-user <user-name> \
   --medium-user <user-name> \
+  --medium-zip <path-to-posts.zip> \
   --devto-user <user-name> \
   --yaml-file manual_resources.yaml
 ```
@@ -260,20 +263,35 @@ uv run python -m app.tools.ingest \
 
 The system uses modular "Connectors" to fetch data:
 *   **GitHub Connector:** Uses the GitHub API to fetch public repositories. Maps `html_url` to `repo_url`, `topics` to `tags`, and `description` to `description`.
-*   **Medium Connector:** Parses the user's Medium RSS feed. Maps posts to `Blog` entries.
+*   **Medium Connector (RSS):** Parses the user's Medium RSS feed for the latest 10 posts. Provides the source of truth for current metadata (date, title).
+*   **Medium Archive Connector (Zip):** Parses a Medium export archive (`posts.zip`). Retrieves the full history of posts and provides the source of truth for post content.
 *   **Dev.to Connector:** Uses the Dev.to API to fetch published articles. Maps articles to `Blog` entries.
 *   **Manual YAML:** Parses a local YAML file for "Metadata Only" entries (e.g., private projects, external links, paywalled articles).
 
-### 3. Data Persistence & Idempotency
+### 3. Content Processing & AI Enrichment
+
+For enriched content (specifically from Medium archives), the ingestion pipeline performs the following steps:
+
+1.  **HTML to Markdown Conversion:** Raw HTML from the export is converted to structured Markdown using `markdownify`.
+    -   **Title:** Forced to H1 (`#`).
+    -   **Headings:** Mapped to H2 (`##`).
+    -   **Subheadings:** Mapped to H3 (`###`).
+    -   **Frontmatter:** A YAML frontmatter block is prepended with `title`, `subtitle`, and `tags`.
+2.  **Paywall Detection:** A heuristic scanner checks for "Member-only story" markers in the content to flag paywalled posts (`is_private: true`).
+3.  **AI Summarization:** The `AiService` sends the extracted text to Gemini to generate a concise, one-paragraph technical summary. This summary is used in the Portfolio UI to provide high-level context before the user clicks through to the full post.
+
+### 4. Data Persistence & Idempotency
 
 *   **Destination:** All data is stored in **Google Firestore**.
+*   **Hybrid Merge Strategy:** When a post exists in both the RSS feed and the Zip archive:
+    -   **RSS** provides the latest `date` and `title`.
+    -   **Archive** provides the `markdown_content`, `ai_summary`, and `is_private` status.
 *   **Idempotency (Upsert Logic):** The ingestion process is designed to be safe to re-run.
     *   It checks if an entry already exists based on a unique key (typically `repo_url` for projects or `url` for blogs).
-    *   If the entry exists, it **updates** the record with the latest metadata from the source.
+    *   If the entry exists, it **updates** the record with the latest metadata and enriched content.
     *   If it does not exist, it **creates** a new document.
-    *   **Note:** This means you can run the ingestion tool repeatedly to sync updates (e.g., star counts, description changes) without creating duplicate entries.
 
-### 4. Static Assets (Images)
+### 5. Static Assets (Images)
 
 *   **Storage:** Images (project screenshots, thumbnails) are stored in a public **Google Cloud Storage (GCS)** bucket (e.g., `<project-id>-assets`).
 *   **Ingestion:** Currently, images must be uploaded manually to the GCS bucket (e.g., via `gsutil` or Cloud Console).
