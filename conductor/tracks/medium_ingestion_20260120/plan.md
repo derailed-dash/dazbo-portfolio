@@ -24,6 +24,7 @@
     - [x] Task: Add `--medium-zip` argument.
     - [x] Task: Implement the priority logic: Use RSS for latest metadata, but enrich *all* matching posts (RSS or Zip) with the Markdown content from the Zip if available.
     - [x] Task: **Explicitly persist updates to Firestore:** Ensure `BlogService.update` is called to save `markdown_content`, `ai_summary`, and `is_private` for existing and new records.
+- [x] Task: Add rich progress reporting to `MediumArchiveConnector` and `ingest.py`.
 - [x] Task: Integration Tests
     - [x] Task: Verify that a post existing in both RSS and Zip gets the correct merged data (fresh date from RSS, full content from Zip).
     - [x] Task: Verify that Firestore documents are correctly updated with the new fields.

@@ -18,17 +18,22 @@ class MediumArchiveConnector:
     def __init__(self, ai_service: ContentEnrichmentService | None = None):
         self.ai_service = ai_service or ContentEnrichmentService()
 
-    async def fetch_posts(self, zip_path: str) -> list[Blog]:
+    async def fetch_posts(self, zip_path: str, on_progress=None) -> list[Blog]:
         """
         Parses a Medium export zip file and returns a list of Blog models.
+        on_progress: Optional callback(processed_count, total_files, current_filename)
         """
         blogs = []
         try:
             with zipfile.ZipFile(zip_path, "r") as z:
                 # Medium exports posts in the 'posts/' directory as HTML files
                 post_files = [f for f in z.namelist() if f.startswith("posts/") and f.endswith(".html")]
+                total_files = len(post_files)
 
-                for post_file in post_files:
+                for i, post_file in enumerate(post_files, 1):
+                    if on_progress:
+                        on_progress(i, total_files, post_file)
+                        
                     with z.open(post_file) as f:
                         html_content = f.read().decode("utf-8")
                         blog = await self._parse_html(html_content)

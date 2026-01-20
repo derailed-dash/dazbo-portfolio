@@ -11,6 +11,14 @@ import typer
 import yaml
 from google.cloud import firestore
 from rich.console import Console
+from rich.progress import (
+    BarColumn,
+    Progress,
+    SpinnerColumn,
+    TaskProgressColumn,
+    TextColumn,
+    TimeRemainingColumn,
+)
 
 from app.config import settings
 from app.models.blog import Blog
@@ -94,7 +102,27 @@ async def ingest_resources(
             console.print(f"Parsing Medium archive: {medium_zip}...")
             archive_connector = MediumArchiveConnector()
             try:
-                archive_blogs = await archive_connector.fetch_posts(medium_zip)
+                with Progress(
+                    SpinnerColumn(),
+                    TextColumn("[progress.description]{task.description}"),
+                    BarColumn(),
+                    TaskProgressColumn(),
+                    TimeRemainingColumn(),
+                    console=console,
+                ) as progress:
+                    task_id = progress.add_task("Processing archive...", total=None)
+
+                    def update_progress(processed, total, current_file):
+                        progress.update(
+                            task_id,
+                            completed=processed,
+                            total=total,
+                            description=f"Processing {current_file}...",
+                        )
+
+                    archive_blogs = await archive_connector.fetch_posts(
+                        medium_zip, on_progress=update_progress
+                    )
                 console.print(f"Found {len(archive_blogs)} Medium posts in archive.")
             except Exception as e:
                 console.print(f"[bold red]Error parsing Medium archive:[/bold red] {e}")
