@@ -183,3 +183,36 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
+
+/* Chat Widget Styling */
+.chat-widget-container {
+  z-index: 1050;
+  pointer-events: none;
+}
+
+.chat-widget-card {
+  width: 350px;
+  height: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.chat-widget-toggle-btn {
+  width: 60px;
+  height: 60px;
+  pointer-events: auto;
+}
+
+.chat-message-bubble {
+  max-width: 85%;
+  font-size: 0.9rem;
+}
+
+.chat-timestamp {
+  font-size: 0.7rem;
+}
+
+.chat-loading-dots {
+  width: fit-content;
+}
