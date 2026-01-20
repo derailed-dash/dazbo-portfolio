@@ -9,14 +9,14 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Model Updates and AI Tooling' (Protocol in workflow.md)
 
 ## Phase 2: Medium Archive Parser & Markdown Converter
-- [ ] Task: Create tests for `MediumArchiveConnector` and Markdown conversion
-    - [ ] Task: Test HTML -> Markdown conversion logic (H1, H2, H3 rules).
-    - [ ] Task: Test Frontmatter extraction.
-    - [ ] Task: Test paywall heuristic detection.
-- [ ] Task: Implement `MediumArchiveConnector` with Conversion Logic
-    - [ ] Task: Implement `app/services/connectors/medium_archive_connector.py`.
-    - [ ] Task: Use a library like `markdownify` or `BeautifulSoup` to handle the conversion.
-    - [ ] Task: Integrate the AI Summarization Service to generate summaries for each post.
+- [x] Task: Create tests for `MediumArchiveConnector` and Markdown conversion
+    - [x] Task: Test HTML -> Markdown conversion logic (H1, H2, H3 rules).
+    - [x] Task: Test Frontmatter extraction.
+    - [x] Task: Test paywall heuristic detection.
+- [x] Task: Implement `MediumArchiveConnector` with Conversion Logic
+    - [x] Task: Implement `app/services/connectors/medium_archive_connector.py`.
+    - [x] Task: Use a library like `markdownify` or `BeautifulSoup` to handle the conversion.
+    - [x] Task: Integrate the AI Summarization Service to generate summaries for each post.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Medium Archive Parser & Markdown Converter' (Protocol in workflow.md)
 
 ## Phase 3: CLI Integration and Hybrid Logic
