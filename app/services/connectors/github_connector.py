@@ -5,6 +5,7 @@ How: Uses httpx to call GitHub API and maps results to Project model.
 """
 
 from datetime import datetime
+
 import httpx
 
 from app.models.project import Project
