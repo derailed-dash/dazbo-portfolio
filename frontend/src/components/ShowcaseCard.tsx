@@ -27,6 +27,15 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   sourceUrl,
   type
 }) => {
+  // Helper to sanitize URLs preventing XSS (e.g., javascript: payloads)
+  const getSafeUrl = (url: string | undefined): string => {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+      return url;
+    }
+    return '#';
+  };
+
   return (
     <Card className="h-100 overflow-hidden">
       {imageUrl && (
@@ -68,7 +77,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
               <Button 
                 variant="primary" 
                 size="sm" 
-                href={linkUrl} 
+                href={getSafeUrl(linkUrl)} 
                 target="_blank"
                 className="d-flex align-items-center gap-1"
               >
@@ -80,7 +89,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
               <Button 
                 variant="outline-secondary" 
                 size="sm" 
-                href={repoUrl} 
+                href={getSafeUrl(repoUrl)} 
                 target="_blank"
                 className="d-flex align-items-center gap-1"
               >
@@ -94,7 +103,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
             <div className="d-flex align-items-center">
               {sourceUrl ? (
                 <a 
-                  href={sourceUrl} 
+                  href={getSafeUrl(sourceUrl)} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="d-inline-flex opacity-75 hover-opacity-100 transition-opacity"
