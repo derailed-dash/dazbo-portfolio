@@ -109,6 +109,14 @@ body {
   transform: translateY(-1px);
 }
 
+.bg-primary {
+  background-color: var(--md-sys-color-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--md-sys-color-primary) !important;
+}
+
 /* Navbar Overrides */
 .navbar {
   background-color: var(--md-sys-color-background) !important;
