@@ -44,3 +44,40 @@ async def test_fetch_posts():
         assert blog.source_platform == "devto_api"
         assert blog.is_manual is False
         assert blog.date.startswith("2026-01-18")
+
+
+@pytest.mark.asyncio
+async def test_fetch_posts_filtering_logic():
+    # Mock JSON data: one normal post, one [Boost] post
+    mock_json = [
+        {
+            "id": 1,
+            "title": "Normal Post",
+            "description": "Valid post",
+            "published_at": "2026-01-01T10:00:00Z",
+            "url": "https://dev.to/user/normal",
+            "tag_list": [],
+        },
+        {
+            "id": 2,
+            "title": "[Boost] Quickie Post",
+            "description": "Should be skipped",
+            "published_at": "2026-01-02T10:00:00Z",
+            "url": "https://dev.to/user/boost",
+            "tag_list": [],
+        },
+    ]
+
+    connector = DevToConnector()
+
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_response = MagicMock(spec=httpx.Response)
+        mock_response.status_code = 200
+        mock_response.json.return_value = mock_json
+        mock_get.return_value = mock_response
+
+        blogs = await connector.fetch_posts("deraileddash")
+
+        # Expect only the normal post
+        assert len(blogs) == 1
+        assert blogs[0].title == "Normal Post"
