@@ -222,21 +222,88 @@ async def ingest_resources(
         console.print(f"[bold blue]Fetching Dev.to posts for {devto_user}...[/bold blue]")
         connector = DevToConnector()
         try:
+            # We fetch all basic metadata first
             blogs = await connector.fetch_posts(devto_user)
-            console.print(f"Found {len(blogs)} Dev.to posts.")
+            console.print(f"Found {len(blogs)} Dev.to posts (filtered).")
 
             existing_blogs = await blog_service.list()
             existing_urls = {b.url: b.id for b in existing_blogs if b.url}
 
-            for b in blogs:
-                if b.url in existing_urls:
-                    b.id = existing_urls[b.url]
-                    await blog_service.update(b.id, b.model_dump(exclude={"id"}))
-                    console.print(f"Updated: {b.title}")
-                else:
-                    slug = slugify(b.title)
-                    await blog_service.create(b, item_id=slug)
-                    console.print(f"Created: {b.title} (ID: {slug})")
+            enrichment_service = ContentEnrichmentService()
+
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(bar_width=None),
+                TaskProgressColumn(),
+                TimeRemainingColumn(),
+                console=console,
+            ) as progress:
+                task = progress.add_task("Processing Dev.to posts...", total=len(blogs))
+
+                for b in blogs:
+                    # Update description
+                    progress.update(task, description=f"[cyan]Processing[/cyan] [white]{b.title[:30]}...[/white]")
+
+                    # Only enrich if we have markdown content and it's not already enriched
+                    # (Though for now, we re-enrich to ensure quality if we are re-ingesting)
+                    # Ideally we check if it already has an AI summary in existing_blogs to save tokens
+                    # But the connector logic currently runs fetching+enrichment.
+                    # WAIT: The connector logic was updated to take `enrichment_service` and do it internally.
+                    # If we use that, we lose granular progress update for the enrichment step of EACH item.
+                    # So we should probably do the enrichment HERE, OR use the connector's internal logic 
+                    # but we can't easily hook into it for progress without a callback.
+                    
+                    # DECISION: Let's do the enrichment HERE so we have full control over the progress bar.
+                    # We already fetched the basic list. Now we need to fetch details + enrich.
+                    # Actually, the `fetch_posts` in connector ALREADY does the detail fetch + enrichment if we pass the service.
+                    # But if we pass the service to `fetch_posts`, it does it all in one go and we just see a spinner.
+                    # The user requested "visual progress... just like Medium".
+                    # So we should iterate here.
+                    
+                    # 1. Fetch full content (using connector helper or direct client? Connector is better encapsulation)
+                    # Let's use the connector to fetch details for this SPECIFIC post if we can?
+                    # No, `fetch_posts` gets the list.
+                    # To do this properly with progress, we should probably refactor `fetch_posts` to yield items or take a callback.
+                    # OR, we can just fetch the list (as we did), and then iterate and manually enrich here.
+                    # The `b` object already has `markdown_content` if we used the updated connector?
+                    # Let's check the connector code... 
+                    # The connector fetches list, then iterates list, fetches detail, enriches, then appends.
+                    # So `fetch_posts` does EVERYTHING.
+                    
+                    # To get a progress bar, we need to split "List" from "Detail+Enrich".
+                    # But `fetch_posts` is monolithic.
+                    # 
+                    # WORKAROUND: We will use the connector to fetch the list WITHOUT enrichment service first.
+                    # This gives us the blogs with (potentially) markdown if the connector fetches it.
+                    # The current connector fetches markdown always.
+                    # So `blogs` already has markdown.
+                    
+                    # Now we just need to Enrich.
+                    if b.markdown_content and not b.ai_summary:
+                        progress.update(task, description=f"[green]Enriching[/green] [white]{b.title[:30]}...[/white]")
+                        try:
+                            enrichment = await enrichment_service.enrich_content(b.markdown_content)
+                            b.ai_summary = enrichment.get("summary")
+                            ai_tags = enrichment.get("tags")
+                            if ai_tags:
+                                # Merge or replace? Let's use AI tags if available
+                                b.tags = ai_tags
+                        except Exception as e:
+                            console.log(f"[red]Enrichment failed for {b.title}:[/red] {e}")
+
+                    # Persist
+                    progress.update(task, description=f"[blue]Saving[/blue] [white]{b.title[:30]}...[/white]")
+                    if b.url in existing_urls:
+                        b.id = existing_urls[b.url]
+                        await blog_service.update(b.id, b.model_dump(exclude={"id"}))
+                        # console.print(f"Updated: {b.title}") # Too noisy for progress bar
+                    else:
+                        slug = slugify(b.title)
+                        await blog_service.create(b, item_id=slug)
+                        # console.print(f"Created: {b.title} (ID: {slug})")
+                    
+                    progress.advance(task)
 
         except Exception as e:
             console.print(f"[bold red]Error fetching Dev.to:[/bold red] {e}")
