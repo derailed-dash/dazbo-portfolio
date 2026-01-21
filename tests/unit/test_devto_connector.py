@@ -108,10 +108,8 @@ async def test_fetch_posts_content_retrieval():
     connector = DevToConnector()
 
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
-        # We expect 2 calls:
-        # 1. List
-        # 2. Detail for ID 1
-
+        # Expect 2 calls: List and Detail
+        
         # Setup side_effect for responses
         resp_list = MagicMock(spec=httpx.Response)
         resp_list.status_code = 200

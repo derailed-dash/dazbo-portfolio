@@ -82,15 +82,13 @@ def test_e2e_ingestion_flow(mock_firestore, mock_devto, mock_medium, mock_github
     mock_col = mock_db.collection.return_value
 
     # Mock list (stream) to return empty first (no existing)
-    # Since we iterate with 'async for', stream() must return an async iterable
     async def async_iter():
         for _ in []:
             yield _
 
     mock_col.stream.return_value = async_iter()
 
-    # Mock add (create)
-    # Mock add (create) - now using document().set()
+    # Mock document set operation
     mock_doc_ref = MagicMock()
     mock_doc_ref.set = AsyncMock()
     mock_col.document.return_value = mock_doc_ref

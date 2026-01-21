@@ -245,41 +245,9 @@ async def ingest_resources(
                     # Update description
                     progress.update(task, description=f"[cyan]Processing[/cyan] [white]{b.title[:30]}...[/white]")
 
-                    # Only enrich if we have markdown content and it's not already enriched
-                    # (Though for now, we re-enrich to ensure quality if we are re-ingesting)
-                    # Ideally we check if it already has an AI summary in existing_blogs to save tokens
-                    # But the connector logic currently runs fetching+enrichment.
-                    # WAIT: The connector logic was updated to take `enrichment_service` and do it internally.
-                    # If we use that, we lose granular progress update for the enrichment step of EACH item.
-                    # So we should probably do the enrichment HERE, OR use the connector's internal logic
-                    # but we can't easily hook into it for progress without a callback.
-
-                    # DECISION: Let's do the enrichment HERE so we have full control over the progress bar.
-                    # We already fetched the basic list. Now we need to fetch details + enrich.
-                    # Actually, the `fetch_posts` in connector ALREADY does the detail fetch + enrichment if we pass the service.
-                    # But if we pass the service to `fetch_posts`, it does it all in one go and we just see a spinner.
-                    # The user requested "visual progress... just like Medium".
-                    # So we should iterate here.
-
-                    # 1. Fetch full content (using connector helper or direct client? Connector is better encapsulation)
-                    # Let's use the connector to fetch details for this SPECIFIC post if we can?
-                    # No, `fetch_posts` gets the list.
-                    # To do this properly with progress, we should probably refactor `fetch_posts` to yield items or take a callback.
-                    # OR, we can just fetch the list (as we did), and then iterate and manually enrich here.
-                    # The `b` object already has `markdown_content` if we used the updated connector?
-                    # Let's check the connector code...
-                    # The connector fetches list, then iterates list, fetches detail, enriches, then appends.
-                    # So `fetch_posts` does EVERYTHING.
-
-                    # To get a progress bar, we need to split "List" from "Detail+Enrich".
-                    # But `fetch_posts` is monolithic.
-                    #
-                    # WORKAROUND: We will use the connector to fetch the list WITHOUT enrichment service first.
-                    # This gives us the blogs with (potentially) markdown if the connector fetches it.
-                    # The current connector fetches markdown always.
-                    # So `blogs` already has markdown.
-
-                    # Now we just need to Enrich.
+                    # Enrich content if markdown is available and summary is missing.
+                    # Note: We perform enrichment here rather than in the connector to ensure
+                    # granular progress updates for each item.
                     if b.markdown_content and not b.ai_summary:
                         progress.update(task, description=f"[green]Enriching[/green] [white]{b.title[:30]}...[/white]")
                         try:
@@ -287,12 +255,12 @@ async def ingest_resources(
                             b.ai_summary = enrichment.get("summary")
                             ai_tags = enrichment.get("tags")
                             if ai_tags:
-                                # Merge or replace? Let's use AI tags if available
+                                # Prefer AI-generated tags if available
                                 b.tags = ai_tags
                         except Exception as e:
                             console.log(f"[red]Enrichment failed for {b.title}:[/red] {e}")
 
-                    # Persist
+                    # Persist to Firestore
                     progress.update(task, description=f"[blue]Saving[/blue] [white]{b.title[:30]}...[/white]")
                     if b.url in existing_urls:
                         b.id = existing_urls[b.url]
