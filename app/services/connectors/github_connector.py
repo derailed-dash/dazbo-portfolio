@@ -4,6 +4,7 @@ Why: Fetches repository metadata from GitHub to populate the portfolio.
 How: Uses httpx to call GitHub API and maps results to Project model.
 """
 
+from datetime import datetime
 import httpx
 
 from app.models.project import Project
@@ -38,6 +39,13 @@ class GitHubConnector:
                 source_platform="github",
                 is_manual=False,
             )
+
+            if repo.get("created_at"):
+                ts = repo.get("created_at")
+                if ts.endswith("Z"):
+                    ts = ts[:-1] + "+00:00"
+                project.created_at = datetime.fromisoformat(ts)
+
             # Add language to tags if present
             if repo.get("language") and repo.get("language") not in project.tags:
                 project.tags.append(repo.get("language").lower())
