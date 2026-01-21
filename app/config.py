@@ -54,8 +54,8 @@ class Settings(BaseSettings):
     dazbo_system_prompt: str = "You are Dazbo's portfolio assistant. You help visitors navigate his projects and blogs. Always provide links/URLs when mentioning specific projects or blogs."
 
     # URLs
-    medium_profile: str
-    devto_profile: str
+    medium_profile: str = ""
+    devto_profile: str = ""
 
 
 settings = Settings()
