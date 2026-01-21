@@ -40,4 +40,4 @@ Final verification of the combined fixes.
     - [x] Run all integration tests `make test`.
     - [x] Run all linting and quality checks `make lint`.
     - [x] Verify sorting across all sections in the live UI (using `make react-ui` and `make local-backend`).
-- [ ] Task: Conductor - User Manual Verification 'Final Integration and Quality Gate' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Final Integration and Quality Gate' (Protocol in workflow.md) [checkpoint: b4c7d16]
