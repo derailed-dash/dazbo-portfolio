@@ -14,6 +14,12 @@ This project uses a comprehensive suite of tools to ensure code quality and func
     *   `Vitest`: Unit and integration test runner for React.
     *   `React Testing Library`: Testing utilities for React components.
 
+## CI/CD Environment
+
+When running tests in a CI/CD environment (e.g., GitHub Actions, Cloud Build), the system sets the `CI` environment variable.
+*   **Locally**: The application loads settings from the `.env` file.
+*   **CI/CD**: The application detects the `CI` environment variable and **skips loading the `.env` file**. This is because the `.env` file in the repository is often encrypted (e.g., via `git-crypt`) and cannot be read as plain text. Configuration values must be provided via environment variables in the CI pipeline.
+
 ## Commands
 
 *   `make test`: Runs unit and integration tests with warnings suppressed.
