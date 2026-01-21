@@ -115,6 +115,7 @@ direnv allow
 | `make docker-run`       | Run the unified container locally                             |
 | `make tf-plan`          | Plan Terraform deployment                                     |
 | `make tf-apply`         | Deploy environment resources using Terraform                  |
+| `uv run python -m app.tools.ingest` | Run ingestion tool                                |
 
 For full command options and usage, refer to the [Makefile](Makefile).
 
