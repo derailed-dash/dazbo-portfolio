@@ -1,2 +1,2 @@
-.env filter=git-crypt diff=git-crypt
+.env.enc filter=git-crypt diff=git-crypt
 env.tfvars filter=git-crypt diff=git-crypt
