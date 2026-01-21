@@ -5,7 +5,6 @@ How: Uses httpx to call Dev.to API and maps results to Blog model.
 """
 
 import logging
-from typing import Optional
 
 import httpx
 
@@ -19,7 +18,9 @@ class DevToConnector:
     def __init__(self, base_url: str = "https://dev.to/api"):
         self.base_url = base_url
 
-    async def fetch_posts(self, username: str, enrichment_service: Optional[ContentEnrichmentService] = None, limit: Optional[int] = None) -> list[Blog]:
+    async def fetch_posts(
+        self, username: str, enrichment_service: ContentEnrichmentService | None = None, limit: int | None = None
+    ) -> list[Blog]:
         """
         Fetches blog posts for a given Dev.to username.
         """
@@ -28,7 +29,7 @@ class DevToConnector:
             response = await client.get(url)
             response.raise_for_status()
             articles_data = response.json()
-            
+
             if limit:
                 articles_data = articles_data[:limit]
 
@@ -54,7 +55,7 @@ class DevToConnector:
                 # AI Enrichment
                 ai_summary = None
                 tags = article.get("tag_list", [])
-                
+
                 if enrichment_service and body_markdown:
                     logger.info(f"Enriching content for: {title}")
                     try:
@@ -80,7 +81,7 @@ class DevToConnector:
                     is_manual=False,
                     markdown_content=body_markdown,
                     ai_summary=ai_summary,
-                    tags=tags
+                    tags=tags,
                 )
                 blogs.append(blog)
 

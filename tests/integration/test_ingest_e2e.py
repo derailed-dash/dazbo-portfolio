@@ -117,7 +117,7 @@ def test_e2e_ingestion_flow(mock_firestore, mock_devto, mock_medium, mock_github
 def test_devto_ingestion_with_enrichment(mock_firestore, mock_enrichment_cls, mock_devto_cls):
     # Setup
     from app.models.blog import Blog
-    
+
     # 1. Mock Connector to return one blog with markdown
     mock_dev_instance = mock_devto_cls.return_value
     mock_dev_instance.fetch_posts = AsyncMock(
@@ -130,27 +130,26 @@ def test_devto_ingestion_with_enrichment(mock_firestore, mock_enrichment_cls, mo
                 url="http://dev.to/post",
                 source_platform="devto_api",
                 markdown_content="Raw Markdown",
-                is_manual=False
+                is_manual=False,
             )
         ]
     )
 
     # 2. Mock Enrichment Service
     mock_enrichment_instance = mock_enrichment_cls.return_value
-    mock_enrichment_instance.enrich_content = AsyncMock(
-        return_value={"summary": "AI Summary", "tags": ["AI Tag"]}
-    )
+    mock_enrichment_instance.enrich_content = AsyncMock(return_value={"summary": "AI Summary", "tags": ["AI Tag"]})
 
     # 3. Mock Firestore
     mock_db = mock_firestore.return_value
     mock_col = mock_db.collection.return_value
-    
+
     # Mock list to return empty (no existing blogs)
     async def async_iter():
         for _ in []:
             yield _
+
     mock_col.stream.return_value = async_iter()
-    
+
     mock_doc_ref = MagicMock()
     mock_doc_ref.set = AsyncMock()
     mock_col.document.return_value = mock_doc_ref
@@ -163,7 +162,7 @@ def test_devto_ingestion_with_enrichment(mock_firestore, mock_enrichment_cls, mo
     # Verify Connector Logic
     # Ingest should call fetch_posts
     mock_dev_instance.fetch_posts.assert_called_once()
-    
+
     # Verify Enrichment Logic
     # Ingest tool now handles enrichment if markdown is present
     mock_enrichment_instance.enrich_content.assert_called_once_with("Raw Markdown")
@@ -171,7 +170,7 @@ def test_devto_ingestion_with_enrichment(mock_firestore, mock_enrichment_cls, mo
     # Verify Persistence
     # The saved blog should have the AI summary and tags
     # The last call to set() should include our enriched data
-    args, kwargs = mock_doc_ref.set.call_args
+    args, _ = mock_doc_ref.set.call_args
     saved_data = args[0]
     assert saved_data["ai_summary"] == "AI Summary"
     assert saved_data["tags"] == ["AI Tag"]
