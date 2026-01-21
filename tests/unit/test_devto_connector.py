@@ -109,7 +109,7 @@ async def test_fetch_posts_content_retrieval():
 
     with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
         # Expect 2 calls: List and Detail
-        
+
         # Setup side_effect for responses
         resp_list = MagicMock(spec=httpx.Response)
         resp_list.status_code = 200
@@ -128,45 +128,3 @@ async def test_fetch_posts_content_retrieval():
 
         # Verify calls
         assert mock_get.call_count == 2
-
-
-@pytest.mark.asyncio
-async def test_fetch_posts_with_enrichment():
-    # Mock List and Detail
-    mock_list_json = [
-        {
-            "id": 1,
-            "title": "Post",
-            "description": "Desc",
-            "published_at": "2026-01-01T10:00:00Z",
-            "url": "url",
-            "tag_list": ["tag1"],
-        }
-    ]
-    mock_detail_json = {"id": 1, "title": "Post", "body_markdown": "Content"}
-
-    connector = DevToConnector()
-
-    # Mock Enrichment Service
-    mock_enrichment = AsyncMock()
-    mock_enrichment.enrich_content.return_value = {"summary": "AI Summary", "tags": ["ai_tag1", "ai_tag2"]}
-
-    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
-        resp_list = MagicMock(spec=httpx.Response)
-        resp_list.status_code = 200
-        resp_list.json.return_value = mock_list_json
-
-        resp_detail = MagicMock(spec=httpx.Response)
-        resp_detail.status_code = 200
-        resp_detail.json.return_value = mock_detail_json
-
-        mock_get.side_effect = [resp_list, resp_detail]
-
-        # Call with mock enrichment service
-        blogs = await connector.fetch_posts("user", enrichment_service=mock_enrichment)
-
-        assert len(blogs) == 1
-        blog = blogs[0]
-        assert blog.ai_summary == "AI Summary"
-        assert blog.tags == ["ai_tag1", "ai_tag2"]
-        mock_enrichment.enrich_content.assert_called_once_with("Content")

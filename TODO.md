@@ -20,7 +20,9 @@
 - [X] Add blog source to the tiles.
 - [X] Remove comments/boost posts from dev.to ingestion.
 - [X] Add dev.to AI summarisation and markdown import.
+- [ ] Add applications with yaml.
 - [ ] Add SEO.
+- [ ] Prevent adding duplicates in dev.to connector.
 - [ ] Implement RAG with Vector Search:
     - [ ] Generate embeddings for Blogs and Projects using Gemini Embeddings.
     - [ ] Handle creating embeddings for existing records.
