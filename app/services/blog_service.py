@@ -22,7 +22,7 @@ class BlogService(FirestoreService[Blog]):
         async for doc in docs:
             data = doc.to_dict()
             data["id"] = doc.id
-            
+
             # Enrich with author profile URL based on platform
             platform = (data.get("platform") or "").lower()
             if "medium" in platform:
