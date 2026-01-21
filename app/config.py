@@ -53,5 +53,9 @@ class Settings(BaseSettings):
     # Note that this prompt is replaced at deploy time
     dazbo_system_prompt: str = "You are Dazbo's portfolio assistant. You help visitors navigate his projects and blogs. Always provide links/URLs when mentioning specific projects or blogs."
 
+    # URLs
+    medium_profile: str = "https://medium.com/@derailed.dash"
+    devto_profile: str = "https://dev.to/deraileddash"
+
 
 settings = Settings()

@@ -14,17 +14,14 @@ const BlogCarousel: React.FC = () => {
       .then((data: Blog[]) => {
         // Map backend data to ShowcaseCarousel item format
         const mapped: ShowcaseItem[] = data.map((b) => {
-          // Map platform to source icon and profile URL
+          // Map platform to source icon
           let iconPath: string | undefined;
-          let profileUrl: string | undefined;
           const lowerPlatform = (b.platform || '').toLowerCase();
           
           if (lowerPlatform.includes('medium')) {
             iconPath = '/images/medium-icon.png';
-            profileUrl = 'https://medium.com/@derailed.dash';
           } else if (lowerPlatform.includes('dev.to')) {
             iconPath = '/images/dev-black.png';
-            profileUrl = 'https://dev.to/deraileddash';
           }
 
           return {
@@ -36,7 +33,7 @@ const BlogCarousel: React.FC = () => {
             linkUrl: b.url,
             isPrivate: b.is_private,
             sourceIcon: iconPath,
-            sourceUrl: profileUrl,
+            sourceUrl: b.author_url,
             type: 'blog'
           };
         });

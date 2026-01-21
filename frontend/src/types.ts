@@ -42,6 +42,7 @@ export interface Blog {
   is_private: boolean;
   markdown_content?: string;
   ai_summary?: string;
+  author_url?: string;
   tags?: string[];
   created_at?: string;
 }
