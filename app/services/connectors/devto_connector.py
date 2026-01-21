@@ -27,26 +27,39 @@ class DevToConnector:
             response.raise_for_status()
             articles_data = response.json()
 
-        blogs = []
-        for article in articles_data:
-            title = article.get("title", "")
-            if title.startswith("[Boost]"):
-                logger.info(f"Skipping (quickie): {title}")
-                continue
+            blogs = []
+            for article in articles_data:
+                title = article.get("title", "")
+                if title.startswith("[Boost]"):
+                    logger.info(f"Skipping (quickie): {title}")
+                    continue
 
-            # Basic mapping
-            # date is published_at, e.g. "2026-01-18T10:00:00Z"
-            date_iso = article.get("published_at", "").split("T")[0]
+                # Fetch full article content to get markdown
+                article_id = article.get("id")
+                body_markdown = None
+                if article_id:
+                    try:
+                        detail_url = f"{self.base_url}/articles/{article_id}"
+                        detail_resp = await client.get(detail_url)
+                        if detail_resp.status_code == 200:
+                            body_markdown = detail_resp.json().get("body_markdown")
+                    except Exception as e:
+                        logger.warning(f"Failed to fetch content for article {article_id}: {e}")
 
-            blog = Blog(
-                title=title,
-                summary=article.get("description") or "",
-                date=date_iso,
-                platform="Dev.to",
-                url=article.get("url"),
-                source_platform="devto_api",
-                is_manual=False,
-            )
-            blogs.append(blog)
+                # Basic mapping
+                # date is published_at, e.g. "2026-01-18T10:00:00Z"
+                date_iso = article.get("published_at", "").split("T")[0]
+
+                blog = Blog(
+                    title=title,
+                    summary=article.get("description") or "",
+                    date=date_iso,
+                    platform="Dev.to",
+                    url=article.get("url"),
+                    source_platform="devto_api",
+                    is_manual=False,
+                    markdown_content=body_markdown,
+                )
+                blogs.append(blog)
 
         return blogs
