@@ -35,8 +35,8 @@ Goal: Ensure the ingestion tool provides correct feedback and performs E2E updat
     - [x] Ensure logging shows "Enriching content..." for Dev.to posts
     - [x] Ensure logging shows "Skipping (quickie)" for filtered posts
     - [x] Implement visual progress indicator (spinner or bar) for Dev.to ingestion
-- [~] Task: Write/Update integration test for Dev.to ingestion
-    - [ ] Mock Dev.to API and AI service
-    - [ ] Verify the full flow from API to `Blog` model population
-- [~] Task: Run full ingestion for a test Dev.to user and verify Firestore results
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Write/Update integration test for Dev.to ingestion b0a35ac
+    - [x] Mock Dev.to API and AI service
+    - [x] Verify the full flow from API to `Blog` model population
+- [x] Task: Run full ingestion for a test Dev.to user and verify Firestore results
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
