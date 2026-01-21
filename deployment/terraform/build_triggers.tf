@@ -75,7 +75,7 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
     _LOCATION                    = var.location
     _ARTIFACT_REGISTRY_REPO_NAME = resource.google_artifact_registry_repository.repo-artifacts-genai.repository_id
     _SERVICE_NAME                = var.service_name
-    _APP_NAME                    = var.service_name
+    _APP_NAME                    = var.app_name
     _AGENT_NAME                  = var.agent_name
     _GOOGLE_GENAI_USE_VERTEXAI   = var.google_genai_use_vertexai
     _MODEL                       = var.model

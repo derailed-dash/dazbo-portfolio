@@ -127,6 +127,12 @@ variable "service_name" {
   default     = "dazbo-portfolio"
 }
 
+variable "app_name" {
+  description = "Name of the Cloud Run service"
+  type        = string
+  default     = "dazbo_portfolio"
+}
+
 variable "agent_name" {
   description = "Name of the agent"
   type        = string
