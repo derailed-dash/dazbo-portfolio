@@ -34,6 +34,7 @@ steps:
         uv run pytest tests/unit
     env:
       - 'PATH=/usr/local/bin:/usr/bin:~/.local/bin'
+      - 'CI=true'
 
   # Run integration tests
   - name: "python:3.12-slim"
@@ -45,6 +46,7 @@ steps:
         uv run pytest tests/integration
     env:
       - 'PATH=/usr/local/bin:/usr/bin:~/.local/bin'
+      - 'CI=true'
       - 'GOOGLE_CLOUD_PROJECT=${PROJECT_ID}'
       - 'GOOGLE_CLOUD_LOCATION=global'
       - 'GOOGLE_GENAI_USE_VERTEXAI=true'
