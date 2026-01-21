@@ -26,6 +26,7 @@ The portfolio is designed for a broad technical audience:
 
 ## Showcased Content
 - **Technical Writing:** Blog posts harvested from various platforms.
+    - **Dev.to:** Ingested via API with AI-enriched summaries and tagging.
 - **Open Source:** GitHub repositories and public code.
 - **Credentials:** Certifications and educational milestones.
 - **Multimedia:** Video tutorials and presentation decks.

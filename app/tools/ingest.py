@@ -222,21 +222,56 @@ async def ingest_resources(
         console.print(f"[bold blue]Fetching Dev.to posts for {devto_user}...[/bold blue]")
         connector = DevToConnector()
         try:
+            # We fetch all basic metadata first
             blogs = await connector.fetch_posts(devto_user)
-            console.print(f"Found {len(blogs)} Dev.to posts.")
+            console.print(f"Found {len(blogs)} Dev.to posts (filtered).")
 
             existing_blogs = await blog_service.list()
             existing_urls = {b.url: b.id for b in existing_blogs if b.url}
 
-            for b in blogs:
-                if b.url in existing_urls:
-                    b.id = existing_urls[b.url]
-                    await blog_service.update(b.id, b.model_dump(exclude={"id"}))
-                    console.print(f"Updated: {b.title}")
-                else:
-                    slug = slugify(b.title)
-                    await blog_service.create(b, item_id=slug)
-                    console.print(f"Created: {b.title} (ID: {slug})")
+            enrichment_service = ContentEnrichmentService()
+
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(bar_width=None),
+                TaskProgressColumn(),
+                TimeRemainingColumn(),
+                console=console,
+            ) as progress:
+                task = progress.add_task("Processing Dev.to posts...", total=len(blogs))
+
+                for b in blogs:
+                    # Update description
+                    progress.update(task, description=f"[cyan]Processing[/cyan] [white]{b.title[:30]}...[/white]")
+
+                    # Enrich content if markdown is available and summary is missing.
+                    # Note: We perform enrichment here rather than in the connector to ensure
+                    # granular progress updates for each item.
+                    if b.markdown_content and not b.ai_summary:
+                        progress.update(task, description=f"[green]Enriching[/green] [white]{b.title[:30]}...[/white]")
+                        try:
+                            enrichment = await enrichment_service.enrich_content(b.markdown_content)
+                            b.ai_summary = enrichment.get("summary")
+                            ai_tags = enrichment.get("tags")
+                            if ai_tags:
+                                # Prefer AI-generated tags if available
+                                b.tags = ai_tags
+                        except Exception as e:
+                            console.log(f"[red]Enrichment failed for {b.title}:[/red] {e}")
+
+                    # Persist to Firestore
+                    progress.update(task, description=f"[blue]Saving[/blue] [white]{b.title[:30]}...[/white]")
+                    if b.url in existing_urls:
+                        b.id = existing_urls[b.url]
+                        await blog_service.update(b.id, b.model_dump(exclude={"id"}))
+                        # console.print(f"Updated: {b.title}") # Too noisy for progress bar
+                    else:
+                        slug = slugify(b.title)
+                        await blog_service.create(b, item_id=slug)
+                        # console.print(f"Created: {b.title} (ID: {slug})")
+
+                    progress.advance(task)
 
         except Exception as e:
             console.print(f"[bold red]Error fetching Dev.to:[/bold red] {e}")

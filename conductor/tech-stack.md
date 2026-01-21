@@ -5,7 +5,7 @@
 - **Agent Framework:** Google Agent Development Kit (ADK) — Powers the interactive chat and agentic features.
 - **Backend Framework:** FastAPI — High-performance web framework for the API layer.
 - **Frontend Framework:** React (with `react-markdown`) — Building the user interface for the portfolio and chat interaction.
-- **AI Enrichment:** Gemini (via `google-genai` SDK) — Powers the `ContentEnrichmentService` for technical summarisation and tagging.
+- **AI Enrichment:** Gemini (via `google-genai` SDK) — Powers the `ContentEnrichmentService` for technical summarisation and tagging (Medium & Dev.to).
 
 ## Data & Storage
 - **Primary Database:** Google Firestore — Serverless, NoSQL document database for managing portfolio content and agent session data.

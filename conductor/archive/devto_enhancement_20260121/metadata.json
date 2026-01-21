@@ -1,0 +1,8 @@
+{
+  "track_id": "devto_enhancement_20260121",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-21T10:30:00Z",
+  "updated_at": "2026-01-21T10:30:00Z",
+  "description": "Exclude 'Quickie posts' (starting with [Boost]) from Dev.to feed and implement AI enrichment (summaries and tagging) for Dev.to blogs."
+}
