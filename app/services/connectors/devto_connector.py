@@ -19,7 +19,7 @@ class DevToConnector:
     def __init__(self, base_url: str = "https://dev.to/api"):
         self.base_url = base_url
 
-    async def fetch_posts(self, username: str, enrichment_service: Optional[ContentEnrichmentService] = None) -> list[Blog]:
+    async def fetch_posts(self, username: str, enrichment_service: Optional[ContentEnrichmentService] = None, limit: Optional[int] = None) -> list[Blog]:
         """
         Fetches blog posts for a given Dev.to username.
         """
@@ -28,6 +28,9 @@ class DevToConnector:
             response = await client.get(url)
             response.raise_for_status()
             articles_data = response.json()
+            
+            if limit:
+                articles_data = articles_data[:limit]
 
             blogs = []
             for article in articles_data:
