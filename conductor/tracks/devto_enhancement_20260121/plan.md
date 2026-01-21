@@ -28,7 +28,7 @@ Goal: Integrate `ContentEnrichmentService` to provide technical summaries and ta
 - [x] Task: Verify enrichment logic with tests da91440
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
-## Phase 3: CLI Integration and E2E Verification
+## Phase 3: CLI Integration and E2E Verification [checkpoint: 5570f4e]
 Goal: Ensure the ingestion tool provides correct feedback and performs E2E updates to Firestore.
 
 - [x] Task: Update `app/tools/ingest.py` to support Dev.to enrichment feedback d9b2659
