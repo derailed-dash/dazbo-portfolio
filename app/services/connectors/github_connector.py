@@ -41,11 +41,8 @@ class GitHubConnector:
                 is_manual=False,
             )
 
-            if repo.get("created_at"):
-                ts = repo.get("created_at")
-                if ts.endswith("Z"):
-                    ts = ts[:-1] + "+00:00"
-                project.created_at = datetime.fromisoformat(ts)
+            if created_at := repo.get("created_at"):
+                project.created_at = datetime.fromisoformat(created_at)
 
             # Add language to tags if present
             if repo.get("language") and repo.get("language") not in project.tags:
