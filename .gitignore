@@ -146,14 +146,13 @@ dmypy.json
 .idea
 
 # Terraform
-# .terraform*
-# .Terraform*
+.terraform*
+.Terraform*
 
 *.tfstate
 *.tfstate.backup
 *.tfplan
 # env.tfvars
-
 
 # Node
 **/node_modules
