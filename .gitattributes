@@ -1,2 +1,3 @@
 .env.enc filter=git-crypt diff=git-crypt
 env.tfvars filter=git-crypt diff=git-crypt
+dazbo.enc filter=git-crypt diff=git-crypt

@@ -17,6 +17,8 @@
 - [X] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
 - [X] Map to my domain name.
 - [x] UI experimentation / aesthetics.
+- [ ] Add blog source to the tiles.
+- [ ] Remove comments/boost posts from dev.to ingestion.
 - [ ] Add SEO.
 - [ ] Implement RAG with Vector Search:
     - [ ] Generate embeddings for Blogs and Projects using Gemini Embeddings.

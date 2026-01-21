@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Carousel, Row, Col } from 'react-bootstrap';
 import ShowcaseCard from './ShowcaseCard';
 
 import type { ShowcaseItem } from '../types';
-
-/* Item interface replaced by import */
 
 interface ShowcaseCarouselProps {
   items: ShowcaseItem[];
@@ -12,7 +10,13 @@ interface ShowcaseCarouselProps {
 }
 
 const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   if (!items || items.length === 0) return null;
+
+  const handleSelect = (selectedIndex: number) => {
+    setActiveIndex(selectedIndex);
+  };
 
   // Function to chunk items for multi-item display on larger screens
   const chunkItems = (arr: ShowcaseItem[], size: number) => {
@@ -24,6 +28,24 @@ const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => 
   };
 
   const desktopChunks = chunkItems(items, 4);
+
+  // Pagination Logic for Mobile
+  const MAX_VISIBLE_DOTS = 5;
+  let startDot = 0;
+  if (items.length > MAX_VISIBLE_DOTS) {
+    // Center the active dot in the window if possible
+    startDot = Math.max(0, Math.min(activeIndex - 2, items.length - MAX_VISIBLE_DOTS));
+  }
+  // Determine the range of dots to show. 
+  // If items.length <= MAX_VISIBLE_DOTS, we show all (0 to items.length).
+  // Otherwise we show from startDot to startDot + MAX_VISIBLE_DOTS.
+  const endDot = Math.min(items.length, items.length <= MAX_VISIBLE_DOTS ? items.length : startDot + MAX_VISIBLE_DOTS);
+  
+  // Create an array of indices to render
+  const visibleDotIndices = [];
+  for (let i = startDot; i < endDot; i++) {
+    visibleDotIndices.push(i);
+  }
 
   return (
     <div className="mb-5">
@@ -45,7 +67,13 @@ const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => 
       </Carousel>
 
       {/* Mobile View: 1 item per slide */}
-      <Carousel interval={null} indicators={items.length > 1} className="pb-5 d-md-none">
+      <Carousel 
+        activeIndex={activeIndex}
+        onSelect={handleSelect}
+        interval={null} 
+        indicators={false} // Disable default indicators
+        className="d-md-none"
+      >
         {items.map((item) => (
           <Carousel.Item key={item.id}>
             <Row className="justify-content-center px-1">
@@ -56,6 +84,33 @@ const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => 
           </Carousel.Item>
         ))}
       </Carousel>
+
+      {/* Custom Mobile Indicators */}
+      <div className="d-flex justify-content-center mt-3 d-md-none mobile-custom-indicators">
+          {items.length <= 1 ? null : (
+              visibleDotIndices.map((absoluteIndex) => {
+                  const isActive = absoluteIndex === activeIndex;
+                  return (
+                      <div 
+                          key={absoluteIndex}
+                          className={`indicator-dot ${isActive ? 'active' : ''}`}
+                          style={{
+                              width: '8px',
+                              height: '8px',
+                              borderRadius: '50%',
+                              backgroundColor: isActive ? 'var(--bs-primary)' : 'var(--bs-gray-400)',
+                              margin: '0 4px',
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease'
+                          }}
+                          onClick={() => setActiveIndex(absoluteIndex)}
+                          role="button"
+                          aria-label={`Go to slide ${absoluteIndex + 1}`}
+                      />
+                  );
+              })
+          )}
+      </div>
     </div>
   );
 };

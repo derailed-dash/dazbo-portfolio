@@ -13,3 +13,13 @@ from app.services.firestore_base import FirestoreService
 class BlogService(FirestoreService[Blog]):
     def __init__(self, db: firestore.AsyncClient):
         super().__init__(db, "blogs", Blog)
+
+    async def list(self) -> list[Blog]:
+        # Sort by date descending
+        docs = self.collection.order_by("date", direction=firestore.Query.DESCENDING).stream()
+        items = []
+        async for doc in docs:
+            data = doc.to_dict()
+            data["id"] = doc.id
+            items.append(self.model_class(**data))
+        return items

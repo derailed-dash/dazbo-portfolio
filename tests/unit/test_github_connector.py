@@ -4,6 +4,7 @@ Why: Verifies that the GitHub connector correctly fetches repositories and maps 
 How: Mocks httpx.AsyncClient responses and asserts on the resulting Project objects.
 """
 
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
@@ -25,6 +26,7 @@ async def test_fetch_repositories():
             "language": "Python",
             "topics": ["python", "ai"],
             "private": False,
+            "created_at": "2023-01-01T12:00:00Z",
         },
         {
             "id": 124,
@@ -35,6 +37,7 @@ async def test_fetch_repositories():
             "language": "Go",
             "topics": ["go"],
             "private": True,
+            "created_at": "2023-01-02T12:00:00Z",
         },
     ]
 
@@ -56,3 +59,4 @@ async def test_fetch_repositories():
         assert project.source_platform == "github"
         assert project.is_manual is False
         assert "python" in project.tags
+        assert project.created_at == datetime(2023, 1, 1, 12, 0, 0, tzinfo=UTC)
