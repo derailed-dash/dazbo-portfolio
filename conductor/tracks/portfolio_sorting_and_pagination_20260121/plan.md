@@ -15,7 +15,7 @@ Refine the service layer to ensure all portfolio data is returned in reverse chr
     - [ ] Create/Update unit test in `tests/unit/test_services.py` to verify `list` returns experience entries sorted by date (newest first).
     - [ ] Modify `app/services/experience_service.py` to include sorting in the Firestore query.
     - [ ] Run tests and verify "Green" phase.
-- [ ] Task: Conductor - User Manual Verification 'Backend Sorting Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Sorting Logic' (Protocol in workflow.md) [checkpoint: 779793d]
 
 ## Phase 2: Frontend Carousel Pagination Fix
 Modify the `ShowcaseCarousel` component to handle high page counts on mobile by limiting visible indicators.
