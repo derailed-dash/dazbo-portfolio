@@ -12,6 +12,7 @@ Usage:
     print(settings.google_cloud_project)
 """
 
+import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,7 +24,9 @@ class Settings(BaseSettings):
     (case-insensitive) or the .env file.
     """
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env" if not os.getenv("CI") else None, env_file_encoding="utf-8", extra="ignore"
+    )
 
     # Infrastructure
     google_cloud_project: str = "dazbo-portfolio"

@@ -57,6 +57,7 @@ You may notice similar variables in `env.tfvars` and your local `.env` file. The
     -   Used by your local runtime (`uvicorn`, `docker run`).
     -   Not visible to Terraform or Cloud Build.
     -   *Source of Truth for local testing.*
+    -   **Note**: This file is encrypted in the repository using `git-crypt`. In CI/CD environments (detected via `CI=true`), the application skips loading this file to prevent compatibility issues. Ensure all required values are provided as environment variables in the pipeline.
 
 -   **`Makefile` (Bridging the gap)**:
     -   The `deploy-cloud-run` target uses conditional assignment (`NAME ?= value`).

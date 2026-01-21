@@ -12,7 +12,8 @@ from contextlib import asynccontextmanager
 import anyio
 import google.auth
 from fastapi import Depends, FastAPI, Request
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.cli.fast_api import get_fast_api_app
@@ -23,6 +24,7 @@ from google.genai import types
 from pydantic import BaseModel
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 
 from app.agent import app as adk_app
@@ -47,7 +49,7 @@ os.environ["OTEL_PYTHON_LOG_LEVEL"] = "ERROR"
 logging.getLogger("opentelemetry.attributes").setLevel(logging.ERROR)
 
 # Rate Limiter Initialization
-limiter = Limiter(key_func=get_remote_address)
+limiter = Limiter(key_func=get_remote_address, headers_enabled=True)
 
 _, project_id = google.auth.default()
 logging_client = google_cloud_logging.Client()
@@ -90,6 +92,7 @@ app.description = "API for interacting with the Agent dazbo-portfolio"
 # Add Limiter to app state and exception handler
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 
 class ChatRequest(BaseModel):
@@ -168,21 +171,24 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
 @limiter.limit("60/minute")
 async def list_projects(request: Request, service: ProjectService = Depends(get_project_service)):
     """List all projects."""
-    return await service.list()
+    data = await service.list()
+    return JSONResponse(content=jsonable_encoder(data))
 
 
 @app.get("/api/blogs", response_model=list[Blog])
 @limiter.limit("60/minute")
 async def list_blogs(request: Request, service: BlogService = Depends(get_blog_service)):
     """List all blog posts."""
-    return await service.list()
+    data = await service.list()
+    return JSONResponse(content=jsonable_encoder(data))
 
 
 @app.get("/api/experience", response_model=list[Experience])
 @limiter.limit("60/minute")
 async def list_experience(request: Request, service: ExperienceService = Depends(get_experience_service)):
     """List all work experience."""
-    return await service.list()
+    data = await service.list()
+    return JSONResponse(content=jsonable_encoder(data))
 
 
 # --- Static File Serving (Unified Origin) ---

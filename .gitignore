@@ -147,10 +147,11 @@ dmypy.json
 # Terraform
 .terraform*
 .Terraform*
+
 *.tfstate
 *.tfstate.backup
 *.tfplan
-env.tfvars
+# env.tfvars
 
 # Node
 **/node_modules
@@ -198,7 +199,8 @@ tests/load_test/.results/*.csv
 .locust_env
 my_env.tfvars
 .saved_chats
-.env
+# .env
+
 .requirements.txt
 
 # A2A Inspector
