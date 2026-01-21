@@ -28,11 +28,14 @@ Modify the `ShowcaseCarousel` component to handle high page counts on mobile by 
 - [x] Task: Verify Responsive Behavior 0af2ae3
     - [x] Verify that the desktop view still shows all indicators (or remains unaffected).
     - [x] Verify that swipe and arrow navigation still update the (limited) indicators correctly on mobile.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Carousel Pagination Fix' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Carousel Pagination Fix' (Protocol in workflow.md) [checkpoint: 2ee0af7]
 
 ## Phase 3: Final Integration and Quality Gate
 Final verification of the combined fixes.
 
+- [ ] Task: Fix `GitHubConnector` to map `created_at` field
+    - [ ] Modify `app/services/connectors/github_connector.py` to map `created_at` or `pushed_at` from GitHub API.
+    - [ ] Create/Update test to verify mapping.
 - [ ] Task: End-to-End Verification
     - [ ] Run all integration tests `make test`.
     - [ ] Run all linting and quality checks `make lint`.
