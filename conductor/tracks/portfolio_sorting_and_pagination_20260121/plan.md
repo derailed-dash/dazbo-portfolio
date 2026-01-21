@@ -11,7 +11,7 @@ Refine the service layer to ensure all portfolio data is returned in reverse chr
     - [ ] Create/Update unit test in `tests/unit/test_services.py` to verify `list` returns projects sorted by date (newest first).
     - [ ] Modify `app/services/project_service.py` to include sorting in the Firestore query.
     - [ ] Run tests and verify "Green" phase.
-- [ ] Task: Update `ExperienceService` to sort by date descending
+- [x] Task: Update `ExperienceService` to sort by date descending f5be639
     - [ ] Create/Update unit test in `tests/unit/test_services.py` to verify `list` returns experience entries sorted by date (newest first).
     - [ ] Modify `app/services/experience_service.py` to include sorting in the Firestore query.
     - [ ] Run tests and verify "Green" phase.
