@@ -13,16 +13,33 @@ const BlogCarousel: React.FC = () => {
     getBlogs()
       .then((data: Blog[]) => {
         // Map backend data to ShowcaseCarousel item format
-        const mapped: ShowcaseItem[] = data.map((b) => ({
-          id: b.id || b.url || 'unknown',
-          title: b.title,
-          description: b.ai_summary || b.summary || '',
-          imageUrl: b.image_url,
-          tags: b.tags || [b.platform],
-          linkUrl: b.url,
-          isPrivate: b.is_private,
-          type: 'blog'
-        }));
+        const mapped: ShowcaseItem[] = data.map((b) => {
+          // Map platform to source icon and profile URL
+          let iconPath: string | undefined;
+          let profileUrl: string | undefined;
+          const lowerPlatform = (b.platform || '').toLowerCase();
+          
+          if (lowerPlatform.includes('medium')) {
+            iconPath = '/images/medium-icon.png';
+            profileUrl = 'https://medium.com/@derailed.dash';
+          } else if (lowerPlatform.includes('dev.to')) {
+            iconPath = '/images/dev-black.png';
+            profileUrl = 'https://dev.to/deraileddash';
+          }
+
+          return {
+            id: b.id || b.url || 'unknown',
+            title: b.title,
+            description: b.ai_summary || b.summary || '',
+            imageUrl: b.image_url,
+            tags: b.tags || [b.platform],
+            linkUrl: b.url,
+            isPrivate: b.is_private,
+            sourceIcon: iconPath,
+            sourceUrl: profileUrl,
+            type: 'blog'
+          };
+        });
         setBlogs(mapped);
       })
       .catch(() => setError('Failed to load blogs.'))

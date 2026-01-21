@@ -10,6 +10,8 @@ interface ShowcaseCardProps {
   linkUrl?: string;
   repoUrl?: string;
   isPrivate?: boolean;
+  sourceIcon?: string;
+  sourceUrl?: string;
   type: 'blog' | 'project' | 'app';
 }
 
@@ -21,6 +23,8 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   linkUrl,
   repoUrl,
   isPrivate,
+  sourceIcon,
+  sourceUrl,
   type
 }) => {
   return (
@@ -55,30 +59,62 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
         <Card.Text className="text-muted small flex-grow-1">
           {description.length > 120 ? `${description.substring(0, 120)}...` : description}
         </Card.Text>
-        <div className="d-flex gap-2 mt-3">
-          {linkUrl && (
-            <Button 
-              variant="primary" 
-              size="sm" 
-              href={linkUrl} 
-              target="_blank"
-              className="d-flex align-items-center gap-1"
-            >
-              <ExternalLink size={14} />
-              <span>{type === 'blog' ? 'Read' : 'View'}</span>
-            </Button>
-          )}
-          {repoUrl && (
-            <Button 
-              variant="outline-secondary" 
-              size="sm" 
-              href={repoUrl} 
-              target="_blank"
-              className="d-flex align-items-center gap-1"
-            >
-              <Github size={14} />
-              <span>Code</span>
-            </Button>
+
+        
+        {/* Footer Row: Buttons (Left) & Source Icon (Right) */}
+        <div className="d-flex justify-content-between align-items-end mt-3">
+          <div className="d-flex gap-2">
+            {linkUrl && (
+              <Button 
+                variant="primary" 
+                size="sm" 
+                href={linkUrl} 
+                target="_blank"
+                className="d-flex align-items-center gap-1"
+              >
+                <ExternalLink size={14} />
+                <span>{type === 'blog' ? 'Read' : 'View'}</span>
+              </Button>
+            )}
+            {repoUrl && (
+              <Button 
+                variant="outline-secondary" 
+                size="sm" 
+                href={repoUrl} 
+                target="_blank"
+                className="d-flex align-items-center gap-1"
+              >
+                <Github size={14} />
+                <span>Code</span>
+              </Button>
+            )}
+          </div>
+
+          {sourceIcon && (
+            <div className="d-flex align-items-center">
+              {sourceUrl ? (
+                <a 
+                  href={sourceUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="d-inline-flex opacity-75 hover-opacity-100 transition-opacity"
+                  title="View Profile"
+                >
+                  <img 
+                    src={sourceIcon} 
+                    alt="Source" 
+                    style={{ width: '24px', height: '24px', objectFit: 'contain' }} 
+                  />
+                </a>
+              ) : (
+                <img 
+                  src={sourceIcon} 
+                  alt="Source" 
+                  style={{ width: '24px', height: '24px', objectFit: 'contain' }} 
+                  title="Content Source"
+                />
+              )}
+            </div>
           )}
         </div>
       </Card.Body>

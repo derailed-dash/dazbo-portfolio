@@ -8,6 +8,8 @@ export interface ShowcaseItem {
   linkUrl?: string;
   repoUrl?: string;
   isPrivate?: boolean;
+  sourceIcon?: string;
+  sourceUrl?: string;
   type: 'blog' | 'project' | 'app';
 }
 
