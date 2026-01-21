@@ -20,14 +20,14 @@ Refine the service layer to ensure all portfolio data is returned in reverse chr
 ## Phase 2: Frontend Carousel Pagination Fix
 Modify the `ShowcaseCarousel` component to handle high page counts on mobile by limiting visible indicators.
 
-- [ ] Task: Implement Limited Pagination Indicators in `ShowcaseCarousel`
-    - [ ] Create/Update frontend unit test for `ShowcaseCarousel` to verify that indicators are limited on mobile when page count is high.
-    - [ ] Modify `frontend/src/components/ShowcaseCarousel.tsx` to implement a "sliding window" or limited dot logic for mobile view.
-    - [ ] Ensure CSS handles the new indicator style gracefully.
-    - [ ] Run frontend tests and verify "Green" phase.
-- [ ] Task: Verify Responsive Behavior
-    - [ ] Verify that the desktop view still shows all indicators (or remains unaffected).
-    - [ ] Verify that swipe and arrow navigation still update the (limited) indicators correctly on mobile.
+- [x] Task: Implement Limited Pagination Indicators in `ShowcaseCarousel` 0af2ae3
+    - [x] Create/Update frontend unit test for `ShowcaseCarousel` to verify that indicators are limited on mobile when page count is high.
+    - [x] Modify `frontend/src/components/ShowcaseCarousel.tsx` to implement a "sliding window" or limited dot logic for mobile view.
+    - [x] Ensure CSS handles the new indicator style gracefully.
+    - [x] Run frontend tests and verify "Green" phase.
+- [x] Task: Verify Responsive Behavior 0af2ae3
+    - [x] Verify that the desktop view still shows all indicators (or remains unaffected).
+    - [x] Verify that swipe and arrow navigation still update the (limited) indicators correctly on mobile.
 - [ ] Task: Conductor - User Manual Verification 'Frontend Carousel Pagination Fix' (Protocol in workflow.md)
 
 ## Phase 3: Final Integration and Quality Gate
