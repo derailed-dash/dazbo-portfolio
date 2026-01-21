@@ -2,7 +2,7 @@
 
 This plan outlines the steps to filter out "Quickie" posts, enable AI enrichment, and capture Markdown content for Dev.to blog posts during ingestion.
 
-## Phase 1: Filtering and Model Alignment
+## Phase 1: Filtering and Model Alignment [checkpoint: 3248550]
 Goal: Implement the "Boost" filter and ensure the Dev.to connector captures the required content fields.
 
 - [x] Task: Write unit tests for `DevToConnector.fetch_posts` filtering logic c73b950
@@ -13,7 +13,7 @@ Goal: Implement the "Boost" filter and ensure the Dev.to connector captures the 
     - [x] Update API call to retrieve `body_markdown`
     - [x] Map `body_markdown` to `Blog.markdown_content`
 - [x] Task: Verify filtering and content retrieval with tests 4c1465e
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: AI Enrichment Integration
 Goal: Integrate `ContentEnrichmentService` to provide technical summaries and tags for Dev.to posts.
