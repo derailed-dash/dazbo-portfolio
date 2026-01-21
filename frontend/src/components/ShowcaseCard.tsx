@@ -27,13 +27,18 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   sourceUrl,
   type
 }) => {
-  // Helper to sanitize URLs preventing XSS (e.g., javascript: payloads)
   const getSafeUrl = (url: string | undefined): string => {
     if (!url) return '#';
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
       return url;
     }
     return '#';
+  };
+
+  const sourceIconStyle: React.CSSProperties = { 
+    width: '24px', 
+    height: '24px', 
+    objectFit: 'contain' 
   };
 
   return (
@@ -112,14 +117,14 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
                   <img 
                     src={sourceIcon} 
                     alt="Source" 
-                    style={{ width: '24px', height: '24px', objectFit: 'contain' }} 
+                    style={sourceIconStyle} 
                   />
                 </a>
               ) : (
                 <img 
                   src={sourceIcon} 
                   alt="Source" 
-                  style={{ width: '24px', height: '24px', objectFit: 'contain' }} 
+                  style={sourceIconStyle} 
                   title="Content Source"
                 />
               )}
