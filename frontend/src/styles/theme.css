@@ -109,6 +109,14 @@ body {
   transform: translateY(-1px);
 }
 
+.bg-primary {
+  background-color: var(--md-sys-color-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--md-sys-color-primary) !important;
+}
+
 /* Navbar Overrides */
 .navbar {
   background-color: var(--md-sys-color-background) !important;
@@ -186,6 +194,13 @@ body {
   border: 4px solid #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+@media (max-width: 768px) {
+  .hero-profile-img {
+    width: 100px;
+    height: 100px;
+  }
 }
 
 /* Chat Widget Styling */

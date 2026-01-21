@@ -6,6 +6,7 @@ How: Extends `FirestoreService` for `Blog` model and `blogs` collection.
 
 from google.cloud import firestore
 
+from app.config import settings
 from app.models.blog import Blog
 from app.services.firestore_base import FirestoreService
 
@@ -14,6 +15,26 @@ class BlogService(FirestoreService[Blog]):
     def __init__(self, db: firestore.AsyncClient):
         super().__init__(db, "blogs", Blog)
 
+    def _enrich_blog_data(self, data: dict) -> dict:
+        """Enrich blog data with computed fields."""
+        # Enrich with author profile URL based on platform
+        platform = (data.get("platform") or "").lower()
+        if "medium" in platform:
+            data["author_url"] = settings.medium_profile
+        elif "dev.to" in platform:
+            data["author_url"] = settings.devto_profile
+        return data
+
+    async def get(self, item_id: str) -> Blog | None:
+        doc_ref = self.collection.document(item_id)
+        doc = await doc_ref.get()
+        if doc.exists:
+            data = doc.to_dict()
+            data["id"] = doc.id
+            data = self._enrich_blog_data(data)
+            return self.model_class(**data)
+        return None
+
     async def list(self) -> list[Blog]:
         # Sort by date descending
         docs = self.collection.order_by("date", direction=firestore.Query.DESCENDING).stream()
@@ -21,5 +42,6 @@ class BlogService(FirestoreService[Blog]):
         async for doc in docs:
             data = doc.to_dict()
             data["id"] = doc.id
+            data = self._enrich_blog_data(data)
             items.append(self.model_class(**data))
         return items

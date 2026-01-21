@@ -23,4 +23,5 @@ class Blog(BaseModel):
     is_private: bool = False
     markdown_content: str | None = None
     ai_summary: str | None = None
+    author_url: str | None = None
     created_at: datetime = Field(default_factory=datetime.now)
