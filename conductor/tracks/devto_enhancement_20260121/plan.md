@@ -31,11 +31,12 @@ Goal: Integrate `ContentEnrichmentService` to provide technical summaries and ta
 ## Phase 3: CLI Integration and E2E Verification
 Goal: Ensure the ingestion tool provides correct feedback and performs E2E updates to Firestore.
 
-- [ ] Task: Update `app/tools/ingest.py` to support Dev.to enrichment feedback
-    - [ ] Ensure logging shows "Enriching content..." for Dev.to posts
-    - [ ] Ensure logging shows "Skipping (quickie)" for filtered posts
-- [ ] Task: Write/Update integration test for Dev.to ingestion
+- [x] Task: Update `app/tools/ingest.py` to support Dev.to enrichment feedback d9b2659
+    - [x] Ensure logging shows "Enriching content..." for Dev.to posts
+    - [x] Ensure logging shows "Skipping (quickie)" for filtered posts
+    - [x] Implement visual progress indicator (spinner or bar) for Dev.to ingestion
+- [~] Task: Write/Update integration test for Dev.to ingestion
     - [ ] Mock Dev.to API and AI service
     - [ ] Verify the full flow from API to `Blog` model population
-- [ ] Task: Run full ingestion for a test Dev.to user and verify Firestore results
+- [~] Task: Run full ingestion for a test Dev.to user and verify Firestore results
 - [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
