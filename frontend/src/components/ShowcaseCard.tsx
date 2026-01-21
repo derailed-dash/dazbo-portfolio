@@ -62,7 +62,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
 
         
         {/* Footer Row: Buttons (Left) & Source Icon (Right) */}
-        <div className="d-flex justify-content-between align-items-end mt-3">
+        <div className="d-flex justify-content-between align-items-center mt-3">
           <div className="d-flex gap-2">
             {linkUrl && (
               <Button 
