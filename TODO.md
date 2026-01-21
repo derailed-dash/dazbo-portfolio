@@ -23,3 +23,4 @@
     - [ ] Handle creating embeddings for existing records.
     - [ ] Store embeddings in Firestore Vector Search.
     - [ ] Implement vector search tool for the agent.
+- [ ] Investigate missing Dev.to blogs in portfolio.
