@@ -3,7 +3,7 @@
 ## Phase 1: Backend Sorting Logic
 Refine the service layer to ensure all portfolio data is returned in reverse chronological order (newest first).
 
-- [ ] Task: Update `BlogService` to sort by date descending
+- [x] Task: Update `BlogService` to sort by date descending 509c20e
     - [ ] Create/Update unit test in `tests/unit/test_services.py` to verify `list` returns blogs sorted by date (newest first).
     - [ ] Modify `app/services/blog_service.py` to include sorting in the Firestore query.
     - [ ] Run tests and verify "Green" phase.
