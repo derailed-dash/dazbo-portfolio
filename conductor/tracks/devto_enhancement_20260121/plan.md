@@ -18,14 +18,14 @@ Goal: Implement the "Boost" filter and ensure the Dev.to connector captures the 
 ## Phase 2: AI Enrichment Integration
 Goal: Integrate `ContentEnrichmentService` to provide technical summaries and tags for Dev.to posts.
 
-- [ ] Task: Write unit tests for AI enrichment integration in `DevToConnector`
-    - [ ] Mock `ContentEnrichmentService` to return predictable summaries/tags
-    - [ ] Verify `ai_summary` and `tags` are populated in the returned `Blog` objects
-- [ ] Task: Implement AI enrichment in `DevToConnector.fetch_posts`
-    - [ ] Call `ContentEnrichmentService.enrich_content` (passing Markdown content)
-    - [ ] Ensure summary limit is set to 225 words in the prompt context
-    - [ ] Implement error handling/fallback to original metadata
-- [ ] Task: Verify enrichment logic with tests
+- [x] Task: Write unit tests for AI enrichment integration in `DevToConnector` da91440
+    - [x] Mock `ContentEnrichmentService` to return predictable summaries/tags
+    - [x] Verify `ai_summary` and `tags` are populated in the returned `Blog` objects
+- [x] Task: Implement AI enrichment in `DevToConnector.fetch_posts` da91440
+    - [x] Call `ContentEnrichmentService.enrich_content` (passing Markdown content)
+    - [x] Ensure summary limit is set to 225 words in the prompt context
+    - [x] Implement error handling/fallback to original metadata
+- [x] Task: Verify enrichment logic with tests da91440
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: CLI Integration and E2E Verification
