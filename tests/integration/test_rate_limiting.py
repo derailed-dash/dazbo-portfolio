@@ -75,7 +75,7 @@ def test_chat_rate_limit(mock_get_client):
 
             # The 6th request should fail with 429
             response = client.post("/api/chat/stream", json=payload)
-            assert response.status_code == 429
+            assert response.status_code == 429, f"Expected 429, got {response.status_code}. Headers: {response.headers}"
             assert "Rate limit exceeded" in response.text
     finally:
         app.dependency_overrides.clear()
