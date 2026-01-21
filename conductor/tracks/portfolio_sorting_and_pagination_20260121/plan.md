@@ -33,9 +33,9 @@ Modify the `ShowcaseCarousel` component to handle high page counts on mobile by 
 ## Phase 3: Final Integration and Quality Gate
 Final verification of the combined fixes.
 
-- [ ] Task: Fix `GitHubConnector` to map `created_at` field
-    - [ ] Modify `app/services/connectors/github_connector.py` to map `created_at` or `pushed_at` from GitHub API.
-    - [ ] Create/Update test to verify mapping.
+- [x] Task: Fix `GitHubConnector` to map `created_at` field 3316c9c
+    - [x] Modify `app/services/connectors/github_connector.py` to map `created_at` or `pushed_at` from GitHub API.
+    - [x] Create/Update test to verify mapping.
 - [ ] Task: End-to-End Verification
     - [ ] Run all integration tests `make test`.
     - [ ] Run all linting and quality checks `make lint`.
