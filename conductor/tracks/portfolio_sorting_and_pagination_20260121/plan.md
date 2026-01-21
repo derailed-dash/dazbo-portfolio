@@ -36,8 +36,8 @@ Final verification of the combined fixes.
 - [x] Task: Fix `GitHubConnector` to map `created_at` field 3316c9c
     - [x] Modify `app/services/connectors/github_connector.py` to map `created_at` or `pushed_at` from GitHub API.
     - [x] Create/Update test to verify mapping.
-- [ ] Task: End-to-End Verification
-    - [ ] Run all integration tests `make test`.
-    - [ ] Run all linting and quality checks `make lint`.
-    - [ ] Verify sorting across all sections in the live UI (using `make react-ui` and `make local-backend`).
+- [x] Task: End-to-End Verification f78a894
+    - [x] Run all integration tests `make test`.
+    - [x] Run all linting and quality checks `make lint`.
+    - [x] Verify sorting across all sections in the live UI (using `make react-ui` and `make local-backend`).
 - [ ] Task: Conductor - User Manual Verification 'Final Integration and Quality Gate' (Protocol in workflow.md)
