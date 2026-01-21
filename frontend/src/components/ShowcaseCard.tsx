@@ -27,13 +27,17 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   sourceUrl,
   type
 }) => {
-  const getSafeUrl = (url: string | undefined): string => {
-    if (!url) return '#';
+  const getSafeUrl = (url: string | undefined): string | undefined => {
+    if (!url) return undefined;
     if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
       return url;
     }
-    return '#';
+    return undefined;
   };
+
+  const safeLinkUrl = getSafeUrl(linkUrl);
+  const safeRepoUrl = getSafeUrl(repoUrl);
+  const safeSourceUrl = getSafeUrl(sourceUrl);
 
   const sourceIconStyle: React.CSSProperties = { 
     width: '24px', 
@@ -78,11 +82,11 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
         {/* Footer Row: Buttons (Left) & Source Icon (Right) */}
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div className="d-flex gap-2">
-            {linkUrl && (
+            {safeLinkUrl && (
               <Button 
                 variant="primary" 
                 size="sm" 
-                href={getSafeUrl(linkUrl)} 
+                href={safeLinkUrl} 
                 target="_blank"
                 className="d-flex align-items-center gap-1"
               >
@@ -90,11 +94,11 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
                 <span>{type === 'blog' ? 'Read' : 'View'}</span>
               </Button>
             )}
-            {repoUrl && (
+            {safeRepoUrl && (
               <Button 
                 variant="outline-secondary" 
                 size="sm" 
-                href={getSafeUrl(repoUrl)} 
+                href={safeRepoUrl} 
                 target="_blank"
                 className="d-flex align-items-center gap-1"
               >
@@ -106,9 +110,9 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
 
           {sourceIcon && (
             <div className="d-flex align-items-center">
-              {sourceUrl ? (
+              {safeSourceUrl ? (
                 <a 
-                  href={getSafeUrl(sourceUrl)} 
+                  href={safeSourceUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="d-inline-flex opacity-75 hover-opacity-100 transition-opacity"
