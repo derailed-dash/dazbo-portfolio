@@ -9,10 +9,10 @@ Goal: Implement the "Boost" filter and ensure the Dev.to connector captures the 
     - [x] Test that titles starting with `[Boost]` are excluded
     - [x] Test that regular titles are included
 - [x] Task: Implement title filtering in `DevToConnector.fetch_posts` c73b950
-- [ ] Task: Update `DevToConnector` to fetch full article content (Markdown)
-    - [ ] Update API call to retrieve `body_markdown`
-    - [ ] Map `body_markdown` to `Blog.markdown_content`
-- [ ] Task: Verify filtering and content retrieval with tests
+- [x] Task: Update `DevToConnector` to fetch full article content (Markdown) 4c1465e
+    - [x] Update API call to retrieve `body_markdown`
+    - [x] Map `body_markdown` to `Blog.markdown_content`
+- [x] Task: Verify filtering and content retrieval with tests 4c1465e
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: AI Enrichment Integration
