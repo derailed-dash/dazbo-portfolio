@@ -15,7 +15,7 @@ Goal: Implement the "Boost" filter and ensure the Dev.to connector captures the 
 - [x] Task: Verify filtering and content retrieval with tests 4c1465e
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
-## Phase 2: AI Enrichment Integration
+## Phase 2: AI Enrichment Integration [checkpoint: 4a9d6aa]
 Goal: Integrate `ContentEnrichmentService` to provide technical summaries and tags for Dev.to posts.
 
 - [x] Task: Write unit tests for AI enrichment integration in `DevToConnector` da91440
@@ -26,7 +26,7 @@ Goal: Integrate `ContentEnrichmentService` to provide technical summaries and ta
     - [x] Ensure summary limit is set to 225 words in the prompt context
     - [x] Implement error handling/fallback to original metadata
 - [x] Task: Verify enrichment logic with tests da91440
-- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: CLI Integration and E2E Verification
 Goal: Ensure the ingestion tool provides correct feedback and performs E2E updates to Firestore.
