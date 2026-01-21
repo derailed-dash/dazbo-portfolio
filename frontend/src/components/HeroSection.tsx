@@ -12,7 +12,7 @@ const HeroSection: React.FC = () => {
                 <Row className="align-items-center">
                     
                     {/* Left Column: Profile Picture */}
-                    <Col xs={12} md={4} lg={3} className="text-center text-md-start mb-4 mb-md-0">
+                    <Col xs={12} md={4} lg={3} className="text-start mb-4 mb-md-0">
                         <img
                             src="/images/dazbo-profile.png"
                             alt="Dazbo"
