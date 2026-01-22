@@ -49,7 +49,9 @@ def slugify(text: str) -> str:
     return text
 
 
-async def _process_manual_projects(project_list: list[dict], service: ProjectService | ApplicationService, default_source: str, model_class=Project):
+async def _process_manual_projects(
+    project_list: list[dict], service: ProjectService | ApplicationService, default_source: str, model_class=Project
+):
     """
     Helper to process manual project/application entries.
     """

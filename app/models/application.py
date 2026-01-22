@@ -12,4 +12,5 @@ class Application(Project):
     Represents a curated application.
     Currently inherits all fields from Project.
     """
+
     pass

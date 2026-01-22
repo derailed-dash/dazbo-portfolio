@@ -5,8 +5,8 @@ How: Mocks file reading and Firestore services.
 """
 
 from unittest.mock import AsyncMock, mock_open, patch
+
 from typer.testing import CliRunner
-import pytest
 
 runner = CliRunner()
 
@@ -18,6 +18,7 @@ applications:
     image_url: "https://storage.googleapis.com/assets/app.png"
     tags: ["react", "fastapi"]
 """
+
 
 @patch("app.tools.ingest.ApplicationService")
 @patch("app.tools.ingest.BlogService")
@@ -37,15 +38,15 @@ def test_ingest_applications_yaml(mock_firestore, mock_blog_service, mock_app_se
         result = runner.invoke(app, ["--yaml-file", "manual_apps.yaml"])
 
     assert result.exit_code == 0
-    
+
     # Verify we found applications
     assert "Found 1 manual applications" in result.stdout
 
     # Verify Application creation calls
     assert mock_app_svc.create.call_count == 1
     call_args = mock_app_svc.create.call_args_list[0]
-    app_obj, kwargs = call_args[0][0], call_args[1]
-    
+    app_obj, _ = call_args[0][0], call_args[1]
+
     assert app_obj.title == "My Awesome App"
     assert app_obj.featured is True
     assert app_obj.is_manual is True
@@ -59,7 +60,8 @@ def test_ingest_applications_yaml(mock_firestore, mock_blog_service, mock_app_se
     # Let's check the slugify implementation in ingest.py. It replaces non-alnum with -.
     # So demo.example.com -> demo-example-com.
     # But wait, split('/')[-1] of https://demo.example.com is demo.example.com
-    pass 
+    pass
+
 
 def test_slugify_trailing_slash():
     # We can't import slugify directly easily if it's not exported or if we want to test the full flow
@@ -71,24 +73,27 @@ applications:
     demo_url: "https://trailing.com/"
 """
     from unittest.mock import MagicMock
+
     mock_app_svc = MagicMock()
     mock_app_svc.create = AsyncMock()
     mock_app_svc.list = AsyncMock(return_value=[])
-    
+
     from app.tools.ingest import app
-    
-    with patch("app.tools.ingest.ApplicationService", return_value=mock_app_svc), \
-         patch("app.tools.ingest.BlogService"), \
-         patch("app.tools.ingest.firestore.AsyncClient"), \
-         patch("builtins.open", mock_open(read_data=YAML_TRAILING)):
-         
+
+    with (
+        patch("app.tools.ingest.ApplicationService", return_value=mock_app_svc),
+        patch("app.tools.ingest.BlogService"),
+        patch("app.tools.ingest.firestore.AsyncClient"),
+        patch("builtins.open", mock_open(read_data=YAML_TRAILING)),
+    ):
         result = runner.invoke(app, ["--yaml-file", "trailing.yaml"])
-        
+
     assert result.exit_code == 0
     call_args = mock_app_svc.create.call_args
     # item_id should not be empty or random
     # https://trailing.com/ -> split -> trailing.com -> slugify -> trailing-com
-    assert call_args[1]['item_id'] == "trailing-com"
+    assert call_args[1]["item_id"] == "trailing-com"
+
 
 @patch("app.tools.ingest.ApplicationService")
 @patch("app.tools.ingest.BlogService")
