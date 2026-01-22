@@ -48,11 +48,11 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   return (
     <Card className="h-100 overflow-hidden">
       {imageUrl && (
-        <div style={{ height: '180px', overflow: 'hidden' }}>
+        <div style={{ height: '180px', overflow: 'hidden' }} className="d-flex align-items-center justify-content-center bg-light">
           <Card.Img 
             variant="top" 
             src={imageUrl} 
-            className="w-100 h-100 object-fit-cover"
+            style={{ height: '90%', width: '90%', objectFit: 'contain' }}
             alt={title}
           />
         </div>

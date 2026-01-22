@@ -12,7 +12,10 @@ const ProjectCarousel: React.FC = () => {
   useEffect(() => {
     getProjects()
       .then((data: Project[]) => {
-        const mapped: ShowcaseItem[] = data.map((p) => ({
+        // Filter for GitHub projects
+        const githubProjects = data.filter((p) => p.source_platform === 'github');
+
+        const mapped: ShowcaseItem[] = githubProjects.map((p) => ({
           id: p.id || p.repo_url || 'unknown',
           title: p.title,
           description: p.description || '',

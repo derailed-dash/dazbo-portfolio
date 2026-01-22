@@ -6,6 +6,7 @@ How: Provides functions to retrieve services (ProjectService, BlogService, etc.)
 
 from fastapi import Request
 
+from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
 from app.services.experience_service import ExperienceService
 from app.services.project_service import ProjectService
@@ -14,6 +15,10 @@ from app.services.session_service import FirestoreSessionService
 
 def get_project_service(request: Request) -> ProjectService:
     return request.app.state.project_service
+
+
+def get_application_service(request: Request) -> ApplicationService:
+    return request.app.state.application_service
 
 
 def get_blog_service(request: Request) -> BlogService:

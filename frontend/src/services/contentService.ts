@@ -1,5 +1,5 @@
 import apiClient from './api';
-import type { Project, Blog } from '../types';
+import type { Project, Blog, Application } from '../types';
 
 export const getBlogs = async (): Promise<Blog[]> => {
   const response = await apiClient.get<Blog[]>('/api/blogs');
@@ -8,6 +8,11 @@ export const getBlogs = async (): Promise<Blog[]> => {
 
 export const getProjects = async (): Promise<Project[]> => {
   const response = await apiClient.get<Project[]>('/api/projects');
+  return response.data;
+};
+
+export const getApplications = async (): Promise<Application[]> => {
+  const response = await apiClient.get<Application[]>('/api/applications');
   return response.data;
 };
 

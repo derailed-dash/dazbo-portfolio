@@ -23,8 +23,10 @@ from rich.progress import (
 )
 
 from app.config import settings
+from app.models.application import Application
 from app.models.blog import Blog
 from app.models.project import Project
+from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
 from app.services.connectors.devto_connector import DevToConnector
 from app.services.connectors.github_connector import GitHubConnector
@@ -47,13 +49,13 @@ def slugify(text: str) -> str:
     return text
 
 
-async def _process_manual_projects(project_list: list[dict], project_service: ProjectService, default_source: str):
+async def _process_manual_projects(project_list: list[dict], service: ProjectService | ApplicationService, default_source: str, model_class=Project):
     """
     Helper to process manual project/application entries.
     """
-    existing_projects = await project_service.list()
-    existing_urls = {p.repo_url: p.id for p in existing_projects if p.repo_url}
-    existing_demo_urls = {p.demo_url: p.id for p in existing_projects if p.demo_url}
+    existing_items = await service.list()
+    existing_urls = {p.repo_url: p.id for p in existing_items if p.repo_url}
+    existing_demo_urls = {p.demo_url: p.id for p in existing_items if p.demo_url}
 
     for proj_data in project_list:
         # Enforce manual flags if not already set
@@ -61,17 +63,15 @@ async def _process_manual_projects(project_list: list[dict], project_service: Pr
         proj_data.setdefault("source_platform", default_source)
 
         try:
-            p = Project(**proj_data)
+            p = model_class(**proj_data)
         except Exception as validation_err:
-            console.print(f"[red]Validation Error for project {proj_data.get('title')}: {validation_err}[/red]")
+            console.print(f"[red]Validation Error for {default_source} {proj_data.get('title')}: {validation_err}[/red]")
             continue
-
-        # Upsert logic based on repo_url or demo_url or title
 
         # Map for titles
         existing_title_map = {}
         ambiguous_titles = set()
-        for existing_p in existing_projects:
+        for existing_p in existing_items:
             if existing_p.title in existing_title_map:
                 ambiguous_titles.add(existing_p.title)
             existing_title_map[existing_p.title] = existing_p.id
@@ -84,7 +84,7 @@ async def _process_manual_projects(project_list: list[dict], project_service: Pr
         elif p.title in existing_title_map:
             if p.title in ambiguous_titles:
                 console.print(
-                    f"[bold red]Error: Title '{p.title}' matches multiple existing projects. Cannot safely upsert by title. Skipping.[/bold red]"
+                    f"[bold red]Error: Title '{p.title}' matches multiple existing items. Cannot safely upsert by title. Skipping.[/bold red]"
                 )
                 continue
             match_id = existing_title_map[p.title]
@@ -93,19 +93,19 @@ async def _process_manual_projects(project_list: list[dict], project_service: Pr
         if p.id:
             desired_id = p.id
         elif p.repo_url:
-            desired_id = slugify(p.repo_url.split("/")[-1])
+            desired_id = slugify(p.repo_url.rstrip("/").split("/")[-1])
         elif p.demo_url:
-            desired_id = slugify(p.demo_url.split("/")[-1])
+            desired_id = slugify(p.demo_url.rstrip("/").split("/")[-1])
         else:
             desired_id = slugify(p.title)
 
         if match_id:
             p.id = match_id
-            await project_service.update(p.id, p.model_dump(exclude={"id"}))
-            console.print(f"Updated Manual: {p.title}")
+            await service.update(p.id, p.model_dump(exclude={"id"}))
+            console.print(f"Updated {default_source.capitalize()}: {p.title}")
         else:
-            await project_service.create(p, item_id=desired_id)
-            console.print(f"Created Manual: {p.title} (ID: {desired_id})")
+            await service.create(p, item_id=desired_id)
+            console.print(f"Created {default_source.capitalize()}: {p.title} (ID: {desired_id})")
 
 
 async def ingest_resources(
@@ -121,6 +121,7 @@ async def ingest_resources(
     """
     db = firestore.AsyncClient(project=project_id)
     project_service = ProjectService(db)
+    application_service = ApplicationService(db)
     blog_service = BlogService(db)
 
     # --- GitHub ---
@@ -361,7 +362,7 @@ async def ingest_resources(
                     if not app_data.get("demo_url"):
                         raise ValueError(f"Application '{app_data.get('title')}' missing required demo_url")
 
-                await _process_manual_projects(manual_apps, project_service, "application")
+                await _process_manual_projects(manual_apps, application_service, "application", model_class=Application)
 
             # Process Blogs
             manual_blogs = data.get("blogs", [])

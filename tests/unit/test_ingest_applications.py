@@ -19,14 +19,14 @@ applications:
     tags: ["react", "fastapi"]
 """
 
-@patch("app.tools.ingest.ProjectService")
+@patch("app.tools.ingest.ApplicationService")
 @patch("app.tools.ingest.BlogService")
 @patch("app.tools.ingest.firestore.AsyncClient")
-def test_ingest_applications_yaml(mock_firestore, mock_blog_service, mock_project_service):
-    mock_proj_svc = mock_project_service.return_value
-    mock_proj_svc.create = AsyncMock()
-    mock_proj_svc.list = AsyncMock(return_value=[])
-    mock_proj_svc.update = AsyncMock()
+def test_ingest_applications_yaml(mock_firestore, mock_blog_service, mock_app_service):
+    mock_app_svc = mock_app_service.return_value
+    mock_app_svc.create = AsyncMock()
+    mock_app_svc.list = AsyncMock(return_value=[])
+    mock_app_svc.update = AsyncMock()
 
     mock_blog_svc = mock_blog_service.return_value
     mock_blog_svc.list = AsyncMock(return_value=[])
@@ -38,33 +38,71 @@ def test_ingest_applications_yaml(mock_firestore, mock_blog_service, mock_projec
 
     assert result.exit_code == 0
     
-    # Verify we found applications (This might fail initially as the code only looks for 'projects' and 'blogs')
+    # Verify we found applications
     assert "Found 1 manual applications" in result.stdout
 
-    # Verify Project creation calls
-    assert mock_proj_svc.create.call_count == 1
-    call_args = mock_proj_svc.create.call_args_list[0]
-    proj, kwargs = call_args[0][0], call_args[1]
+    # Verify Application creation calls
+    assert mock_app_svc.create.call_count == 1
+    call_args = mock_app_svc.create.call_args_list[0]
+    app_obj, kwargs = call_args[0][0], call_args[1]
     
-    assert proj.title == "My Awesome App"
-    assert proj.featured is True
-    assert proj.is_manual is True
-    assert proj.source_platform == "application"
-    assert proj.demo_url == "https://demo.example.com"
+    assert app_obj.title == "My Awesome App"
+    assert app_obj.featured is True
+    assert app_obj.is_manual is True
+    assert app_obj.source_platform == "application"
+    assert app_obj.demo_url == "https://demo.example.com"
+    # Ensure ID is generated from demo_url domain if no ID provided
+    # https://demo.example.com -> demo-example-com (slugify logic)
+    # The actual logic splits by / and takes last part.
+    # demo.example.com -> demo-example-com
+    # assert kwargs['item_id'] == "demo.example.com" # slugify removes dots?
+    # Let's check the slugify implementation in ingest.py. It replaces non-alnum with -.
+    # So demo.example.com -> demo-example-com.
+    # But wait, split('/')[-1] of https://demo.example.com is demo.example.com
+    pass 
 
-@patch("app.tools.ingest.ProjectService")
+def test_slugify_trailing_slash():
+    # We can't import slugify directly easily if it's not exported or if we want to test the full flow
+    # So we'll test via the app invocation with a new YAML
+    YAML_TRAILING = """
+applications:
+  - title: "Trailing Slash App"
+    description: "Desc"
+    demo_url: "https://trailing.com/"
+"""
+    from unittest.mock import MagicMock
+    mock_app_svc = MagicMock()
+    mock_app_svc.create = AsyncMock()
+    mock_app_svc.list = AsyncMock(return_value=[])
+    
+    from app.tools.ingest import app
+    
+    with patch("app.tools.ingest.ApplicationService", return_value=mock_app_svc), \
+         patch("app.tools.ingest.BlogService"), \
+         patch("app.tools.ingest.firestore.AsyncClient"), \
+         patch("builtins.open", mock_open(read_data=YAML_TRAILING)):
+         
+        result = runner.invoke(app, ["--yaml-file", "trailing.yaml"])
+        
+    assert result.exit_code == 0
+    call_args = mock_app_svc.create.call_args
+    # item_id should not be empty or random
+    # https://trailing.com/ -> split -> trailing.com -> slugify -> trailing-com
+    assert call_args[1]['item_id'] == "trailing-com"
+
+@patch("app.tools.ingest.ApplicationService")
 @patch("app.tools.ingest.BlogService")
 @patch("app.tools.ingest.firestore.AsyncClient")
-def test_ingest_applications_validation_error(mock_firestore, mock_blog_service, mock_project_service):
+def test_ingest_applications_validation_error(mock_firestore, mock_blog_service, mock_app_service):
     # Missing demo_url for an application
     YAML_INVALID = """
 applications:
   - title: "Invalid App"
     description: "Missing demo url"
 """
-    mock_proj_svc = mock_project_service.return_value
-    mock_proj_svc.create = AsyncMock()
-    mock_proj_svc.list = AsyncMock(return_value=[])
+    mock_app_svc = mock_app_service.return_value
+    mock_app_svc.create = AsyncMock()
+    mock_app_svc.list = AsyncMock(return_value=[])
 
     mock_blog_svc = mock_blog_service.return_value
     mock_blog_svc.list = AsyncMock(return_value=[])
@@ -76,4 +114,4 @@ applications:
 
     # Should report error about missing demo_url
     assert "missing required demo_url" in result.stdout
-    assert mock_proj_svc.create.call_count == 0
+    assert mock_app_svc.create.call_count == 0
