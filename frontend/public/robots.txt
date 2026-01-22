@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dazbo.com/api/sitemap.xml
+Sitemap: https://darrenlester.net/api/sitemap.xml

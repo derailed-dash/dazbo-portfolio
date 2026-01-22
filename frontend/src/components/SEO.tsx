@@ -13,12 +13,12 @@ interface SEOProps {
 const SEO: React.FC<SEOProps> = ({ 
   title, 
   description, 
-  image = 'https://dazbo.com/images/og-image.jpg', // Default image if we have one
+  image = 'https://darrenlester.net/images/dazbo-profile.png', 
   url = window.location.href, 
   type = 'website',
   jsonLd 
 }) => {
-  const siteTitle = 'Darren "Dazbo" Lester - Solutions Architect';
+  const siteTitle = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist';
   const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
 
   return (
