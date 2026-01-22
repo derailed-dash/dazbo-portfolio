@@ -29,8 +29,8 @@ This plan outlines the steps to implement SEO improvements, update UI text, and 
 ## Phase 4: Backend Sitemap
 *Dynamic sitemap generation for indexing.*
 
-- [ ] Task: Implement dynamic XML sitemap generation in the backend.
-- [ ] Task: Update `BlogService` and `ProjectService` if necessary to facilitate URL list retrieval.
+- [x] Task: Implement dynamic XML sitemap generation in the backend. a08bad9
+- [x] Task: Update `BlogService` and `ProjectService` if necessary to facilitate URL list retrieval. a08bad9
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Backend Sitemap' (Protocol in workflow.md)
 
 ## Phase 5: Documentation
