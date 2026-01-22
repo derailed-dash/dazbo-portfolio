@@ -56,6 +56,7 @@ class Settings(BaseSettings):
     # URLs
     medium_profile: str = ""
     devto_profile: str = ""
+    base_url: str = ""
 
 
 settings = Settings()

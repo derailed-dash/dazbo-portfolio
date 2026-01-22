@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 
 import anyio
 import google.auth
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -201,6 +201,52 @@ async def list_experience(request: Request, service: ExperienceService = Depends
     """List all work experience."""
     data = await service.list()
     return JSONResponse(content=jsonable_encoder(data))
+
+
+@app.get("/sitemap.xml")
+@limiter.limit("10/minute")
+async def sitemap_xml(
+    request: Request,
+    blog_service: BlogService = Depends(get_blog_service),
+    project_service: ProjectService = Depends(get_project_service),
+):
+    """Generate dynamic XML sitemap."""
+    import xml.etree.ElementTree as ET
+
+    base_url = settings.base_url
+
+    urlset = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+
+    def add_url(loc: str, lastmod: str | None = None, changefreq: str = "monthly", priority: str = "0.7"):
+        url = ET.SubElement(urlset, "url")
+        ET.SubElement(url, "loc").text = loc
+        if lastmod:
+            ET.SubElement(url, "lastmod").text = lastmod
+        ET.SubElement(url, "changefreq").text = changefreq
+        ET.SubElement(url, "priority").text = priority
+
+    # Static pages
+    add_url(f"{base_url}/", changefreq="daily", priority="1.0")
+
+    # Dynamic Blogs
+    blogs = await blog_service.get_sitemap_entries()
+    for blog in blogs:
+        add_url(
+            f"{base_url}/details/{blog['id']}",
+            lastmod=blog.get("lastmod"),
+        )
+
+    # Dynamic Projects
+    projects = await project_service.get_sitemap_entries()
+    for proj in projects:
+        add_url(
+            f"{base_url}/details/{proj['id']}",
+            lastmod=proj.get("lastmod"),
+        )
+
+    xml_content = f'<?xml version="1.0" encoding="UTF-8"?>\n{ET.tostring(urlset, encoding="unicode")}'
+
+    return Response(content=xml_content, media_type="application/xml")
 
 
 # --- Static File Serving (Unified Origin) ---

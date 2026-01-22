@@ -24,7 +24,6 @@ describe('MainLayout', () => {
         </MainLayout>
       </BrowserRouter>
     );
-    expect(screen.getAllByText(/Dazbo Portfolio/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Built with React & FastAPI/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Darren Lester/i).length).toBeGreaterThan(0);
   });
 });

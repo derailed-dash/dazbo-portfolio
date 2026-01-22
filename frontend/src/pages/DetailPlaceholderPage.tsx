@@ -2,12 +2,18 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { ArrowLeft } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const DetailPlaceholderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
   return (
     <div className="py-5">
+      <SEO 
+        title={`Content Detail: ${id}`}
+        description={`Details for content item: ${id}`}
+        type="article"
+      />
       <Link to="/">
         <Button variant="outline-secondary" className="mb-4 d-flex align-items-center gap-2">
           <ArrowLeft size={18} />

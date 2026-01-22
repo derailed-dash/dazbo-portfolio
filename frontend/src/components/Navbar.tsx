@@ -18,7 +18,7 @@ const AppNavbar: React.FC = () => {
         <div className="d-none d-lg-block text-end navbar-tagline">
             A showcase of technical writing, open-source craftsmanship, and professional experience.
             <br />
-            Powered by Python, React, and Gemini AI.
+            Built with Python, React, and Gemini AI.
         </div>
       </Container>
     </Navbar>

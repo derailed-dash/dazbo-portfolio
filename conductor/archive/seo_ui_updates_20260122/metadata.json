@@ -1,0 +1,8 @@
+{
+  "track_id": "seo_ui_updates_20260122",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-22T14:40:00Z",
+  "updated_at": "2026-01-22T14:40:00Z",
+  "description": "Implement basic SEO (Helmet, Sitemap, Robots, Metadata), update header tagline, and refine footer wording/links."
+}

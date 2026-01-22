@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+
 import App from './App';
 
 describe('App Routing', () => {
@@ -8,7 +9,9 @@ describe('App Routing', () => {
     // But testing App directly might be tricky if it has BrowserRouter inside.
     // Usually we test a component that uses useRoutes or similar.
     // For now, let's just ensure App renders without crashing.
-    render(<App />);
+    render(
+      <App />
+    );
     expect(screen.getByText(/Dazbo's/i)).toBeInTheDocument();
   });
 });

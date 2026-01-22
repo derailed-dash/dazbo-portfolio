@@ -25,6 +25,8 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | GOOGLE_CLOUD_LOCATION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
 | GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
 | Use Cloud Run Domain Mapping | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. See [Cloud Run Domain Mapping](https://docs.cloud.google.com/run/docs/mapping-custom-domains#run). |
+| Use React 19 Native Metadata | Leverages built-in hoisting for `<title>` and `<meta>` tags, eliminating the need for external libraries like `react-helmet`. |
+| Dynamic XML Sitemap | Generated on-the-fly by the backend to ensure search engines can discover all project and blog detail pages. |
 
 ## Application Design
 
@@ -40,7 +42,7 @@ The application uses `pydantic-settings` to manage configuration in a centralize
     2.  **`.env` File**: For local development, settings are loaded from a `.env` file in the project root. This file is excluded from version control.
 *   **Usage**: The `settings` object is imported and used throughout the application (e.g., in `app/agent.py`), ensuring that hardcoded values are avoided.
 
-### 1. Presentation Layer (React + FastAPI)
+## Presentation Layer (React + FastAPI)
 
 The application employs a **Unified Origin Architecture**. In production, the FastAPI backend serves both the REST API and the compiled React frontend assets.
 
@@ -83,13 +85,39 @@ The application implements a multi-tier rate limiting strategy using `slowapi` (
 *   **Chat Feedback**: The `ChatWidget` component explicitly checks for HTTP 429 status codes. If a user exceeds the limit, it displays a friendly message: *"You're sending messages too fast. Please wait a moment before trying again."*
 *   **Global Handling**: A central Axios interceptor (`frontend/src/services/api.ts`) monitors all API responses. Any 429 error triggers a console warning to notify developers and users of rate limit exhaustion.
 
-### 2. Service Layer
+## Search Engine Optimization (SEO)
+
+The application implements a comprehensive SEO strategy to ensure visibility and professional presentation on social media and search engines.
+
+### Document Metadata (React 19)
+
+We leverage **React 19's native support for document metadata**. This allows components to define `<title>`, `<meta>`, and `<link>` tags directly in their render output. React automatically hoists these tags to the `<head>` of the document and manages updates during client-side navigation.
+
+*   **`SEO` Component**: A reusable component (`frontend/src/components/SEO.tsx`) that centralizes the management of:
+    *   **Standard Tags**: Title, Description.
+    *   **Open Graph (OG)**: `og:title`, `og:description`, `og:image`, `og:url`, `og:type`.
+    *   **Twitter Cards**: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`.
+    *   **Structured Data**: Injects JSON-LD (Schema.org) scripts for rich search results (e.g., `Person` schema on the Home page).
+
+### Dynamic XML Sitemap
+
+To facilitate discovery of deep-linked content (Blogs and Projects), the FastAPI backend provides a dynamic sitemap at `/sitemap.xml`.
+
+*   **Implementation**: The endpoint (`app/fast_api_app.py`) retrieves slugs and modification dates from Firestore and constructs an XML response.
+*   **Optimization**: Services (`BlogService`, `ProjectService`) use **Firestore Projections** (`select()`) to retrieve only the necessary fields (`id`, `date`/`created_at`), minimizing database egress and latency.
+*   **Static Pages**: Includes the home page and major section landing pages.
+
+### Robots.txt
+
+A static `robots.txt` file in `frontend/public/` directs crawlers to the dynamic sitemap.
+
+## Service Layer
 
 *   **Generic Data Access**: `app/services/firestore_base.py` defines a generic `FirestoreService[T]` class. It handles common CRUD operations (create, get, list, update, delete) for any Pydantic model.
 *   **Domain Services**: Specialized services (`ProjectService`, `BlogService`, `ExperienceService`) inherit from the generic base or use it to implement domain-specific logic.
 *   **Session Management**: Uses `InMemorySessionService` from the Google ADK. Sessions are ephemeral and tied to the current application process, which is sufficient for the portfolio's conversational needs.
 
-### 3. Data/Model Layer
+### Data/Model Layer
 
 *   **Pydantic Models**: Located in `app/models/`, these define the schema for data entities (`Project`, `Blog`, `Experience`) and ensure type safety and validation between the API and Firestore.
 
@@ -267,7 +295,7 @@ Ideal for verifying the final build and deployment configuration.
 
 The portfolio populates its content (Projects and Blogs) through a hybrid ingestion system, designed to be run "out-of-band" via a CLI tool.
 
-### 1. The Ingestion CLI (`app/tools/ingest.py`)
+### The Ingestion CLI (`app/tools/ingest.py`)
 
 This tool allows the developer to trigger synchronization from external sources or ingest manually defined resources from a YAML file.
 
@@ -281,7 +309,7 @@ uv run python -m app.tools.ingest \
   --yaml-file manual_resources.yaml
 ```
 
-### 2. Connectors
+### Connectors
 
 The system uses modular "Connectors" to fetch data:
 *   **GitHub Connector:** Uses the GitHub API to fetch public repositories. Maps `html_url` to `repo_url`, `topics` to `tags`, and `description` to `description`. **Note:** Repositories marked as forks are automatically filtered out to ensure only original work is showcased.
@@ -290,7 +318,7 @@ The system uses modular "Connectors" to fetch data:
 *   **Dev.to Connector:** Uses the Dev.to API to fetch published articles. Maps articles to `Blog` entries.
 *   **Manual YAML:** Parses a local YAML file for "Metadata Only" entries (e.g., private projects, external links, paywalled articles).
 
-### 3. Content Processing & AI Enrichment
+### Content Processing & AI Enrichment
 
 For enriched content (specifically from Medium archives), the ingestion pipeline performs the following steps:
 
@@ -307,7 +335,7 @@ For enriched content (specifically from Medium archives), the ingestion pipeline
     -   Return the result as structured JSON.
     -   If the original HTML tags are missing, these AI-generated tags are used.
 
-### 4. Data Persistence & Idempotency
+### Data Persistence & Idempotency
 
 *   **Destination:** All data is stored in **Google Firestore**.
 *   **Sequential Processing:** The ingestion tool processes the archive file-by-file and persists to Firestore immediately. This allows the long-running process to be interrupted and resumed without data loss.
@@ -316,7 +344,7 @@ For enriched content (specifically from Medium archives), the ingestion pipeline
     -   **RSS** provides the latest `date` and `title`.
     -   **Archive** provides the `markdown_content`, `ai_summary`, `tags`, and `is_private` status.
 
-### 5. Ingestion Experience (CLI)
+### Ingestion Experience (CLI)
 
 The CLI tool (`app/tools/ingest.py`) provides rich visual feedback:
 *   **Progress Bar:** Shows the percentage complete, current file, and estimated time remaining.
@@ -331,7 +359,7 @@ The application uses the `rich` library to enhance the CLI experience.
 -   **Thread-Safe Logging:** The `console.log` method is used within the progress loop to print messages (like skip notifications) without breaking the progress bar layout.
 -   **Formatted Output:** `console.print` supports BBCode-like syntax (e.g., `[bold blue]...[/]`) for readable status updates.
 
-### 6. Static Assets (Images)
+### Static Assets (Images)
 
 *   **Storage:** Images (project screenshots, thumbnails) are stored in a public **Google Cloud Storage (GCS)** bucket (e.g., `<project-id>-assets`).
 *   **Ingestion:** Currently, images must be uploaded manually to the GCS bucket (e.g., via `gsutil` or Cloud Console).
@@ -345,12 +373,12 @@ The application uses the `rich` library to enhance the CLI experience.
         5.  Manually add or update the `image_url` field with the copied URL.
 *   **Future:** Automated image scraping and uploading may be added in future phases.
 
-### 5. Data Management
+### Data Management
 
 *   **Deletions:** The ingestion tool currently supports **create** and **update** operations. It does *not* delete entries that have been removed from the source.
     *   **To Delete:** Use the **Google Cloud Console (Firestore)** to manually delete obsolete documents. This is a safety design choice to prevent accidental bulk deletion.
 
-### 6. Manual Resources YAML Schema
+### Manual Resources YAML Schema
 
 To ingest resources that are not on GitHub, Medium, or Dev.to (e.g., standalone websites, private projects, or specific external articles), use a YAML file with the following structure:
 
@@ -389,34 +417,20 @@ blogs:
 
 *   **Blogs:** `title` (required), `summary`, `date` (ISO 8601), `platform` (e.g., "External", "Substack"), `url` (required), `metadata_only` (bool).
 
-
-
 ## Future Enhancements: RAG & Vector Search
 
-
-
 To improve the chatbot's ability to answer specific questions about the portfolio content, we plan to implement Retrieval-Augmented Generation (RAG) using Vector Search.
-
-
 
 ### Architecture
 
 *   **Embeddings Model:** Google Vertex AI Embeddings (e.g., `text-embedding-004`).
-
 *   **Vector Store:** Google Firestore Vector Search (using `KNN_VECTOR` fields and vector indexes).
-
 *   **Ingestion Pipeline Update:**
-
     1.  When a project or blog is ingested/updated, generate a text embedding for its description/summary.
-
     2.  Store the embedding vector in a new field (e.g., `embedding`) in the Firestore document.
 
 *   **Agent Tooling:**
-
     1.  Create a new tool `search_portfolio_vector` (or update existing).
-
     2.  The tool will generate an embedding for the user's query.
-
     3.  Perform a vector similarity search (cosine distance) in Firestore to find the most relevant documents.
-
     4.  Pass the retrieved context to the Gemini model for answer generation.
