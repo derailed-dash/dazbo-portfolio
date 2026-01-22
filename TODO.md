@@ -21,7 +21,7 @@
 - [X] Remove comments/boost posts from dev.to ingestion.
 - [X] Add dev.to AI summarisation and markdown import.
 - [X] Add application ingestion with yaml.
-- [ ] Add SEO.
+- [x] Add SEO.
 - [ ] Prevent adding duplicates in dev.to connector.
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
 - [ ] Implement RAG with Vector Search:
