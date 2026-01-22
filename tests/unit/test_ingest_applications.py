@@ -118,5 +118,5 @@ applications:
         result = runner.invoke(app, ["--yaml-file", "invalid_apps.yaml"])
 
     # Should report error about missing demo_url
-    assert "missing required demo_url" in result.stdout
+    assert "missing the required 'demo_url'" in result.stdout
     assert mock_app_svc.create.call_count == 0
