@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 
 import anyio
 import google.auth
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -201,6 +201,44 @@ async def list_experience(request: Request, service: ExperienceService = Depends
     """List all work experience."""
     data = await service.list()
     return JSONResponse(content=jsonable_encoder(data))
+
+
+@app.get("/sitemap.xml")
+async def sitemap_xml(
+    request: Request,
+    blog_service: BlogService = Depends(get_blog_service),
+    project_service: ProjectService = Depends(get_project_service),
+):
+    """Generate dynamic XML sitemap."""
+    base_url = "https://darrenlester.net"
+
+    # Static pages
+    urls = [
+        f"<url><loc>{base_url}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>",
+    ]
+
+    # Dynamic Blogs
+    blogs = await blog_service.get_sitemap_entries()
+    for blog in blogs:
+        lastmod = f"<lastmod>{blog['lastmod']}</lastmod>" if blog.get("lastmod") else ""
+        urls.append(
+            f"<url><loc>{base_url}/details/{blog['id']}</loc>{lastmod}<changefreq>monthly</changefreq><priority>0.7</priority></url>"
+        )
+
+    # Dynamic Projects
+    projects = await project_service.get_sitemap_entries()
+    for proj in projects:
+        lastmod = f"<lastmod>{proj['lastmod']}</lastmod>" if proj.get("lastmod") else ""
+        urls.append(
+            f"<url><loc>{base_url}/details/{proj['id']}</loc>{lastmod}<changefreq>monthly</changefreq><priority>0.7</priority></url>"
+        )
+
+    xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{''.join(urls)}
+</urlset>"""
+
+    return Response(content=xml_content, media_type="application/xml")
 
 
 # --- Static File Serving (Unified Origin) ---

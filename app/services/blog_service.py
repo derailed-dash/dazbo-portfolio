@@ -5,6 +5,7 @@ How: Extends `FirestoreService` for `Blog` model and `blogs` collection.
 """
 
 from google.cloud import firestore
+from typing import List, Any
 
 from app.config import settings
 from app.models.blog import Blog
@@ -35,7 +36,7 @@ class BlogService(FirestoreService[Blog]):
             return self.model_class(**data)
         return None
 
-    async def list(self) -> list[Blog]:
+    async def list(self) -> List[Blog]:
         # Sort by date descending
         docs = self.collection.order_by("date", direction=firestore.Query.DESCENDING).stream()
         items = []
@@ -45,3 +46,27 @@ class BlogService(FirestoreService[Blog]):
             data = self._enrich_blog_data(data)
             items.append(self.model_class(**data))
         return items
+
+    async def get_sitemap_entries(self) -> List[dict]:
+        """
+        Get all blog entries for sitemap (id and date).
+        Only returns public blogs (is_private=False).
+        """
+        # Note: We can't filter by is_private in list_projection easily if we didn't implement filtering there.
+        # But we can select is_private and filter in python.
+        # Ideally we should push filter to DB. 
+        # But list_projection doesn't support where() yet.
+        # Given small dataset, fetching is_private is fine.
+        
+        # Projection: id, date, is_private
+        results = await self.list_projection(["date", "is_private"], order_by="date")
+        
+        # Filter and map
+        entries = []
+        for item in results:
+            if not item.get("is_private", False):
+                entries.append({
+                    "id": item["id"],
+                    "lastmod": item["date"]
+                })
+        return entries
