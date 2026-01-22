@@ -25,6 +25,8 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | GOOGLE_CLOUD_LOCATION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
 | GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
 | Use Cloud Run Domain Mapping | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. See [Cloud Run Domain Mapping](https://docs.cloud.google.com/run/docs/mapping-custom-domains#run). |
+| Use React 19 Native Metadata | Leverages built-in hoisting for `<title>` and `<meta>` tags, eliminating the need for external libraries like `react-helmet`. |
+| Dynamic XML Sitemap | Generated on-the-fly by the backend to ensure search engines can discover all project and blog detail pages. |
 
 ## Application Design
 
@@ -82,6 +84,32 @@ The application implements a multi-tier rate limiting strategy using `slowapi` (
 
 *   **Chat Feedback**: The `ChatWidget` component explicitly checks for HTTP 429 status codes. If a user exceeds the limit, it displays a friendly message: *"You're sending messages too fast. Please wait a moment before trying again."*
 *   **Global Handling**: A central Axios interceptor (`frontend/src/services/api.ts`) monitors all API responses. Any 429 error triggers a console warning to notify developers and users of rate limit exhaustion.
+
+## Search Engine Optimization (SEO)
+
+The application implements a comprehensive SEO strategy to ensure visibility and professional presentation on social media and search engines.
+
+### 1. Document Metadata (React 19)
+
+We leverage **React 19's native support for document metadata**. This allows components to define `<title>`, `<meta>`, and `<link>` tags directly in their render output. React automatically hoists these tags to the `<head>` of the document and manages updates during client-side navigation.
+
+*   **`SEO` Component**: A reusable component (`frontend/src/components/SEO.tsx`) that centralizes the management of:
+    *   **Standard Tags**: Title, Description.
+    *   **Open Graph (OG)**: `og:title`, `og:description`, `og:image`, `og:url`, `og:type`.
+    *   **Twitter Cards**: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`.
+    *   **Structured Data**: Injects JSON-LD (Schema.org) scripts for rich search results (e.g., `Person` schema on the Home page).
+
+### 2. Dynamic XML Sitemap
+
+To facilitate discovery of deep-linked content (Blogs and Projects), the FastAPI backend provides a dynamic sitemap at `/sitemap.xml`.
+
+*   **Implementation**: The endpoint (`app/fast_api_app.py`) retrieves slugs and modification dates from Firestore and constructs an XML response.
+*   **Optimization**: Services (`BlogService`, `ProjectService`) use **Firestore Projections** (`select()`) to retrieve only the necessary fields (`id`, `date`/`created_at`), minimizing database egress and latency.
+*   **Static Pages**: Includes the home page and major section landing pages.
+
+### 3. Robots.txt
+
+A static `robots.txt` file in `frontend/public/` directs crawlers to the dynamic sitemap.
 
 ### 2. Service Layer
 
