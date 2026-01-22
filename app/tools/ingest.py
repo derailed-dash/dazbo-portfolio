@@ -357,14 +357,20 @@ async def ingest_resources(
             manual_apps = data.get("applications", [])
             if manual_apps:
                 console.print(f"Found {len(manual_apps)} manual applications.")
+                valid_apps = []
                 # For applications, we enforce some defaults and validation
                 for app_data in manual_apps:
                     app_data["featured"] = True
                     app_data["source_platform"] = "application"
                     if not app_data.get("demo_url"):
-                        console.print(f"[bold red]Error: Application '{app_data.get('title')}' is missing the required 'demo_url'. Skipping.[/bold red]")
+                        console.print(
+                            f"[bold red]Error: Application '{app_data.get('title')}' is missing the required 'demo_url'. Skipping.[/bold red]"
+                        )
                         continue
-                await _process_manual_projects(manual_apps, application_service, "application", model_class=Application)
+                    valid_apps.append(app_data)
+
+                if valid_apps:
+                    await _process_manual_projects(valid_apps, application_service, "application", model_class=Application)
 
             # Process Blogs
             manual_blogs = data.get("blogs", [])
