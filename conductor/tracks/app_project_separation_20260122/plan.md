@@ -4,10 +4,10 @@
 - [x] Task: Ingest Tool - Update GitHub Connector to Filter Forks [e3211c6]
     - [x] Sub-task: Modify `app/services/connectors/github_connector.py` to check the `fork` property in the GitHub API response.
     - [x] Sub-task: Add logic to skip the repository if `fork` is `true`.
-- [ ] Task: Ingest Tool - Add "Applications" YAML Support
-    - [ ] Sub-task: Update `app/tools/ingest.py` to parse the `applications` key from the YAML file.
-    - [ ] Sub-task: Implement logic to map `applications` entries to `Project` models with `featured=true`, `is_manual=true`, and `source_platform="application"`.
-    - [ ] Sub-task: Enforce `demo_url` as a required field for `applications` entries during validation.
+- [x] Task: Ingest Tool - Add "Applications" YAML Support [680edcd]
+    - [x] Sub-task: Update `app/tools/ingest.py` to parse the `applications` key from the YAML file.
+    - [x] Sub-task: Implement logic to map `applications` entries to `Project` models with `featured=true`, `is_manual=true`, and `source_platform="application"`.
+    - [x] Sub-task: Enforce `demo_url` as a required field for `applications` entries during validation.
 - [ ] Task: Create Sample Applications YAML
     - [ ] Sub-task: Create a file `manual_applications.yaml` (or update existing) with sample application entries (e.g., AoC Site, Portfolio).
     - [ ] Sub-task: Ensure entries have valid `image_url` fields pointing to GCS placeholders or actual assets.
