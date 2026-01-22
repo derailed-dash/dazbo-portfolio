@@ -8,7 +8,7 @@ This plan outlines the steps to implement SEO improvements, update UI text, and 
 - [x] Task: Update Header tagline text in the frontend. c92bb77
 - [x] Task: Update Footer copyright and links in the frontend. fb9489d
 - [x] Task: Create `robots.txt` in `frontend/public/` to guide search crawlers. 4a6d226
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: UI Wording Tweaks & Robots.txt' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: UI Wording Tweaks & Robots.txt' (Protocol in workflow.md) [checkpoint: c92fbef]
 
 ## Phase 2: Frontend SEO Infrastructure
 *Integrating head management and structured data.*
