@@ -8,9 +8,9 @@
     - [x] Sub-task: Update `app/tools/ingest.py` to parse the `applications` key from the YAML file.
     - [x] Sub-task: Implement logic to map `applications` entries to `Project` models with `featured=true`, `is_manual=true`, and `source_platform="application"`.
     - [x] Sub-task: Enforce `demo_url` as a required field for `applications` entries during validation.
-- [ ] Task: Create Sample Applications YAML
-    - [ ] Sub-task: Create a file `manual_applications.yaml` (or update existing) with sample application entries (e.g., AoC Site, Portfolio).
-    - [ ] Sub-task: Ensure entries have valid `image_url` fields pointing to GCS placeholders or actual assets.
+- [x] Task: Create Sample Applications YAML [c8b82b9]
+    - [x] Sub-task: Create a file `manual_applications.yaml` (or update existing) with sample application entries (e.g., AoC Site, Portfolio).
+    - [x] Sub-task: Ensure entries have valid `image_url` fields pointing to GCS placeholders or actual assets.
 - [ ] Task: Conductor - User Manual Verification 'Ingestion & Backend Logic' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Implementation
