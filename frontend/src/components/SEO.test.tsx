@@ -1,18 +1,14 @@
 import { render, waitFor } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { HelmetProvider } from 'react-helmet-async';
 import SEO from './SEO';
 
 describe('SEO Component', () => {
   it('renders title and meta tags', async () => {
-    const context = {};
     render(
-      <HelmetProvider context={context}>
-        <SEO 
-          title="Test Page" 
-          description="This is a test description" 
-        />
-      </HelmetProvider>
+      <SEO 
+        title="Test Page" 
+        description="This is a test description" 
+      />
     );
 
     await waitFor(() => {
@@ -28,7 +24,6 @@ describe('SEO Component', () => {
   });
 
   it('renders JSON-LD when provided', async () => {
-    const context = {};
     const jsonLdData = {
       "@context": "https://schema.org",
       "@type": "Person",
@@ -36,16 +31,16 @@ describe('SEO Component', () => {
     };
 
     render(
-      <HelmetProvider context={context}>
-        <SEO 
-          title="Home" 
-          description="Home page"
-          jsonLd={jsonLdData}
-        />
-      </HelmetProvider>
+      <SEO 
+        title="Home" 
+        description="Home page"
+        jsonLd={jsonLdData}
+      />
     );
 
     await waitFor(() => {
+      // Note: React 19 does not hoist script tags by default, so it might be in the body container
+      // But we just check if it exists in the document
       const script = document.querySelector('script[type="application/ld+json"]');
       expect(script).toBeInTheDocument();
       expect(script?.textContent).toBe(JSON.stringify(jsonLdData));

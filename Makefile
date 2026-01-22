@@ -7,10 +7,11 @@ MODEL ?= gemini-2.5-flash
 GOOGLE_CLOUD_REGION ?= europe-west1
 GOOGLE_CLOUD_LOCATION ?= global
 
-# Install dependencies using uv package manager
+# Install dependencies using uv package manager and npm
 install:
-	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.8.13/install.sh | sh; source $HOME/.local/bin/env; }
+	@command -v uv >/dev/null 2>&1 || { echo "uv is not installed. Installing uv..."; curl -LsSf https://astral.sh/uv/0.8.13/install.sh | sh; source $$HOME/.local/bin/env; }
 	uv sync
+	cd frontend && npm install --legacy-peer-deps
 
 # Launch local ADK Web UI
 playground:
