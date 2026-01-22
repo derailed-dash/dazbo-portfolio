@@ -25,10 +25,10 @@
 - [x] Task: Conductor - User Manual Verification 'Frontend Implementation'
 
 ## Phase 3: Documentation & Verification
-- [~] Task: Update Documentation
-    - [ ] Sub-task: Update `docs/design-and-walkthrough.md` to document the new `applications:` YAML structure, the dedicated collection, and the fork filtering policy.
-    - [ ] Sub-task: Verify the documentation example is correct.
-- [ ] Task: Final Verification
-    - [ ] Sub-task: Run the ingestion tool with GitHub user and YAML file.
-    - [ ] Sub-task: Verify in the UI that "Applications" and "Projects" are distinct and populated correctly.
-- [ ] Task: Conductor - User Manual Verification 'Documentation & Verification' (Protocol in workflow.md)
+- [x] Task: Update Documentation [6f91ae8]
+    - [x] Sub-task: Update `docs/design-and-walkthrough.md` to document the new `applications:` YAML structure, the dedicated collection, and the fork filtering policy.
+    - [x] Sub-task: Verify the documentation example is correct.
+- [x] Task: Final Verification [6f91ae8]
+    - [x] Sub-task: Run the ingestion tool with GitHub user and YAML file.
+    - [x] Sub-task: Verify in the UI that "Applications" and "Projects" are distinct and populated correctly.
+- [x] Task: Conductor - User Manual Verification 'Documentation & Verification'
