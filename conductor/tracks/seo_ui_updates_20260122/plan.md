@@ -34,7 +34,7 @@ This plan outlines the steps to implement SEO improvements, update UI text, and 
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Backend Sitemap' (Protocol in workflow.md)
 
 ## Phase 5: Documentation
-*Recording design decisions.*
+*Recording design decisions.* [checkpoint: 9f7f2af]
 
-- [ ] Task: Update `docs/design-and-walkthrough.md` with SEO architecture and configuration details.
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Documentation' (Protocol in workflow.md)
+- [x] Task: Update `docs/design-and-walkthrough.md` with SEO architecture and configuration details. 6f817f2
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Documentation' (Protocol in workflow.md)
