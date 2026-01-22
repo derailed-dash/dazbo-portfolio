@@ -1,9 +1,9 @@
 # Implementation Plan - Application and Project Separation
 
 ## Phase 1: Ingestion & Backend Logic
-- [ ] Task: Ingest Tool - Update GitHub Connector to Filter Forks
-    - [ ] Sub-task: Modify `app/services/connectors/github_connector.py` to check the `fork` property in the GitHub API response.
-    - [ ] Sub-task: Add logic to skip the repository if `fork` is `true`.
+- [x] Task: Ingest Tool - Update GitHub Connector to Filter Forks [e3211c6]
+    - [x] Sub-task: Modify `app/services/connectors/github_connector.py` to check the `fork` property in the GitHub API response.
+    - [x] Sub-task: Add logic to skip the repository if `fork` is `true`.
 - [ ] Task: Ingest Tool - Add "Applications" YAML Support
     - [ ] Sub-task: Update `app/tools/ingest.py` to parse the `applications` key from the YAML file.
     - [ ] Sub-task: Implement logic to map `applications` entries to `Project` models with `featured=true`, `is_manual=true`, and `source_platform="application"`.
