@@ -1,0 +1,8 @@
+{
+  "track_id": "app_project_separation_20260122",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-22T10:00:00Z",
+  "updated_at": "2026-01-22T10:00:00Z",
+  "description": "Manual YAML ingestion should use the heading 'Applications' to insert entries into the 'Applications' carousel. Fix any incorrect filters that would cause entries to appear in both 'Applications' and 'Featured Projects'. (The latter is for GitHub repos.) Ensure that these tiles can show images that we upload to GCS. Create a YAML to add some applications of my choosing. Update docs/design-and-walkthrough.md to reflect these changes, including any changes to how YAML works."
+}
