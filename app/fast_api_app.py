@@ -210,7 +210,7 @@ async def sitemap_xml(
     project_service: ProjectService = Depends(get_project_service),
 ):
     """Generate dynamic XML sitemap."""
-    base_url = "https://darrenlester.net"
+    base_url = settings.base_url
 
     # Static pages
     urls = [
@@ -235,7 +235,7 @@ async def sitemap_xml(
 
     xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{''.join(urls)}
+{"".join(urls)}
 </urlset>"""
 
     return Response(content=xml_content, media_type="application/xml")

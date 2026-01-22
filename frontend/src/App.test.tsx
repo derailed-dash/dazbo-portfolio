@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { HelmetProvider } from 'react-helmet-async';
+
 import App from './App';
 
 describe('App Routing', () => {
@@ -10,9 +10,7 @@ describe('App Routing', () => {
     // Usually we test a component that uses useRoutes or similar.
     // For now, let's just ensure App renders without crashing.
     render(
-      <HelmetProvider>
-        <App />
-      </HelmetProvider>
+      <App />
     );
     expect(screen.getByText(/Dazbo's/i)).toBeInTheDocument();
   });

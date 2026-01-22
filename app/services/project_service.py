@@ -4,8 +4,9 @@ Why: Handles business logic and Firestore operations for portfolio projects.
 How: Extends `FirestoreService` for `Project` model and `projects` collection.
 """
 
+import builtins
+
 from google.cloud import firestore
-from typing import List
 
 from app.models.project import Project
 from app.services.firestore_base import FirestoreService
@@ -15,7 +16,7 @@ class ProjectService(FirestoreService[Project]):
     def __init__(self, db: firestore.AsyncClient):
         super().__init__(db, "projects", Project)
 
-    async def list(self) -> List[Project]:
+    async def list(self) -> list[Project]:
         # Sort by created_at descending
         docs = self.collection.order_by("created_at", direction=firestore.Query.DESCENDING).stream()
         items = []
@@ -25,12 +26,12 @@ class ProjectService(FirestoreService[Project]):
             items.append(self.model_class(**data))
         return items
 
-    async def get_sitemap_entries(self) -> List[dict]:
+    async def get_sitemap_entries(self) -> builtins.list[dict]:
         """
         Get all project entries for sitemap (id and created_at).
         """
         results = await self.list_projection(["created_at"], order_by="created_at")
-        
+
         entries = []
         for item in results:
             created_at = item.get("created_at")
@@ -41,9 +42,6 @@ class ProjectService(FirestoreService[Project]):
                     lastmod = created_at.isoformat()
                 else:
                     lastmod = str(created_at)
-            
-            entries.append({
-                "id": item["id"],
-                "lastmod": lastmod
-            })
+
+            entries.append({"id": item["id"], "lastmod": lastmod})
         return entries

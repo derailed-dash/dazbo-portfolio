@@ -9,16 +9,19 @@ interface SEOProps {
   jsonLd?: Record<string, any>;
 }
 
+const SITE_TITLE = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist';
+const DEFAULT_IMAGE = 'https://darrenlester.net/images/dazbo-profile.png';
+
+
 const SEO: React.FC<SEOProps> = ({ 
   title, 
   description, 
-  image = 'https://darrenlester.net/images/dazbo-profile.png', 
+  image = DEFAULT_IMAGE, 
   url = window.location.href, 
   type = 'website',
   jsonLd 
 }) => {
-  const siteTitle = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist';
-  const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
+  const fullTitle = title === SITE_TITLE ? title : `${title} | ${SITE_TITLE}`;
 
   return (
     <>
