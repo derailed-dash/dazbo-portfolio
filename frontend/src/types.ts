@@ -28,6 +28,8 @@ export interface Project {
   created_at?: string;
 }
 
+export interface Application extends Project {}
+
 export interface Blog {
   id?: string;
   title: string;

@@ -35,7 +35,8 @@ def test_agent_stream() -> None:
     async def mock_run_async(*args, **kwargs):
         yield mock_event
 
-    with patch("app.agent.PortfolioAgent.run_async", side_effect=mock_run_async):
+    # Patch the base LlmAgent.run_async to be sure it's caught
+    with patch("google.adk.agents.llm_agent.LlmAgent.run_async", side_effect=mock_run_async):
         runner = Runner(agent=root_agent, session_service=session_service, app_name=settings.app_name)
 
         message = types.Content(role="user", parts=[types.Part.from_text(text="Why is the sky blue?")])

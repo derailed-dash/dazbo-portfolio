@@ -4,7 +4,7 @@ Why: Verifies that API routes return correct status codes and data format.
 How: Uses `TestClient` and mocks dependency injection overrides for services.
 """
 
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 from fastapi.testclient import TestClient
 
@@ -18,8 +18,8 @@ from app.dependencies import (
 def test_get_projects():
     from app.fast_api_app import app
 
-    mock_service = AsyncMock()
-    mock_service.list.return_value = []
+    mock_service = MagicMock()
+    mock_service.list = AsyncMock(return_value=[])
     app.dependency_overrides[get_project_service] = lambda: mock_service
 
     try:
@@ -33,8 +33,8 @@ def test_get_projects():
 def test_get_blogs():
     from app.fast_api_app import app
 
-    mock_service = AsyncMock()
-    mock_service.list.return_value = []
+    mock_service = MagicMock()
+    mock_service.list = AsyncMock(return_value=[])
     app.dependency_overrides[get_blog_service] = lambda: mock_service
 
     try:
@@ -48,8 +48,8 @@ def test_get_blogs():
 def test_get_experience():
     from app.fast_api_app import app
 
-    mock_service = AsyncMock()
-    mock_service.list.return_value = []
+    mock_service = MagicMock()
+    mock_service.list = AsyncMock(return_value=[])
     app.dependency_overrides[get_experience_service] = lambda: mock_service
 
     try:

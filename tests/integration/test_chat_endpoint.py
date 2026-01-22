@@ -35,7 +35,7 @@ def test_chat_streaming_endpoint():
         ToolMockBlogService.return_value.list = AsyncMock(return_value=[])
 
         # Setup MockGetClient to return an AsyncMock for the db client
-        mock_db_client = AsyncMock()
+        mock_db_client = MagicMock()
         MockGetClient.return_value = mock_db_client
 
         # Mock the client close method to be synchronous (as per recent change)

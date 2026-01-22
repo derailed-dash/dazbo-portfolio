@@ -31,13 +31,16 @@ from app.agent import app as adk_app
 from app.app_utils.typing import Feedback
 from app.config import settings
 from app.dependencies import (
+    get_application_service,
     get_blog_service,
     get_experience_service,
     get_project_service,
 )
+from app.models.application import Application
 from app.models.blog import Blog
 from app.models.experience import Experience
 from app.models.project import Project
+from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
 from app.services.experience_service import ExperienceService
 from app.services.firestore import close_client, get_client
@@ -69,6 +72,7 @@ async def lifespan(app: FastAPI):
 
     # Initialize Services
     app.state.project_service = ProjectService(db)
+    app.state.application_service = ApplicationService(db)
     app.state.blog_service = BlogService(db)
     app.state.experience_service = ExperienceService(db)
     app.state.session_service = InMemorySessionService()
@@ -171,6 +175,14 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
 @limiter.limit("60/minute")
 async def list_projects(request: Request, service: ProjectService = Depends(get_project_service)):
     """List all projects."""
+    data = await service.list()
+    return JSONResponse(content=jsonable_encoder(data))
+
+
+@app.get("/api/applications", response_model=list[Application])
+@limiter.limit("60/minute")
+async def list_applications(request: Request, service: ApplicationService = Depends(get_application_service)):
+    """List all curated applications."""
     data = await service.list()
     return JSONResponse(content=jsonable_encoder(data))
 

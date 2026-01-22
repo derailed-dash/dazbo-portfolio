@@ -100,6 +100,7 @@ The application uses **Google Firestore** in Native mode. Data is organized into
 ### Collections
 
 *   **`projects`**: Stores portfolio projects (e.g., GitHub repos, manual entries).
+*   **`applications`**: Stores curated applications (e.g., standalone websites, live demos) ingested via YAML.
 *   **`blogs`**: Stores blog posts (e.g., Medium articles, Dev.to posts).
 *   **`experience`**: Stores work experience entries.
 
@@ -283,7 +284,7 @@ uv run python -m app.tools.ingest \
 ### 2. Connectors
 
 The system uses modular "Connectors" to fetch data:
-*   **GitHub Connector:** Uses the GitHub API to fetch public repositories. Maps `html_url` to `repo_url`, `topics` to `tags`, and `description` to `description`.
+*   **GitHub Connector:** Uses the GitHub API to fetch public repositories. Maps `html_url` to `repo_url`, `topics` to `tags`, and `description` to `description`. **Note:** Repositories marked as forks are automatically filtered out to ensure only original work is showcased.
 *   **Medium Connector (RSS):** Parses the user's Medium RSS feed for the latest 10 posts. Provides the source of truth for current metadata (date, title).
 *   **Medium Archive Connector (Zip):** Parses a Medium export archive (`posts.zip`). Retrieves the full history of posts and provides the source of truth for post content.
 *   **Dev.to Connector:** Uses the Dev.to API to fetch published articles. Maps articles to `Blog` entries.
@@ -357,14 +358,19 @@ To ingest resources that are not on GitHub, Medium, or Dev.to (e.g., standalone 
 
 ```yaml
 projects:
+  - title: "Some External Project"
+    description: "A project not on GitHub."
+    repo_url: "https://some-link.com"
+    tags: ["python", "cli"]
+    featured: true
+    metadata_only: true 
+
+applications:
   - title: "Advent of Code Walkthroughs"
     description: "My solutions and Python learning resources for Advent of Code."
-    repo_url: "https://github.com/derailed-dash/advent-of-code" # Optional, if there is a repo
     demo_url: "https://aoc.just2good.co.uk/"
     image_url: "https://storage.googleapis.com/<project-id>-assets/aoc-thumb.png"
     tags: ["python", "algorithms", "education"]
-    featured: true
-    metadata_only: true # Indicates this is purely a reference, not fully managed by connector
 
 blogs:
   - title: "Understanding Python Decorators"
@@ -378,6 +384,8 @@ blogs:
 **Fields:**
 
 *   **Projects:** `title` (required), `description`, `repo_url`, `demo_url`, `image_url`, `tags` (list), `featured` (bool), `metadata_only` (bool).
+
+*   **Applications:** `title` (required), `description` (required), `demo_url` (required), `repo_url` (optional), `image_url`, `tags` (list). These are automatically marked as `featured: true` and `source_platform: "application"`.
 
 *   **Blogs:** `title` (required), `summary`, `date` (ISO 8601), `platform` (e.g., "External", "Substack"), `url` (required), `metadata_only` (bool).
 
