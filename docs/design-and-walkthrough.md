@@ -111,7 +111,7 @@ To facilitate discovery of deep-linked content (Blogs and Projects), the FastAPI
 
 A static `robots.txt` file in `frontend/public/` directs crawlers to the dynamic sitemap.
 
-### 2. Service Layer
+## Service Layer
 
 *   **Generic Data Access**: `app/services/firestore_base.py` defines a generic `FirestoreService[T]` class. It handles common CRUD operations (create, get, list, update, delete) for any Pydantic model.
 *   **Domain Services**: Specialized services (`ProjectService`, `BlogService`, `ExperienceService`) inherit from the generic base or use it to implement domain-specific logic.
