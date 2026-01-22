@@ -47,6 +47,67 @@ def slugify(text: str) -> str:
     return text
 
 
+async def _process_manual_projects(project_list: list[dict], project_service: ProjectService, default_source: str):
+    """
+    Helper to process manual project/application entries.
+    """
+    existing_projects = await project_service.list()
+    existing_urls = {p.repo_url: p.id for p in existing_projects if p.repo_url}
+    existing_demo_urls = {p.demo_url: p.id for p in existing_projects if p.demo_url}
+
+    for proj_data in project_list:
+        # Enforce manual flags if not already set
+        proj_data.setdefault("is_manual", True)
+        proj_data.setdefault("source_platform", default_source)
+
+        try:
+            p = Project(**proj_data)
+        except Exception as validation_err:
+            console.print(f"[red]Validation Error for project {proj_data.get('title')}: {validation_err}[/red]")
+            continue
+
+        # Upsert logic based on repo_url or demo_url or title
+
+        # Map for titles
+        existing_title_map = {}
+        ambiguous_titles = set()
+        for existing_p in existing_projects:
+            if existing_p.title in existing_title_map:
+                ambiguous_titles.add(existing_p.title)
+            existing_title_map[existing_p.title] = existing_p.id
+
+        match_id = None
+        if p.repo_url and p.repo_url in existing_urls:
+            match_id = existing_urls[p.repo_url]
+        elif p.demo_url and p.demo_url in existing_demo_urls:
+            match_id = existing_demo_urls[p.demo_url]
+        elif p.title in existing_title_map:
+            if p.title in ambiguous_titles:
+                console.print(
+                    f"[bold red]Error: Title '{p.title}' matches multiple existing projects. Cannot safely upsert by title. Skipping.[/bold red]"
+                )
+                continue
+            match_id = existing_title_map[p.title]
+
+        desired_id = None
+        if p.id:
+            desired_id = p.id
+        elif p.repo_url:
+            desired_id = slugify(p.repo_url.split("/")[-1])
+        elif p.demo_url:
+            desired_id = slugify(p.demo_url.split("/")[-1])
+        else:
+            desired_id = slugify(p.title)
+
+        if match_id:
+            p.id = match_id
+            await project_service.update(p.id, p.model_dump(exclude={"id"}))
+            console.print(f"Updated Manual: {p.title}")
+        else:
+            await project_service.create(p, item_id=desired_id)
+            console.print(f"Created Manual: {p.title} (ID: {desired_id})")
+
+
 async def ingest_resources(
     github_user: str | None,
     medium_user: str | None,
@@ -287,63 +348,20 @@ async def ingest_resources(
             manual_projects = data.get("projects", [])
             if manual_projects:
                 console.print(f"Found {len(manual_projects)} manual projects.")
-                existing_projects = await project_service.list()
-                existing_urls = {p.repo_url: p.id for p in existing_projects if p.repo_url}
+                await _process_manual_projects(manual_projects, project_service, "manual")
 
-                for proj_data in manual_projects:
-                    # Enforce manual flags
-                    proj_data["is_manual"] = True
-                    proj_data["source_platform"] = "manual"
+            # Process Applications
+            manual_apps = data.get("applications", [])
+            if manual_apps:
+                console.print(f"Found {len(manual_apps)} manual applications.")
+                # For applications, we enforce some defaults and validation
+                for app_data in manual_apps:
+                    app_data["featured"] = True
+                    app_data["source_platform"] = "application"
+                    if not app_data.get("demo_url"):
+                        raise ValueError(f"Application '{app_data.get('title')}' missing required demo_url")
 
-                    try:
-                        p = Project(**proj_data)
-                    except Exception as validation_err:
-                        console.print(f"[red]Validation Error for project {proj_data.get('title')}: {validation_err}[/red]")
-                        continue
-
-                    # Upsert logic based on repo_url if present, else title?
-
-                    # We need a map for titles too if we support that
-                    existing_title_map = {}
-                    ambiguous_titles = set()
-                    for existing_p in existing_projects:
-                        if existing_p.title in existing_title_map:
-                            ambiguous_titles.add(existing_p.title)
-                        existing_title_map[existing_p.title] = existing_p.id
-
-                    match_id = None
-                    if p.repo_url and p.repo_url in existing_urls:
-                        match_id = existing_urls[p.repo_url]
-                    elif p.title in existing_title_map:
-                        if p.title in ambiguous_titles:
-                            console.print(
-                                f"[bold red]Error: Title '{p.title}' matches multiple existing projects. Cannot safely upsert by title. Please provide explicit 'id' or 'repo_url'. Skipping.[/bold red]"
-                            )
-                            continue
-                        match_id = existing_title_map[p.title]
-
-                    desired_id = None
-                    if p.id:
-                        desired_id = p.id
-                    elif p.repo_url:
-                        # try to get slug from repo url
-                        desired_id = slugify(p.repo_url.split("/")[-1])
-                    else:
-                        console.print(
-                            f"[yellow]Warning: No 'id' or 'repo_url' for manual project '{p.title}'. Using title slug as ID. This may not be stable.[/yellow]"
-                        )
-                        desired_id = slugify(p.title)
-
-                    if match_id:
-                        # Existing item found by repo_url or title lookup
-                        # We use the EXISTING ID to update it
-                        p.id = match_id
-                        await project_service.update(p.id, p.model_dump(exclude={"id"}))
-                        console.print(f"Updated Manual: {p.title}")
-                    else:
-                        # Create new with our desired ID
-                        await project_service.create(p, item_id=desired_id)
-                        console.print(f"Created Manual: {p.title} (ID: {desired_id})")
+                await _process_manual_projects(manual_apps, project_service, "application")
 
             # Process Blogs
             manual_blogs = data.get("blogs", [])
