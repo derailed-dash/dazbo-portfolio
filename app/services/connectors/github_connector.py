@@ -28,7 +28,7 @@ class GitHubConnector:
 
         projects = []
         for repo in repos_data:
-            if repo.get("private"):
+            if repo.get("private") or repo.get("fork"):
                 continue
 
             # Basic mapping
