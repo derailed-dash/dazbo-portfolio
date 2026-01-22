@@ -28,6 +28,11 @@ def test_sitemap_xml():
     app.dependency_overrides[get_blog_service] = lambda: mock_blog_service
     app.dependency_overrides[get_project_service] = lambda: mock_project_service
 
+    # Mock settings.base_url for the test since CI might have it empty
+    from app.config import settings
+    original_base_url = settings.base_url
+    settings.base_url = "https://darrenlester.net"
+
     try:
         with TestClient(app) as client:
             response = client.get("/sitemap.xml")
@@ -50,3 +55,4 @@ def test_sitemap_xml():
 
     finally:
         app.dependency_overrides.clear()
+        settings.base_url = original_base_url
