@@ -27,11 +27,11 @@ This plan outlines the steps to implement SEO improvements, update UI text, and 
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Dynamic SEO Implementation' (Protocol in workflow.md)
 
 ## Phase 4: Backend Sitemap
-*Dynamic sitemap generation for indexing.*
+*Dynamic sitemap generation for indexing.* [checkpoint: 6bc5e46]
 
 - [x] Task: Implement dynamic XML sitemap generation in the backend. a08bad9
 - [x] Task: Update `BlogService` and `ProjectService` if necessary to facilitate URL list retrieval. a08bad9
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Backend Sitemap' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Backend Sitemap' (Protocol in workflow.md)
 
 ## Phase 5: Documentation
 *Recording design decisions.*
