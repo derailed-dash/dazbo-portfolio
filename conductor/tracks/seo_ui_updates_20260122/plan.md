@@ -6,7 +6,7 @@ This plan outlines the steps to implement SEO improvements, update UI text, and 
 *Quick wins and static assets.*
 
 - [x] Task: Update Header tagline text in the frontend. c92bb77
-- [ ] Task: Update Footer copyright and links in the frontend.
+- [x] Task: Update Footer copyright and links in the frontend. fb9489d
 - [ ] Task: Create `robots.txt` in `frontend/public/` to guide search crawlers.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: UI Wording Tweaks & Robots.txt' (Protocol in workflow.md)
 
