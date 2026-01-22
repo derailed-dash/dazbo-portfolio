@@ -204,39 +204,47 @@ async def list_experience(request: Request, service: ExperienceService = Depends
 
 
 @app.get("/sitemap.xml")
+@limiter.limit("10/minute")
 async def sitemap_xml(
     request: Request,
     blog_service: BlogService = Depends(get_blog_service),
     project_service: ProjectService = Depends(get_project_service),
 ):
     """Generate dynamic XML sitemap."""
+    import xml.etree.ElementTree as ET
+
     base_url = settings.base_url
 
+    urlset = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
+
+    def add_url(loc: str, lastmod: str | None = None, changefreq: str = "monthly", priority: str = "0.7"):
+        url = ET.SubElement(urlset, "url")
+        ET.SubElement(url, "loc").text = loc
+        if lastmod:
+            ET.SubElement(url, "lastmod").text = lastmod
+        ET.SubElement(url, "changefreq").text = changefreq
+        ET.SubElement(url, "priority").text = priority
+
     # Static pages
-    urls = [
-        f"<url><loc>{base_url}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>",
-    ]
+    add_url(f"{base_url}/", changefreq="daily", priority="1.0")
 
     # Dynamic Blogs
     blogs = await blog_service.get_sitemap_entries()
     for blog in blogs:
-        lastmod = f"<lastmod>{blog['lastmod']}</lastmod>" if blog.get("lastmod") else ""
-        urls.append(
-            f"<url><loc>{base_url}/details/{blog['id']}</loc>{lastmod}<changefreq>monthly</changefreq><priority>0.7</priority></url>"
+        add_url(
+            f"{base_url}/details/{blog['id']}",
+            lastmod=blog.get("lastmod"),
         )
 
     # Dynamic Projects
     projects = await project_service.get_sitemap_entries()
     for proj in projects:
-        lastmod = f"<lastmod>{proj['lastmod']}</lastmod>" if proj.get("lastmod") else ""
-        urls.append(
-            f"<url><loc>{base_url}/details/{proj['id']}</loc>{lastmod}<changefreq>monthly</changefreq><priority>0.7</priority></url>"
+        add_url(
+            f"{base_url}/details/{proj['id']}",
+            lastmod=proj.get("lastmod"),
         )
 
-    xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{"".join(urls)}
-</urlset>"""
+    xml_content = f'<?xml version="1.0" encoding="UTF-8"?>\n{ET.tostring(urlset, encoding="unicode")}'
 
     return Response(content=xml_content, media_type="application/xml")
 
