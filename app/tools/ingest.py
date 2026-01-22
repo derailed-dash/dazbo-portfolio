@@ -362,8 +362,8 @@ async def ingest_resources(
                     app_data["featured"] = True
                     app_data["source_platform"] = "application"
                     if not app_data.get("demo_url"):
-                        raise ValueError(f"Application '{app_data.get('title')}' missing required demo_url")
-
+                        console.print(f"[bold red]Error: Application '{app_data.get('title')}' is missing the required 'demo_url'. Skipping.[/bold red]")
+                        continue
                 await _process_manual_projects(manual_apps, application_service, "application", model_class=Application)
 
             # Process Blogs
