@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Github, Linkedin } from 'lucide-react';
+import { Github, Linkedin, FileText } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
         <Row className="align-items-center">
           <Col md={6} className="text-center text-md-start mb-3 mb-md-0">
             <p className="mb-0 text-secondary">
-              &copy; {currentYear} Dazbo Portfolio. Built with React & FastAPI.
+              &copy; {currentYear} Darren Lester. Built with React & FastAPI.
             </p>
           </Col>
           <Col md={6} className="text-center text-md-end">
@@ -33,6 +33,15 @@ const Footer: React.FC = () => {
                 aria-label="LinkedIn"
               >
                 <Linkedin size={20} />
+              </a>
+              <a 
+                href="https://medium.com/@derailed.dash" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-white hover-primary"
+                aria-label="Medium"
+              >
+                <FileText size={20} />
               </a>
             </div>
           </Col>
