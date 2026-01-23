@@ -15,6 +15,8 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 
 - @README.md - repo overview and dev guidance
 - @GEMINI.md - guidance for you, the agent
+- @conductor/product.md - an overview of this portfolio site as a "product"
+- @conductor/tech-stack.md - an overview of the tech stack
 - @TODO.md - list of tasks to complete
 - @Makefile - dev commands
 - @docs/design-and-walkthrough.md - design and walkthrough, including design decisions and implementation

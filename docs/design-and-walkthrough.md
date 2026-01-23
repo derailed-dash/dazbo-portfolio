@@ -1,32 +1,50 @@
 # Design and Walkthrough
 
+## Table of Contents
+- [Design Decisions](#design-decisions)
+- [Application Design](#application-design)
+    - [Configuration Management](#configuration-management)
+- [Presentation Layer (React + FastAPI)](#presentation-layer-react--fastapi)
+    - [CORS Strategy](#cors-strategy)
+    - [Rate Limiting](#rate-limiting)
+    - [Search Engine Optimization (SEO)](#search-engine-optimization-seo)
+- [Service Layer](#service-layer)
+- [Firestore Data Model](#firestore-data-model)
+- [Solution Architecture](#solution-architecture)
+    - [Component Architecture](#component-architecture)
+    - [Runtime & Deployment Architecture](#runtime--deployment-architecture)
+- [Frontend Implementation](#frontend-implementation)
+- [Resource Ingestion Architecture](#resource-ingestion-architecture)
+- [Future Enhancements](#future-enhancements-rag--vector-search)
+
 This document serves as the technical reference for the **Dazbo Portfolio** application. It outlines the key architectural decisions, the solution design, and the operational workflows for managing content. It is intended for developers and maintainers seeking to understand the system's inner workings, from the React-FastAPI runtime to the data ingestion pipelines.
 
 ## Design decisions:
 
 | Decision | Rationale |
 |----------|-----------|
-| Use ADK for agent framework | ADK provides a solid foundation for building agents, including tools for memory, state management, and more. |
-| Use Gemini for LLM | Gemini is a powerful LLM that is well-suited for this application. |
-| Use FastAPI for backend | FastAPI is a modern, fast, and easy-to-use web framework for building APIs. |
-| Use React for frontend | React is a popular and powerful library for building user interfaces. |
-| Use Vite for frontend build | Vite offers superior performance and simplicity for SPAs compared to legacy tools like CRA. |
-| Use Terraform for infrastructure | Terraform is a tool for defining and provisioning infrastructure as code. |
-| Use Google Cloud Build for CI/CD | Google Cloud Build is a managed CI/CD service that is well-suited for this application. |
-| The frontend, API and backend agent will be containerised into a single container image. | This is to simplify deployment and management. |
-| Use a Unified Origin architecture. | Serving the React SPA directly from FastAPI simplifies origin management and eliminates CORS complexity in production. |
-| Use an `/api` prefix for all backend routes. | Provides a clear namespace for backend services and prevents collisions with frontend client-side routes. |
-| The container will be deployed to Cloud Run. | Cloud Run is a fully-managed, serverless compute platform that lets you run containers directly on Google Cloud infrastructure. |
-| Use InMemorySessionService for session management | There is no need for session persistence across restarts for this application. |
-| Use Python 3.12+ Type Parameters | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
-| Use In-Memory Rate Limiting | Implemented via `slowapi` to control LLM costs and provide basic DoS protection without additional infrastructure like Redis. |
-| Use Hybrid Ingestion for Medium | Combines RSS feed (latest) and Zip Archive (history) to overcome the issue that Medium's RSS feed only returns the last 10 blogs, and there is no API. |
-| AI-Powered Content Enrichment | Uses Gemini to generate concise technical summaries and structured Markdown from raw HTML. |
-| GOOGLE_CLOUD_LOCATION = "global" | This environment variable is used by the Gemini model. "Global" is safest, particularly when using preview models. |
-| GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
-| Use Cloud Run Domain Mapping | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. See [Cloud Run Domain Mapping](https://docs.cloud.google.com/run/docs/mapping-custom-domains#run). |
-| Use React 19 Native Metadata | Leverages built-in hoisting for `<title>` and `<meta>` tags, eliminating the need for external libraries like `react-helmet`. |
-| Static XML Sitemap | Generated on-the-fly by the backend to ensure search engines can discover the main application page. |
+| **Use ADK for agent framework** | ADK provides a solid foundation for building agents, including tools for memory, state management, and more. |
+| **Use Gemini for LLM** | Gemini is a powerful LLM that is well-suited for this application. |
+| **Use FastAPI for backend** | FastAPI is a modern, fast, and easy-to-use web framework for building APIs. |
+| **Use React for frontend** | React is a popular and powerful library for building user interfaces. |
+| **Use Vite for frontend build** | Vite offers superior performance and simplicity for SPAs compared to legacy tools like CRA. |
+| **Use Terraform for infrastructure** | Terraform is a tool for defining and provisioning infrastructure as code. |
+| **Use Google Cloud Build for CI/CD** | Google Cloud Build is a managed CI/CD service that is well-suited for this application. |
+| **Unified Container Image** | The frontend, API, and backend agent are containerized into a single image to simplify deployment and management. |
+| **Unified Origin Architecture** | Serving the React SPA directly from FastAPI simplifies origin management and eliminates CORS complexity in production. |
+| **`/api` Prefix** | Provides a clear namespace for backend services and prevents collisions with frontend client-side routes. |
+| **Deploy to Cloud Run** | Cloud Run is a fully-managed, serverless compute platform that lets you run containers directly on Google Cloud infrastructure. |
+| **Use `InMemorySessionService`** | There is no need for session persistence across restarts for this application, as sessions are ephemeral. |
+| **Use Python 3.12+ Type Parameters** | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
+| **Use `uv` for Package Management** | `uv` provides extremely fast and reliable dependency resolution and virtual environment management compared to `pip` or `poetry`. |
+| **Use In-Memory Rate Limiting** | Implemented via `slowapi` to control LLM costs and provide basic DoS protection without additional infrastructure like Redis. |
+| **Hybrid Ingestion for Medium** | Combines RSS feed (latest) and Zip Archive (history) to overcome the issue that Medium's RSS feed only returns the last 10 blogs. |
+| **AI-Powered Content Enrichment** | Uses Gemini to generate concise technical summaries and structured Markdown from raw HTML. |
+| **Single Project ID Strategy** | Refactored to use a single `project_id` variable in Terraform to prevent duplicate resource creation in the same GCP project. |
+| **Simplified Date Parsing** | Uses `datetime.fromisoformat` for robust handling of ISO dates including 'Z' suffix. |
+| **Use Cloud Run Domain Mapping** | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. |
+| **Use React 19 Native Metadata** | Leverages built-in hoisting for `<title>` and `<meta>` tags, eliminating the need for external libraries like `react-helmet`. |
+| **Static XML Sitemap** | Generated on-the-fly by the backend to ensure search engines can discover the main application page. |
 
 ## Application Design
 
@@ -173,9 +191,10 @@ graph TD
         Agent["Gemini Agent<br/>(app/agent.py)"]
         Dep["Dependencies<br/>(app/dependencies.py)"]
         
-        Frontend -->|API Calls| API
-        API -->|Mounts| Agent
-        API -->|Uses| Dep
+        Frontend -- "HTTP/JSON" --> API
+        API -- "Bootstraps" --> Agent
+        API -- "Injects Services" --> Dep
+        Agent -- "Called via /chat" --> API
     end
 
     subgraph "CLI / Scripts"
@@ -183,66 +202,113 @@ graph TD
     end
 
     subgraph "Service Layer (Shared)"
+        direction TB
         PS["ProjectService"]
         BS["BlogService"]
         ES["ExperienceService"]
         FS["FirestoreService<br/>(Generic Base)"]
+        CES["ContentEnrichmentService<br/>(Gemini)"]
         
         PS --> FS
         BS --> FS
         ES --> FS
+        CLI -.-> CES
     end
 
     subgraph "Data Layer (Shared)"
-        Models["Pydantic Models<br/>(app/models/*)"];
+        Models["Pydantic Models<br/>(app/models/*)"]
     end
 
     subgraph "Infrastructure"
-        Firestore["Google Firestore"]
-        GCS["Google Cloud Storage"]
+        Firestore[("Google Firestore<br/>(NoSQL)")]
+        GCS[("Cloud Storage<br/>(Assets/Logs)")]
+        Vertex["Vertex AI<br/>(Gemini Models)"]
     end
 
     %% Relationships
     Dep -->|Injects| PS
     Dep -->|Injects| BS
     Dep -->|Injects| ES
+    
     CLI -->|Instantiates| PS
     CLI -->|Instantiates| BS
     CLI -->|Instantiates| ES
+    
     FS -->|Reads/Writes| Firestore
     FS -->|Validates| Models
     
+    CES -->|Generates Summary| Vertex
+    Agent -->|Inference| Vertex
+    
     %% User Interactions
-    User["User / Web Frontend"] -->|Interacts| Frontend
-    Frontend -->|HTTP Requests| API
-    User -->|Chat| Agent
+    User["User"] -->|Browses| Frontend
+    Frontend -->|Requests /api/*| API
+    User -->|Chats| Agent
     
     %% Ingestion Flow
     Dev["Developer"] -->|Runs| CLI
+    CLI -->|Uploads Assets| GCS
+
+    %% Styles
+    %% Styles
+    classDef ingest fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    
+    class CLI ingest;
+    class Agent agent;
+    
+    %% Style Ingest Tool Arrows (Blue)
+    linkStyle 7,11,12,13,22 stroke:#1565c0,stroke-width:2px;
+    
+    %% Style Agent Arrows (Green)
+    linkStyle 3,17 stroke:#2e7d32,stroke-width:2px;
 ```
 
 ### Runtime & Deployment Architecture
 
 The diagram below details the runtime configurations for both production (Unified Container) and local development.
 
+The diagram below details the runtime configurations for both production (Unified Container) and local development, highlighting the relationship between Terraform (Infrastructure) and Cloud Build (Application Deployment).
+
 ```mermaid
 graph TD
-    subgraph "Cloud Run / Local Container"
-        API["FastAPI App<br/>(app/fast_api_app.py)"]
-        Frontend["React Assets<br/>(frontend/dist/)"]
-        Agent["Gemini Agent<br/>(app/agent.py)"]
-        Dep["Dependencies<br/>(app/dependencies.py)"]
+    subgraph "Google Cloud Platform"
+        subgraph "Cloud Run Service"
+            Container["Unified Container"]
+            Env["Env Vars<br/>(Settings)"]
+            
+            subgraph "Process"
+                Uvicorn["Uvicorn Server"]
+                FastAPI["FastAPI App"]
+                Static["Static Files<br/>(React Build)"]
+            end
+            
+            Container --> Uvicorn
+            Uvicorn --> FastAPI
+            FastAPI -- "Serves /assets" --> Static
+            FastAPI -- "Handles /api" --> Logic["Business Logic"]
+        end
         
-        API -->|Serves| Frontend
-        API -->|Mounts| Agent
-        API -->|Uses| Dep
+        subgraph "Managed Services"
+            FS[("Firestore")]
+            GCS[("Cloud Storage")]
+            LOG[("Cloud Logging")]
+        end
+
+        Logic --> FS
+        Logic --> GCS
+        FastAPI -.-> LOG
     end
 
-    subgraph "Local Development (Processes)"
-        Vite["Vite Dev Server<br/>(localhost:5173)"]
-        FastAPI["FastAPI Backend<br/>(localhost:8000)"]
+    subgraph "Deployment Pipeline"
+        TF["Terraform<br/>(Infrastructure)"]
+        CB["Cloud Build<br/>(CI/CD)"]
         
-        Vite -->|Proxies /api| FastAPI
+        TF -- "Provisions" --> Service["Cloud Run Service Resource"]
+        TF -- "Configures" --> IAM["IAM Permissions"]
+        
+        CB -- "Builds" --> Image["Docker Image"]
+        CB -- "Deploys" --> Service
     end
 ```
 
