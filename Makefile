@@ -6,6 +6,7 @@ AGENT_NAME ?= dazbo_portfolio_chat_agent
 MODEL ?= gemini-2.5-flash
 GOOGLE_CLOUD_REGION ?= europe-west1
 GOOGLE_CLOUD_LOCATION ?= global
+GOOGLE_CLOUD_PROJECT ?= $(shell gcloud config get-value project)
 
 # Install dependencies using uv package manager and npm
 install:
@@ -34,18 +35,17 @@ react-ui:
 # Builds directly from source; not from Google Artifact Registry
 # Usage: make deploy-cloud-run [IAP=true]
 deploy-cloud-run:
-	PROJECT_ID=$$(gcloud config get-value project) && \
 	gcloud run deploy $(SERVICE_NAME) \
 		--source . \
 		--memory "4Gi" \
-		--project $$GOOGLE_CLOUD_PROJECT \
+		--project $(GOOGLE_CLOUD_PROJECT) \
 		--region $(GOOGLE_CLOUD_REGION) \
 		--service-account="$$SERVICE_SA_EMAIL" \
 		--max-instances=1 \
 		--cpu-boost \
 		--allow-unauthenticated \
 		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(APP_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION),LOG_LEVEL=DEBUG" \
-		--labels dev-tutorial=devnewyear2026 \
+		--labels=dev-tutorial=devnewyear2026 \
 		$(if $(IAP),--iap)
 
 # Build the unified container image
@@ -55,7 +55,7 @@ docker-build:
 # Run the unified container locally
 docker-run:
 	docker run --rm -p 8080:8080 \
-		-e GOOGLE_CLOUD_PROJECT=$$(gcloud config get-value project) \
+		-e GOOGLE_CLOUD_PROJECT=$(GOOGLE_CLOUD_PROJECT) \
 		-e FIRESTORE_DATABASE_ID="(default)" \
 		-e GEMINI_API_KEY="$${GEMINI_API_KEY}" \
 		-e GOOGLE_GENAI_USE_VERTEXAI="$${GOOGLE_GENAI_USE_VERTEXAI}" \
