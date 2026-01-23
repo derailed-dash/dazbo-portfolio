@@ -45,6 +45,7 @@ deploy-cloud-run:
 		--cpu-boost \
 		--allow-unauthenticated \
 		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(APP_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION),LOG_LEVEL=DEBUG" \
+		--labels dev-tutorial=devnewyear2026 \
 		$(if $(IAP),--iap)
 
 # Build the unified container image

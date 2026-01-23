@@ -26,7 +26,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | GOOGLE_CLOUD_REGION = "europe-west1" | Used for deploying resources. |
 | Use Cloud Run Domain Mapping | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. See [Cloud Run Domain Mapping](https://docs.cloud.google.com/run/docs/mapping-custom-domains#run). |
 | Use React 19 Native Metadata | Leverages built-in hoisting for `<title>` and `<meta>` tags, eliminating the need for external libraries like `react-helmet`. |
-| Dynamic XML Sitemap | Generated on-the-fly by the backend to ensure search engines can discover all project and blog detail pages. |
+| Static XML Sitemap | Generated on-the-fly by the backend to ensure search engines can discover the main application page. |
 
 ## Application Design
 
@@ -49,7 +49,7 @@ The application employs a **Unified Origin Architecture**. In production, the Fa
 *   **Frontend (React/Vite)**:
     *   **Framework**: React 19+ with TypeScript, built using Vite.
     *   **UI Library**: React Bootstrap styled with Material Design principles (custom CSS variables).
-    *   **Navigation**: `react-router-dom` handles client-side routing (Home, Details).
+    *   **Navigation**: `react-router-dom` handles client-side routing (Home, Sections).
     *   **Components**:
         *   `MainLayout`: Wrapper providing Navbar and Footer.
         *   `ShowcaseCarousel`: Reusable, responsive carousel for displaying content cards (Blogs, Projects).
@@ -99,13 +99,12 @@ We leverage **React 19's native support for document metadata**. This allows com
     *   **Twitter Cards**: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`.
     *   **Structured Data**: Injects JSON-LD (Schema.org) scripts for rich search results (e.g., `Person` schema on the Home page).
 
-### Dynamic XML Sitemap
+### Static XML Sitemap
 
-To facilitate discovery of deep-linked content (Blogs and Projects), the FastAPI backend provides a dynamic sitemap at `/sitemap.xml`.
+To facilitate discovery of the application, the FastAPI backend provides a sitemap at `/sitemap.xml`.
 
-*   **Implementation**: The endpoint (`app/fast_api_app.py`) retrieves slugs and modification dates from Firestore and constructs an XML response.
-*   **Optimization**: Services (`BlogService`, `ProjectService`) use **Firestore Projections** (`select()`) to retrieve only the necessary fields (`id`, `date`/`created_at`), minimizing database egress and latency.
-*   **Static Pages**: Includes the home page and major section landing pages.
+*   **Implementation**: The endpoint (`app/fast_api_app.py`) constructs a simple XML response pointing to the root URL.
+*   **Static Pages**: Includes the home page.
 
 ### Robots.txt
 
