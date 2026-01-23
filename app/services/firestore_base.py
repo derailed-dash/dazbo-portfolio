@@ -4,9 +4,6 @@ Why: Provides reusable CRUD operations for Pydantic models backed by Firestore.
 How: Implements `create`, `get`, `list`, `update`, `delete` using python 3.12+ generics.
 """
 
-import builtins
-from typing import Any
-
 from google.cloud import firestore
 from pydantic import BaseModel
 
@@ -50,26 +47,6 @@ class FirestoreService[T: BaseModel]:
             data = doc.to_dict()
             data["id"] = doc.id
             items.append(self.model_class(**data))
-        return items
-
-    async def list_projection(
-        self, fields: builtins.list[str], order_by: str | None = None
-    ) -> builtins.list[dict[str, Any]]:
-        """
-        List documents with a projection (select specific fields).
-        Returns a list of dictionaries, not Pydantic models.
-        Always includes 'id'.
-        """
-        query = self.collection.select(fields)
-        if order_by:
-            query = query.order_by(order_by, direction=firestore.Query.DESCENDING)
-
-        docs = query.stream()
-        items = []
-        async for doc in docs:
-            data = doc.to_dict()
-            data["id"] = doc.id
-            items.append(data)
         return items
 
     async def update(self, item_id: str, item_data: dict) -> T | None:

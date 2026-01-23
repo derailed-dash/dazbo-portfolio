@@ -205,11 +205,7 @@ async def list_experience(request: Request, service: ExperienceService = Depends
 
 @app.get("/sitemap.xml")
 @limiter.limit("10/minute")
-async def sitemap_xml(
-    request: Request,
-    blog_service: BlogService = Depends(get_blog_service),
-    project_service: ProjectService = Depends(get_project_service),
-):
+async def sitemap_xml(request: Request):
     """Generate dynamic XML sitemap."""
     import xml.etree.ElementTree as ET
 
@@ -227,22 +223,6 @@ async def sitemap_xml(
 
     # Static pages
     add_url(f"{base_url}/", changefreq="daily", priority="1.0")
-
-    # Dynamic Blogs
-    blogs = await blog_service.get_sitemap_entries()
-    for blog in blogs:
-        add_url(
-            f"{base_url}/details/{blog['id']}",
-            lastmod=blog.get("lastmod"),
-        )
-
-    # Dynamic Projects
-    projects = await project_service.get_sitemap_entries()
-    for proj in projects:
-        add_url(
-            f"{base_url}/details/{proj['id']}",
-            lastmod=proj.get("lastmod"),
-        )
 
     xml_content = f'<?xml version="1.0" encoding="UTF-8"?>\n{ET.tostring(urlset, encoding="unicode")}'
 
