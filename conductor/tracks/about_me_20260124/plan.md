@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Data & API' (Protocol in workflow.md) 6900dee
 
 ## Phase 2: Frontend Development
-- [ ] Task: Implement Frontend `contentService`
+- [x] Task: Implement Frontend `contentService` bafb66d
     - [ ] Create `frontend/src/services/contentService.ts` with `getContentBySlug`.
     - [ ] Write unit tests in `frontend/src/services/contentService.test.ts`.
 - [ ] Task: Create `AboutPage` component
