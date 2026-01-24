@@ -130,7 +130,7 @@ A static `robots.txt` file in `frontend/public/` directs crawlers to the sitemap
 ## Service Layer
 
 *   **Generic Data Access**: `app/services/firestore_base.py` defines a generic `FirestoreService[T]` class. It handles common CRUD operations (create, get, list, update, delete) for any Pydantic model.
-*   **Domain Services**: Specialized services (`ProjectService`, `BlogService`, `ExperienceService`) inherit from the generic base or use it to implement domain-specific logic.
+*   **Domain Services**: Specialized services (`ProjectService`, `BlogService`, `ExperienceService`, `ContentService`) inherit from the generic base or use it to implement domain-specific logic.
 *   **Session Management**: Uses `InMemorySessionService` from the Google ADK. Sessions are ephemeral and tied to the current application process, which is sufficient for the portfolio's conversational needs.
 
 ### Data/Model Layer
@@ -147,6 +147,7 @@ The application uses **Google Firestore** in Native mode. Data is organized into
 *   **`applications`**: Stores curated applications (e.g., standalone websites, live demos) ingested via YAML.
 *   **`blogs`**: Stores blog posts (e.g., Medium articles, Dev.to posts).
 *   **`experience`**: Stores work experience entries.
+*   **`content`**: Stores singleton content pages (e.g., `about`) with Markdown bodies.
 
 ### Document IDs
 
@@ -327,6 +328,7 @@ The frontend is a single-page application (SPA) built with React and Vite. It is
     *   **Responsiveness**: On mobile, it displays 1 item per slide. On desktop, it displays a grid of 3 items per slide.
     *   **Navigation**: Includes custom-styled "Previous" and "Next" controls and indicators.
 *   **`ChatWidget`**: A floating action button (FAB) that expands into a chat interface. It currently serves as a shell for future agent integration.
+*   **`AboutPage`**: A dedicated page for the professional profile, rendering Markdown content from Firestore with a glassmorphic UI design.
 
 ### Development Workflow
 
