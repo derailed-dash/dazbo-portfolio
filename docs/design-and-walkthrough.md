@@ -177,6 +177,16 @@ The `blogs` collection uses the following schema:
 | `is_manual` | Boolean | True if added via YAML, False if ingested via API/Zip. | Ingestion logic |
 | `source_platform` | String | Specific connector source (e.g., `medium_rss`, `medium_archive`). | Ingestion logic |
 
+### Content Model Fields
+
+The `content` collection (used for singleton pages like `about`) uses the following schema:
+
+| Field | Type | Description | Source |
+| :--- | :--- | :--- | :--- |
+| `title` | String | The title of the page (e.g., "About Me"). | Manual Firestore entry |
+| `body` | String | The full page content in Markdown format. | Manual Firestore entry |
+| `last_updated` | Timestamp | The date and time of the last update. | Manual Firestore entry |
+
 ## Solution Architecture
 
 ### Component Architecture
@@ -206,62 +216,16 @@ graph TD
         PS["ProjectService"]
         BS["BlogService"]
         ES["ExperienceService"]
+        CS["ContentService"]
         FS["FirestoreService<br/>(Generic Base)"]
         CES["ContentEnrichmentService<br/>(Gemini)"]
         
         PS --> FS
         BS --> FS
         ES --> FS
+        CS --> FS
         CLI -.-> CES
     end
-
-    subgraph "Data Layer (Shared)"
-        Models["Pydantic Models<br/>(app/models/*)"]
-    end
-
-    subgraph "Infrastructure"
-        Firestore[("Google Firestore<br/>(NoSQL)")]
-        GCS[("Cloud Storage<br/>(Assets/Logs)")]
-        Vertex["Vertex AI<br/>(Gemini Models)"]
-    end
-
-    %% Relationships
-    Dep -->|Injects| PS
-    Dep -->|Injects| BS
-    Dep -->|Injects| ES
-    
-    CLI -->|Instantiates| PS
-    CLI -->|Instantiates| BS
-    CLI -->|Instantiates| ES
-    
-    FS -->|Reads/Writes| Firestore
-    FS -->|Validates| Models
-    
-    CES -->|Generates Summary| Vertex
-    Agent -->|Inference| Vertex
-    
-    %% User Interactions
-    User["User"] -->|Browses| Frontend
-    Frontend -->|Requests /api/*| API
-    User -->|Chats| Agent
-    
-    %% Ingestion Flow
-    Dev["Developer"] -->|Runs| CLI
-    CLI -->|Uploads Assets| GCS
-
-    %% Styles
-    %% Styles
-    classDef ingest fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
-    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    
-    class CLI ingest;
-    class Agent agent;
-    
-    %% Style Ingest Tool Arrows (Blue)
-    linkStyle 7,11,12,13,22 stroke:#1565c0,stroke-width:2px;
-    
-    %% Style Agent Arrows (Green)
-    linkStyle 3,17 stroke:#2e7d32,stroke-width:2px;
 ```
 
 ### Runtime & Deployment Architecture
