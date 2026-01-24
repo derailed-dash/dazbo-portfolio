@@ -1,17 +1,10 @@
 # Implementation Plan - Professional Profile (About Me Page)
 
-## Phase 1: Backend Data & API
+## Phase 1: Backend Data & API [checkpoint: 6900dee]
 - [x] Task: Define `Content` Pydantic model 3764661
-    - [ ] Create `app/models/content.py` with `title`, `body`, and `last_updated` fields.
-    - [ ] Write unit tests for the model in `tests/unit/test_models.py`.
 - [x] Task: Implement `ContentService` a2eca66
-    - [ ] Create `app/services/content_service.py` inheriting from `FirestoreService[Content]`.
-    - [ ] Write unit tests for the service in `tests/unit/test_content_service.py`.
 - [x] Task: Add GET `/api/content/{slug}` endpoint 24d1489
-    - [ ] Update `app/dependencies.py` to provide `ContentService`.
-    - [ ] Implement the route in `app/fast_api_app.py`.
-    - [ ] Write integration tests for the endpoint in `tests/integration/test_endpoints.py`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Data & API' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Data & API' (Protocol in workflow.md) 6900dee
 
 ## Phase 2: Frontend Development
 - [ ] Task: Implement Frontend `contentService`
