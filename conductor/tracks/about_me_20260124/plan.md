@@ -1,7 +1,7 @@
 # Implementation Plan - Professional Profile (About Me Page)
 
 ## Phase 1: Backend Data & API
-- [ ] Task: Define `Content` Pydantic model
+- [x] Task: Define `Content` Pydantic model 3764661
     - [ ] Create `app/models/content.py` with `title`, `body`, and `last_updated` fields.
     - [ ] Write unit tests for the model in `tests/unit/test_models.py`.
 - [ ] Task: Implement `ContentService`
