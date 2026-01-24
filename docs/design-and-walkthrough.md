@@ -184,7 +184,7 @@ The following diagram illustrates the relationship between the application's run
 
 ```mermaid
 graph TD
-    subgraph "Cloud Run / Local Runtime"
+    subgraph "Web Application Layer"
         API["FastAPI App<br/>(app/fast_api_app.py)"]
         Frontend["React UI<br/>(frontend/)"]
         Agent["Gemini Agent<br/>(app/agent.py)"]
