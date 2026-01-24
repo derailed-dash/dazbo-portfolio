@@ -62,9 +62,10 @@ def test_get_experience():
 
 
 def test_get_content():
+    from datetime import UTC, datetime
+
     from app.fast_api_app import app
     from app.models.content import Content
-    from datetime import UTC, datetime
 
     mock_service = MagicMock()
     mock_content = Content(

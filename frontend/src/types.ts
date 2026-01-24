@@ -28,7 +28,7 @@ export interface Project {
   created_at?: string;
 }
 
-export interface Application extends Project {}
+export type Application = Project;
 
 export interface Blog {
   id?: string;

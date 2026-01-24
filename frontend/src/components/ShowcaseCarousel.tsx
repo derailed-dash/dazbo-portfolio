@@ -55,7 +55,7 @@ const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => 
       <Carousel interval={null} indicators={items.length > 4} className="pb-5 d-none d-md-block">
         {desktopChunks.map((chunk, idx) => (
           <Carousel.Item key={idx}>
-            <Row className="g-3" style={{ paddingLeft: '6%', paddingRight: '6%' }}>
+            <Row className="g-3" style={{ paddingLeft: '6%', paddingRight: '6%', paddingTop: '10px' }}>
               {chunk.map(item => (
                 <Col md={3} key={item.id} className="mb-3">
                   <ShowcaseCard {...item} />
@@ -76,7 +76,7 @@ const ShowcaseCarousel: React.FC<ShowcaseCarouselProps> = ({ items, title }) => 
       >
         {items.map((item) => (
           <Carousel.Item key={item.id}>
-            <Row className="justify-content-center px-1">
+            <Row className="justify-content-center px-1" style={{ paddingTop: '10px' }}>
               <Col xs={11}>
                 <ShowcaseCard {...item} />
               </Col>

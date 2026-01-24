@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import AboutPage from './AboutPage';
 import { getContentBySlug } from '../services/contentService';
 import { MemoryRouter } from 'react-router-dom';
+import type { Mock } from 'vitest';
 
 // Mock the services
 vi.mock('../services/contentService', () => ({
@@ -20,7 +21,7 @@ describe('AboutPage', () => {
   });
 
   it('renders loading state initially', () => {
-    (getContentBySlug as any).mockReturnValue(new Promise(() => {})); // Never resolves
+    (getContentBySlug as Mock).mockReturnValue(new Promise(() => {})); // Never resolves
     render(
       <MemoryRouter>
         <AboutPage />
@@ -35,7 +36,7 @@ describe('AboutPage', () => {
       body: '# Professional Bio\nThis is my bio.',
       last_updated: '2026-01-24T12:00:00Z',
     };
-    (getContentBySlug as any).mockResolvedValueOnce(mockContent);
+    (getContentBySlug as Mock).mockResolvedValueOnce(mockContent);
 
     render(
       <MemoryRouter>
@@ -44,14 +45,14 @@ describe('AboutPage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('About Me')).toBeInTheDocument();
+      expect(screen.getByText('About Darren: Professional Profile & Expertise')).toBeInTheDocument();
       expect(screen.getByText('Professional Bio')).toBeInTheDocument();
       expect(screen.getByText('This is my bio.')).toBeInTheDocument();
     });
   });
 
   it('renders error message on fetch failure', async () => {
-    (getContentBySlug as any).mockRejectedValueOnce(new Error('Fetch failed'));
+    (getContentBySlug as Mock).mockRejectedValueOnce(new Error('Fetch failed'));
 
     render(
       <MemoryRouter>
@@ -60,7 +61,7 @@ describe('AboutPage', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Failed to load about page/i)).toBeInTheDocument();
+      expect(screen.getByText(/Failed to load about page content/i)).toBeInTheDocument();
     });
   });
 });

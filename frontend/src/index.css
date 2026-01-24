@@ -57,3 +57,49 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+
+/* Glassmorphic Button */
+.btn-glass {
+  backdrop-filter: blur(4px);
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid white;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-glass:hover, .btn-glass:focus, .btn-glass:active {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: white !important;
+  border-color: white;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+  .btn-glass {
+    padding: 4px 16px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Glassmorphic Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.glass-card .card-title {
+  color: white !important;
+}
+
+.glass-card .card-text {
+  color: rgba(255, 255, 255, 0.7) !important;
+}

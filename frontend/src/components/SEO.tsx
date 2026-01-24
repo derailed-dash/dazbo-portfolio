@@ -6,7 +6,7 @@ interface SEOProps {
   image?: string;
   url?: string;
   type?: string;
-  jsonLd?: Record<string, any>;
+  jsonLd?: Record<string, unknown>;
 }
 
 const SITE_TITLE = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist';

@@ -23,12 +23,12 @@ async def test_content_service_init(mock_db):
         pytest.fail("Could not import ContentService or Content model")
 
     service = ContentService(mock_db)
-    
+
     # We can't easily check the collection ID without calling a method that uses it,
     # or inspecting the init if it sets a public property.
     # The base class `FirestoreService` usually sets `self.collection`.
     # Let's assume we can access it or verify via a method call.
-    
+
     assert service.model_class == Content
 
 
@@ -48,10 +48,10 @@ async def test_get_content_by_slug(mock_db):
     mock_doc_snapshot.to_dict.return_value = {
         "title": "About Me",
         "body": "# About Me",
-        "last_updated": "2026-01-24T12:00:00Z"
+        "last_updated": "2026-01-24T12:00:00Z",
     }
     mock_doc_snapshot.id = "about"
-    
+
     mock_doc_ref.get = AsyncMock(return_value=mock_doc_snapshot)
     mock_db.collection.return_value.document.return_value = mock_doc_ref
 
