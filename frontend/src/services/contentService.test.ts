@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getBlogs, getProjects } from './contentService';
+import { getBlogs, getProjects, getContentBySlug } from './contentService';
 import apiClient from './api';
 
 // Mock the api module
@@ -29,6 +29,15 @@ describe('contentService', () => {
 
     const result = await getProjects();
     expect(apiClient.get).toHaveBeenCalledWith('/api/projects');
+    expect(result).toEqual(mockData);
+  });
+
+  it('getContentBySlug fetches data from /content/:slug', async () => {
+    const mockData = { id: 'about', title: 'About Me', body: 'Body' };
+    (apiClient.get as any).mockResolvedValueOnce({ data: mockData });
+
+    const result = await getContentBySlug('about');
+    expect(apiClient.get).toHaveBeenCalledWith('/api/content/about');
     expect(result).toEqual(mockData);
   });
 });
