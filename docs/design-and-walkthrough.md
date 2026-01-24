@@ -265,10 +265,6 @@ graph TD
 
 ### Runtime & Deployment Architecture
 
-The diagram below details the runtime configurations for both production (Unified Container) and local development.
-
-The diagram below details the runtime configurations for both production (Unified Container) and local development, highlighting the relationship between Terraform (Infrastructure) and Cloud Build (Application Deployment).
-
 ```mermaid
 graph TD
     subgraph "Google Cloud Platform"
