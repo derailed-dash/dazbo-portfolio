@@ -23,28 +23,27 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 
 | Decision | Rationale |
 |----------|-----------|
-| **Use ADK for agent framework** | ADK provides a solid foundation for building agents, including tools for memory, state management, and more. |
-| **Use Gemini for LLM** | Gemini is a powerful LLM that is well-suited for this application. |
-| **Use FastAPI for backend** | FastAPI is a modern, fast, and easy-to-use web framework for building APIs. |
-| **Use React for frontend** | React is a popular and powerful library for building user interfaces. |
-| **Use Vite for frontend build** | Vite offers superior performance and simplicity for SPAs compared to legacy tools like CRA. |
-| **Use Terraform for infrastructure** | Terraform is a tool for defining and provisioning infrastructure as code. |
-| **Use Google Cloud Build for CI/CD** | Google Cloud Build is a managed CI/CD service that is well-suited for this application. |
-| **Unified Container Image** | The frontend, API, and backend agent are containerized into a single image to simplify deployment and management. |
-| **Unified Origin Architecture** | Serving the React SPA directly from FastAPI simplifies origin management and eliminates CORS complexity in production. |
-| **`/api` Prefix** | Provides a clear namespace for backend services and prevents collisions with frontend client-side routes. |
-| **Deploy to Cloud Run** | Cloud Run is a fully-managed, serverless compute platform that lets you run containers directly on Google Cloud infrastructure. |
-| **Use `InMemorySessionService`** | There is no need for session persistence across restarts for this application, as sessions are ephemeral. |
-| **Use Python 3.12+ Type Parameters** | Leverages modern Python generic syntax (PEP 695) for cleaner and more expressive code, particularly in the Service layer. |
-| **Use `uv` for Package Management** | `uv` provides extremely fast and reliable dependency resolution and virtual environment management compared to `pip` or `poetry`. |
-| **Use In-Memory Rate Limiting** | Implemented via `slowapi` to control LLM costs and provide basic DoS protection without additional infrastructure like Redis. |
-| **Hybrid Ingestion for Medium** | Combines RSS feed (latest) and Zip Archive (history) to overcome the issue that Medium's RSS feed only returns the last 10 blogs. |
-| **AI-Powered Content Enrichment** | Uses Gemini to generate concise technical summaries and structured Markdown from raw HTML. |
-| **Single Project ID Strategy** | Refactored to use a single `project_id` variable in Terraform to prevent duplicate resource creation in the same GCP project. |
-| **Simplified Date Parsing** | Uses `datetime.fromisoformat` for robust handling of ISO dates including 'Z' suffix. |
+| **Use Gemini for LLM** | Native multimodal capabilities and massive 1M+ token context window. |
+| **Use ADK for agent framework** | Provides a production-grade foundation for agent orchestration. Provides the ability to orchestrate across multiple agents, manage context and artifacts, provides agentic evaluation tools, and provides convenient developer tools for interacting with agents. |
+| **Use FastAPI for backend** | Chosen for its high-performance async capabilities, automatic OpenAPI documentation, and native Pydantic integration, ensuring strict type validation across the API surface. |
+| **Use React for frontend** | The industry standard for dynamic UIs. Its declarative component model efficiently handles complex states (like real-time chat and dynamic content filters) and benefits from a massive ecosystem. |
+| **Use Vite for frontend build** | Offers instant Hot Module Replacement and optimized production builds using Javascript ES modules, significantly outperforming legacy Webpack-based tools in developer experience and build speed. Efficient deliver to the client|
+| **Use Terraform for infrastructure** | Enables declarative Infrastructure as Code (IaC), allowing us to version, audit, and reproduce the entire GCP environment (Cloud Run, Firestore, IAM) consistently across environments. |
+| **Use Google Cloud Build for CI/CD** | A fully managed, serverless CI/CD platform that integrates natively with GCP security. It executes builds in ephemeral, secure environments close to our artifact registry. Integrates seamlessly with GitHub, so that changes pushed to GitHub result in new builds and deployments. |
+| **Unified Container Image** | Packaging the frontend, backend, and agent into a single container ensures atomic deployments, and greatly simplifies the overall solution and deployment process. |
+| **Unified Origin Architecture** | Serving React static assets directly from the FastAPI backend (acting as the origin) completely eliminates CORS complexity in production and simplifies cookie handling. |
+| **Use Firestore for Database** | A serverless, NoSQL document database chosen for its flexibility with semi-structured data (blogs, projects) and seamless integration with the ADK for chat memory/history. |
+| **Use Cloud Storage (GCS)** | Scalable object storage used for hosting static assets (images, badges) and archiving logs. It provides a secure, low-latency origin for serving media content globally. |
+| **`/api` Prefix** | Establishes a strict routing namespace: `/api` for backend services; all other routes fallback to the SPA (`index.html`). |
+| **Deploy to Cloud Run** | A fully managed serverless platform that scales to zero (cost-effective) and handles autoscaling automatically. It abstracts infrastructure management while running standard OCI containers. It also supports custom domains without the need for a Load Balancer. |
+| **Use `uv` for Package Management** | Replaces `pip`/`poetry` with a single, ultra-fast (Rust-based) tool for dependency resolution and environment management, ensuring deterministic builds. |
+| **Use `InMemorySessionService`** | Sessions are designed to be ephemeral (per browser tab). An in-memory store offers the lowest possible latency and simplest implementation without needing external persistence like Redis. |
+| **Use In-Memory Rate Limiting** | Implemented via `slowapi` to provide essential DoS protection and cost control for the LLM. At our current scale, this avoids the operational overhead of a dedicated Redis cluster. |
+| **Hybrid Ingestion for Medium** | Combines RSS feed and Zip Archive (history) to overcome the issue that Medium's RSS feed only returns the last 10 blogs. |
+| **AI-Powered Summary Creation** | Uses Gemini to generate concise technical summaries from ingested blogs. |
+| **AI-Powered Markdown Creation** | Uses Gemini to generate structured Markdown from raw blog HTML. |
 | **Use Cloud Run Domain Mapping** | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. |
 | **Use React 19 Native Metadata** | Leverages built-in hoisting for `<title>` and `<meta>` tags, eliminating the need for external libraries like `react-helmet`. |
-| **Static XML Sitemap** | Generated on-the-fly by the backend to ensure search engines can discover the main application page. |
 
 ## Application Design
 
