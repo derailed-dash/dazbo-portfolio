@@ -15,7 +15,7 @@
     - [ ] Implement Markdown rendering using `react-markdown`.
     - [ ] Integrate the `SEO` component.
     - [ ] Write component tests in `frontend/src/pages/AboutPage.test.tsx`.
-- [ ] Task: Configure Routing
+- [x] Task: Configure Routing 239ed0b
     - [ ] Add the `/about` route to the main application router.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Development' (Protocol in workflow.md)
 
