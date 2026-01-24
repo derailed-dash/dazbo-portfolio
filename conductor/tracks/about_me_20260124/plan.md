@@ -12,10 +12,8 @@
 - [x] Task: Configure Routing 239ed0b
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Development' (Protocol in workflow.md) 9d6f382
 
-## Phase 3: UI Integration & Final Polish
-- [ ] Task: Update `HeroSection` UI
-    - [ ] Add an "About Me" link/button below the profile picture in `frontend/src/components/HeroSection.tsx`.
-    - [ ] Style the link to be clean and integrated with the profile image area.
-- [ ] Task: Refine `AboutPage` Header
-    - [ ] Ensure the top of the About page uses the Hero banner styling for visual continuity.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Integration & Final Polish' (Protocol in workflow.md)
+## Phase 3: UI Integration & Final Polish [checkpoint: 5e9ebf0]
+- [x] Task: Update `HeroSection` UI 5e9ebf0
+- [x] Task: Refine `AboutPage` Header 5e9ebf0
+- [x] Task: Conductor - User Manual Verification 'Phase 3: UI Integration & Final Polish' (Protocol in workflow.md) 5e9ebf0
+
