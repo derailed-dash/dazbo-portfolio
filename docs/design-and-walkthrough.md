@@ -455,9 +455,9 @@ projects:
 
 applications:
   - title: "Advent of Code Walkthroughs"
-    description: "My solutions and Python learning resources for Advent of Code."
+    description: "A comprehensive site featuring Python walkthroughs and learning resources for Advent of Code challenges."
     demo_url: "https://aoc.just2good.co.uk/"
-    image_url: "https://storage.googleapis.com/<project-id>-assets/aoc-thumb.png"
+    image_url: "https://storage.googleapis.com/<project-id>-assets/aoc-walkthroughs.png"
     tags: ["python", "algorithms", "education"]
 
 blogs:

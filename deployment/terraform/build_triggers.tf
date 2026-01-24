@@ -6,8 +6,7 @@
 #
 # Triggers include:
 # 1. PR Checks: Runs tests and linting on pull requests to the main branch.
-# 2. CD Pipeline: Deploys to the Staging environment on pushes to main.
-# 3. Prod Deployment: Manual approval trigger to promote builds to Production.
+# 2. Prod Deployment: Manual approval trigger to promote builds to Production.
 
 # a. Create PR checks trigger
 resource "google_cloudbuild_trigger" "pr_checks" {
