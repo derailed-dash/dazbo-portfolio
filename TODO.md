@@ -1,12 +1,15 @@
+- [x] Create README.md and GEMINI.md
 - [x] Create design-and-walkthrough doc
 - [x] Create testing doc
 - [x] Implement Conductor
 - [x] Add Gemini PR GitHub Actions
-- [x] Add instruction for Firestore creation, and API enablement
 - [x] Ensure Firestore in Terraform deployment; remove any Cloud SQL
 - [x] Add billing alerts and killswitch
-- [x] Deploy with Terraform
 - [x] Establish how to ingest/point to source blogs, repos, etc
+- [x] Add GCS bucket for static assets
+- [x] Implement backend services
+- [x] Implement FastAPI
+- [x] Deploy with Terraform
 - [x] Create React UI with carousel for blogs, GitHub repos, applications, etc.
 - [x] Build container image and test locally.
 - [x] Deploy and test on Cloud Run.
@@ -17,11 +20,15 @@
 - [X] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
 - [X] Map to my domain name.
 - [x] UI experimentation / aesthetics.
+- [x] Add AI summarisation of ingested material.
+- [x] Add AI creation of markdown and generation of keywords.
 - [X] Add blog source to the tiles.
 - [X] Remove comments/boost posts from dev.to ingestion.
 - [X] Add dev.to AI summarisation and markdown import.
 - [X] Add application ingestion with yaml.
 - [x] Add SEO.
+- [ ] Add professional profile information.
+- [ ] Add YouTube content.
 - [ ] Prevent adding duplicates in dev.to connector.
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
 - [ ] Implement RAG with Vector Search:
