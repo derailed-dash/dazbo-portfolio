@@ -33,15 +33,18 @@ from app.config import settings
 from app.dependencies import (
     get_application_service,
     get_blog_service,
+    get_content_service,
     get_experience_service,
     get_project_service,
 )
 from app.models.application import Application
 from app.models.blog import Blog
+from app.models.content import Content
 from app.models.experience import Experience
 from app.models.project import Project
 from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
+from app.services.content_service import ContentService
 from app.services.experience_service import ExperienceService
 from app.services.firestore import close_client, get_client
 from app.services.project_service import ProjectService
@@ -74,6 +77,7 @@ async def lifespan(app: FastAPI):
     app.state.project_service = ProjectService(db)
     app.state.application_service = ApplicationService(db)
     app.state.blog_service = BlogService(db)
+    app.state.content_service = ContentService(db)
     app.state.experience_service = ExperienceService(db)
     app.state.session_service = InMemorySessionService()
 
@@ -201,6 +205,16 @@ async def list_experience(request: Request, service: ExperienceService = Depends
     """List all work experience."""
     data = await service.list()
     return JSONResponse(content=jsonable_encoder(data))
+
+
+@app.get("/api/content/{slug}", response_model=Content)
+@limiter.limit("60/minute")
+async def get_content(slug: str, request: Request, service: ContentService = Depends(get_content_service)):
+    """Retrieve a content page by slug."""
+    doc = await service.get(slug)
+    if not doc:
+        return JSONResponse(status_code=404, content={"message": "Content not found"})
+    return JSONResponse(content=jsonable_encoder(doc))
 
 
 @app.get("/sitemap.xml")

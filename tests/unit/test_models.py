@@ -67,3 +67,20 @@ def test_experience_model():
         order=1,
     )
     assert experience.company == "Google"
+
+
+def test_content_model():
+    try:
+        from app.models.content import Content
+    except ImportError:
+        pytest.fail("Could not import Content model")
+
+    content = Content(
+        id="about",
+        title="About Me",
+        body="# Hello\nI am Dazbo.",
+        last_updated=datetime.now(UTC),
+    )
+    assert content.title == "About Me"
+    assert content.body == "# Hello\nI am Dazbo."
+    assert isinstance(content.last_updated, datetime)

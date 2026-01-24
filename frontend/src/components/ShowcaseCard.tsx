@@ -46,9 +46,9 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   };
 
   return (
-    <Card className="h-100 overflow-hidden">
+    <Card className="h-100 overflow-hidden glass-card">
       {imageUrl && (
-        <div style={{ height: '180px', overflow: 'hidden' }} className="d-flex align-items-center justify-content-center bg-light">
+        <div style={{ height: '180px', overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }} className="d-flex align-items-center justify-content-center">
           <Card.Img 
             variant="top" 
             src={imageUrl} 
@@ -61,7 +61,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
         <div className="d-flex justify-content-between align-items-start mb-2">
           <div className="tags-container">
             {tags.slice(0, 3).map(tag => (
-              <Badge key={tag} bg="light" text="dark" className="me-1 border text-uppercase" style={{ fontSize: '0.7rem' }}>
+              <Badge key={tag} bg="transparent" className="me-1 border text-uppercase" style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.3)' }}>
                 {tag}
               </Badge>
             ))}
@@ -74,7 +74,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
           )}
         </div>
         <Card.Title className="h5 mb-2 fw-bold">{title}</Card.Title>
-        <Card.Text className="text-muted small flex-grow-1">
+        <Card.Text className="small flex-grow-1">
           {description.length > 120 ? `${description.substring(0, 120)}...` : description}
         </Card.Text>
 
@@ -115,7 +115,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
                   href={safeSourceUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="d-inline-flex opacity-75 hover-opacity-100 transition-opacity"
+                  className="d-inline-flex opacity-100 hover-opacity-100 transition-opacity bg-white rounded-circle p-1 shadow-sm"
                   title="View Profile"
                 >
                   <img 
@@ -125,12 +125,14 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
                   />
                 </a>
               ) : (
-                <img 
-                  src={sourceIcon} 
-                  alt="Source" 
-                  style={sourceIconStyle} 
-                  title="Content Source"
-                />
+                <div className="bg-white rounded-circle p-1 shadow-sm d-inline-flex">
+                  <img 
+                    src={sourceIcon} 
+                    alt="Source" 
+                    style={sourceIconStyle} 
+                    title="Content Source"
+                  />
+                </div>
               )}
             </div>
           )}

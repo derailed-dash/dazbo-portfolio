@@ -130,7 +130,7 @@ A static `robots.txt` file in `frontend/public/` directs crawlers to the sitemap
 ## Service Layer
 
 *   **Generic Data Access**: `app/services/firestore_base.py` defines a generic `FirestoreService[T]` class. It handles common CRUD operations (create, get, list, update, delete) for any Pydantic model.
-*   **Domain Services**: Specialized services (`ProjectService`, `BlogService`, `ExperienceService`) inherit from the generic base or use it to implement domain-specific logic.
+*   **Domain Services**: Specialized services (`ProjectService`, `BlogService`, `ExperienceService`, `ContentService`) inherit from the generic base or use it to implement domain-specific logic.
 *   **Session Management**: Uses `InMemorySessionService` from the Google ADK. Sessions are ephemeral and tied to the current application process, which is sufficient for the portfolio's conversational needs.
 
 ### Data/Model Layer
@@ -147,6 +147,7 @@ The application uses **Google Firestore** in Native mode. Data is organized into
 *   **`applications`**: Stores curated applications (e.g., standalone websites, live demos) ingested via YAML.
 *   **`blogs`**: Stores blog posts (e.g., Medium articles, Dev.to posts).
 *   **`experience`**: Stores work experience entries.
+*   **`content`**: Stores singleton content pages (e.g., `about`) with Markdown bodies.
 
 ### Document IDs
 
@@ -175,6 +176,16 @@ The `blogs` collection uses the following schema:
 | `is_private` | Boolean | Flag for paywalled/member-only content. | Heuristic check ("Member-only story") in content. |
 | `is_manual` | Boolean | True if added via YAML, False if ingested via API/Zip. | Ingestion logic |
 | `source_platform` | String | Specific connector source (e.g., `medium_rss`, `medium_archive`). | Ingestion logic |
+
+### Content Model Fields
+
+The `content` collection (used for singleton pages like `about`) uses the following schema:
+
+| Field | Type | Description | Source |
+| :--- | :--- | :--- | :--- |
+| `title` | String | The title of the page (e.g., "About Me"). | Manual Firestore entry |
+| `body` | String | The full page content in Markdown format. | Manual Firestore entry |
+| `last_updated` | Timestamp | The date and time of the last update. | Manual Firestore entry |
 
 ## Solution Architecture
 
@@ -205,62 +216,16 @@ graph TD
         PS["ProjectService"]
         BS["BlogService"]
         ES["ExperienceService"]
+        CS["ContentService"]
         FS["FirestoreService<br/>(Generic Base)"]
         CES["ContentEnrichmentService<br/>(Gemini)"]
         
         PS --> FS
         BS --> FS
         ES --> FS
+        CS --> FS
         CLI -.-> CES
     end
-
-    subgraph "Data Layer (Shared)"
-        Models["Pydantic Models<br/>(app/models/*)"]
-    end
-
-    subgraph "Infrastructure"
-        Firestore[("Google Firestore<br/>(NoSQL)")]
-        GCS[("Cloud Storage<br/>(Assets/Logs)")]
-        Vertex["Vertex AI<br/>(Gemini Models)"]
-    end
-
-    %% Relationships
-    Dep -->|Injects| PS
-    Dep -->|Injects| BS
-    Dep -->|Injects| ES
-    
-    CLI -->|Instantiates| PS
-    CLI -->|Instantiates| BS
-    CLI -->|Instantiates| ES
-    
-    FS -->|Reads/Writes| Firestore
-    FS -->|Validates| Models
-    
-    CES -->|Generates Summary| Vertex
-    Agent -->|Inference| Vertex
-    
-    %% User Interactions
-    User["User"] -->|Browses| Frontend
-    Frontend -->|Requests /api/*| API
-    User -->|Chats| Agent
-    
-    %% Ingestion Flow
-    Dev["Developer"] -->|Runs| CLI
-    CLI -->|Uploads Assets| GCS
-
-    %% Styles
-    %% Styles
-    classDef ingest fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
-    classDef agent fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    
-    class CLI ingest;
-    class Agent agent;
-    
-    %% Style Ingest Tool Arrows (Blue)
-    linkStyle 7,11,12,13,22 stroke:#1565c0,stroke-width:2px;
-    
-    %% Style Agent Arrows (Green)
-    linkStyle 3,17 stroke:#2e7d32,stroke-width:2px;
 ```
 
 ### Runtime & Deployment Architecture
@@ -327,6 +292,7 @@ The frontend is a single-page application (SPA) built with React and Vite. It is
     *   **Responsiveness**: On mobile, it displays 1 item per slide. On desktop, it displays a grid of 3 items per slide.
     *   **Navigation**: Includes custom-styled "Previous" and "Next" controls and indicators.
 *   **`ChatWidget`**: A floating action button (FAB) that expands into a chat interface. It currently serves as a shell for future agent integration.
+*   **`AboutPage`**: A dedicated page for the professional profile, rendering Markdown content from Firestore with a glassmorphic UI design.
 
 ### Development Workflow
 
@@ -455,9 +421,9 @@ projects:
 
 applications:
   - title: "Advent of Code Walkthroughs"
-    description: "My solutions and Python learning resources for Advent of Code."
+    description: "A comprehensive site featuring Python walkthroughs and learning resources for Advent of Code challenges."
     demo_url: "https://aoc.just2good.co.uk/"
-    image_url: "https://storage.googleapis.com/<project-id>-assets/aoc-thumb.png"
+    image_url: "https://storage.googleapis.com/<project-id>-assets/aoc-walkthroughs.png"
     tags: ["python", "algorithms", "education"]
 
 blogs:

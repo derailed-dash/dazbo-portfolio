@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ChatWidget from './ChatWidget';
+import type { Mock } from 'vitest';
 
 describe('ChatWidget', () => {
   beforeEach(() => {
@@ -54,7 +55,7 @@ describe('ChatWidget', () => {
       getReader: () => mockReader,
     };
 
-    (globalThis.fetch as any).mockResolvedValue({
+    (globalThis.fetch as Mock).mockResolvedValue({
       ok: true,
       body: mockStream,
     });
@@ -95,7 +96,7 @@ describe('ChatWidget', () => {
     render(<ChatWidget />);
     fireEvent.click(screen.getByLabelText(/Toggle chat/i));
 
-    (globalThis.fetch as any).mockResolvedValue({
+    (globalThis.fetch as Mock).mockResolvedValue({
       ok: false,
       status: 429,
     });

@@ -54,3 +54,10 @@ export interface ChatMessage {
   content: string;
   timestamp: Date;
 }
+
+export interface Content {
+  id?: string;
+  title: string;
+  body: string;
+  last_updated: string;
+}

@@ -20,7 +20,7 @@ describe('API Client Interceptor', () => {
 
     try {
       await apiClient.get('/test-429');
-    } catch (error) {
+    } catch {
       // Ignore error
     }
 
