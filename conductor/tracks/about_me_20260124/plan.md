@@ -10,7 +10,7 @@
 - [x] Task: Implement Frontend `contentService` bafb66d
     - [ ] Create `frontend/src/services/contentService.ts` with `getContentBySlug`.
     - [ ] Write unit tests in `frontend/src/services/contentService.test.ts`.
-- [ ] Task: Create `AboutPage` component
+- [x] Task: Create `AboutPage` component 77a3f98
     - [ ] Create `frontend/src/pages/AboutPage.tsx`.
     - [ ] Implement Markdown rendering using `react-markdown`.
     - [ ] Integrate the `SEO` component.
