@@ -16,18 +16,18 @@
 - [x] Add conversational agent using Dazbo persona. Store the persona as a Google Secret.
 - [x] Check `app_name` is being used in the agent from the env vars.
 - [x] Persona can answer portfolio questions and questions about me.
-- [X] Add rate limiting.
-- [X] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
-- [X] Map to my domain name.
+- [x] Add rate limiting.
+- [x] Medium RSS feed only retrieves last 10 blogs. Need to find a way to get all of them.
+- [x] Map to my domain name.
 - [x] UI experimentation / aesthetics.
 - [x] Add AI summarisation of ingested material.
 - [x] Add AI creation of markdown and generation of keywords.
-- [X] Add blog source to the tiles.
-- [X] Remove comments/boost posts from dev.to ingestion.
-- [X] Add dev.to AI summarisation and markdown import.
-- [X] Add application ingestion with yaml.
+- [x] Add blog source to the tiles.
+- [x] Remove comments/boost posts from dev.to ingestion.
+- [x] Add dev.to AI summarisation and markdown import.
+- [x] Add application ingestion with yaml.
 - [x] Add SEO.
-- [ ] Add professional profile information.
+- [x] Add professional profile information.
 - [ ] Add YouTube content.
 - [ ] Prevent adding duplicates in dev.to connector.
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
