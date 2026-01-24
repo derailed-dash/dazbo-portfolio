@@ -52,6 +52,7 @@ describe('AboutPage', () => {
   });
 
   it('renders error message on fetch failure', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     (getContentBySlug as Mock).mockRejectedValueOnce(new Error('Fetch failed'));
 
     render(
@@ -63,5 +64,7 @@ describe('AboutPage', () => {
     await waitFor(() => {
       expect(screen.getByText(/Failed to load about page content/i)).toBeInTheDocument();
     });
+    
+    consoleSpy.mockRestore();
   });
 });
