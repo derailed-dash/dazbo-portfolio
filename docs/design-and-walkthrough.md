@@ -125,7 +125,7 @@ To facilitate discovery of the application, the FastAPI backend provides a sitem
 
 ### Robots.txt
 
-A static `robots.txt` file in `frontend/public/` directs crawlers to the dynamic sitemap.
+A static `robots.txt` file in `frontend/public/` directs crawlers to the sitemap endpoint.
 
 ## Service Layer
 

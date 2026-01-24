@@ -206,7 +206,7 @@ async def list_experience(request: Request, service: ExperienceService = Depends
 @app.get("/sitemap.xml")
 @limiter.limit("10/minute")
 async def sitemap_xml(request: Request):
-    """Generate dynamic XML sitemap."""
+    """Generate XML sitemap."""
     import xml.etree.ElementTree as ET
 
     base_url = settings.base_url
