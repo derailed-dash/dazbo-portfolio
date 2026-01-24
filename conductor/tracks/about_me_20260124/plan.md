@@ -6,18 +6,11 @@
 - [x] Task: Add GET `/api/content/{slug}` endpoint 24d1489
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Data & API' (Protocol in workflow.md) 6900dee
 
-## Phase 2: Frontend Development
+## Phase 2: Frontend Development [checkpoint: 9d6f382]
 - [x] Task: Implement Frontend `contentService` bafb66d
-    - [ ] Create `frontend/src/services/contentService.ts` with `getContentBySlug`.
-    - [ ] Write unit tests in `frontend/src/services/contentService.test.ts`.
 - [x] Task: Create `AboutPage` component 77a3f98
-    - [ ] Create `frontend/src/pages/AboutPage.tsx`.
-    - [ ] Implement Markdown rendering using `react-markdown`.
-    - [ ] Integrate the `SEO` component.
-    - [ ] Write component tests in `frontend/src/pages/AboutPage.test.tsx`.
 - [x] Task: Configure Routing 239ed0b
-    - [ ] Add the `/about` route to the main application router.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Development' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Development' (Protocol in workflow.md) 9d6f382
 
 ## Phase 3: UI Integration & Final Polish
 - [ ] Task: Update `HeroSection` UI
