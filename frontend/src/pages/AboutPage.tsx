@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import { getContentBySlug } from '../services/contentService';
-import { Content } from '../types';
+import type { Content } from '../types';
 import SEO from '../components/SEO';
 
 const AboutPage: React.FC = () => {

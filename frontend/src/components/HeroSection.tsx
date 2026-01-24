@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const HeroSection: React.FC = () => {
     return (
@@ -18,6 +19,11 @@ const HeroSection: React.FC = () => {
                             alt="Dazbo"
                             className="shadow-lg hero-profile-img"
                         />
+                        <div className="mt-3 text-center text-md-start">
+                            <Link to="/about" className="text-white text-decoration-none fw-bold border-bottom border-2 border-white pb-1">
+                                More about me &rarr;
+                            </Link>
+                        </div>
                     </Col>
 
                     {/* Right Column: Empty now, but keeping structure for spacing or future use */}
