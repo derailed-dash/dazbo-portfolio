@@ -7,7 +7,7 @@
 - [x] Task: Implement `ContentService` a2eca66
     - [ ] Create `app/services/content_service.py` inheriting from `FirestoreService[Content]`.
     - [ ] Write unit tests for the service in `tests/unit/test_content_service.py`.
-- [ ] Task: Add GET `/api/content/{slug}` endpoint
+- [x] Task: Add GET `/api/content/{slug}` endpoint 24d1489
     - [ ] Update `app/dependencies.py` to provide `ContentService`.
     - [ ] Implement the route in `app/fast_api_app.py`.
     - [ ] Write integration tests for the endpoint in `tests/integration/test_endpoints.py`.
