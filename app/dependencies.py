@@ -8,6 +8,7 @@ from fastapi import Request
 
 from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
+from app.services.content_service import ContentService
 from app.services.experience_service import ExperienceService
 from app.services.project_service import ProjectService
 from app.services.session_service import FirestoreSessionService
@@ -23,6 +24,10 @@ def get_application_service(request: Request) -> ApplicationService:
 
 def get_blog_service(request: Request) -> BlogService:
     return request.app.state.blog_service
+
+
+def get_content_service(request: Request) -> ContentService:
+    return request.app.state.content_service
 
 
 def get_experience_service(request: Request) -> ExperienceService:
