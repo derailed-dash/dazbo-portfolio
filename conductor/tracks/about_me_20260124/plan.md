@@ -4,7 +4,7 @@
 - [x] Task: Define `Content` Pydantic model 3764661
     - [ ] Create `app/models/content.py` with `title`, `body`, and `last_updated` fields.
     - [ ] Write unit tests for the model in `tests/unit/test_models.py`.
-- [ ] Task: Implement `ContentService`
+- [x] Task: Implement `ContentService` a2eca66
     - [ ] Create `app/services/content_service.py` inheriting from `FirestoreService[Content]`.
     - [ ] Write unit tests for the service in `tests/unit/test_content_service.py`.
 - [ ] Task: Add GET `/api/content/{slug}` endpoint
