@@ -8,7 +8,7 @@
 # 3. Firestore: NoSQL database in Native mode for application data.
 
 provider "google" {
-  region = var.region
+  region                = var.region
   user_project_override = true
 }
 
@@ -67,10 +67,10 @@ resource "google_storage_bucket" "logs_data_bucket" {
 }
 
 resource "google_firestore_database" "database" {
-  project                     = var.project_id
-  name                        = "(default)"
-  location_id                 = var.region
-  type                        = "FIRESTORE_NATIVE"
-  delete_protection_state     = "DELETE_PROTECTION_DISABLED"
-  depends_on = [resource.google_project_service.deploy_project_services]
+  project                 = var.project_id
+  name                    = "(default)"
+  location_id             = var.region
+  type                    = "FIRESTORE_NATIVE"
+  delete_protection_state = "DELETE_PROTECTION_DISABLED"
+  depends_on              = [resource.google_project_service.deploy_project_services]
 }

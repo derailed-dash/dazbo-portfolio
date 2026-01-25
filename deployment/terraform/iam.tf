@@ -51,7 +51,7 @@ resource "google_project_iam_member" "app_sa_roles" {
 # 4. Allow Cloud Run service SA to pull containers stored in the CICD project
 # 4. Allow Cloud Run service SA to pull containers stored in the CICD project
 resource "google_project_iam_member" "cicd_run_invoker_artifact_registry_reader" {
-  project  = var.cicd_runner_project_id
+  project = var.cicd_runner_project_id
 
   role       = "roles/artifactregistry.reader"
   member     = "serviceAccount:service-${data.google_project.project.number}@serverless-robot-prod.iam.gserviceaccount.com"
