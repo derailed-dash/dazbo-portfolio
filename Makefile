@@ -4,6 +4,7 @@ SERVICE_NAME ?= dazbo-portfolio
 APP_NAME ?= dazbo_portfolio
 AGENT_NAME ?= dazbo_portfolio_chat_agent
 MODEL ?= gemini-2.5-flash
+MIN_INSTANCES ?= 0
 GOOGLE_CLOUD_REGION ?= europe-west1
 GOOGLE_CLOUD_LOCATION ?= global
 GOOGLE_CLOUD_PROJECT ?= $(shell gcloud config get-value project)
@@ -42,6 +43,7 @@ deploy-cloud-run:
 		--region $(GOOGLE_CLOUD_REGION) \
 		--service-account="$$SERVICE_SA_EMAIL" \
 		--max-instances=1 \
+		--min-instances=$(MIN_INSTANCES) \
 		--cpu-boost \
 		--allow-unauthenticated \
 		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(APP_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION),LOG_LEVEL=DEBUG" \
