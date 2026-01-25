@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner, Alert, Button } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { getContentBySlug } from '../services/contentService';
@@ -93,7 +94,7 @@ const AboutPage: React.FC = () => {
                 color: 'var(--md-sys-color-on-background)'
               }}
             >
-              <ReactMarkdown>{content.body}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{content.body}</ReactMarkdown>
             </div>
           </Col>
         </Row>
