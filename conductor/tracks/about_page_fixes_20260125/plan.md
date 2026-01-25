@@ -1,7 +1,7 @@
 # Implementation Plan - Track: about_page_fixes_20260125
 
 ## Phase 1: Frontend Fixes (About Page)
-- [ ] Task: Create reproduction test case for About Page rendering
+- [x] Task: Create reproduction test case for About Page rendering 45ef5b1
     - [ ] Create a unit test for `AboutPage` that mocks the API response with Markdown content.
     - [ ] Assert that the rendered output contains expected HTML elements (e.g., `<h1>`, `<strong>`), not raw Markdown characters.
 - [ ] Task: Fix Markdown Rendering in `AboutPage`
