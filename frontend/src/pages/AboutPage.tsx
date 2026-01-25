@@ -99,6 +99,21 @@ const AboutPage: React.FC = () => {
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]} 
                 rehypePlugins={[rehypeRaw]}
+                components={{
+                  code: ({className, children, ...props}) => {
+                    // Apply glass tag style to inline code blocks (those without language- class)
+                    const match = /language-(\w+)/.exec(className || '');
+                    const isInline = !match;
+                    return (
+                      <code 
+                        className={`${className || ''} ${isInline ? 'glass-tag' : ''}`} 
+                        {...props}
+                      >
+                        {children}
+                      </code>
+                    );
+                  }
+                }}
               >
                 {content.body.replace(/\\n/g, '\n')}
               </ReactMarkdown>

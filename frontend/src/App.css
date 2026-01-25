@@ -40,3 +40,18 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Glassmorphism tag style for inline code in markdown */
+.glass-tag {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+  margin: 0 0.2em;
+  font-family: inherit;
+  font-size: 0.9em;
+  color: #e0e0e0;
+  display: inline-block;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
