@@ -4,6 +4,8 @@ Why: Allows the agent to retrieve full details for a specific project or blog by
 How: Queries ProjectService and BlogService by ID.
 """
 
+import re
+
 from app.services.blog_service import BlogService
 from app.services.content_service import ContentService
 from app.services.firestore import get_client
@@ -20,6 +22,10 @@ async def get_content_details(item_id: str) -> str:
     Returns:
         A detailed string representation of the item, or a not found message.
     """
+    # Security check: Validate item_id to prevent path traversal or injection
+    if not re.match(r"^[a-zA-Z0-9_\-]+$", item_id):
+        return f"Invalid item_id: '{item_id}'. IDs must contain only alphanumeric characters, underscores, and hyphens."
+
     db = get_client()
     project_service = ProjectService(db)
     blog_service = BlogService(db)
