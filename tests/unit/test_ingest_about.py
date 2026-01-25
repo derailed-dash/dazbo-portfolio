@@ -4,10 +4,12 @@ Why: Verifies that the CLI tool correctly handles the --about-file argument.
 How: Mocks ContentService and Typer context.
 """
 
-from unittest.mock import AsyncMock, patch, mock_open
+from unittest.mock import AsyncMock, mock_open, patch
+
 from typer.testing import CliRunner
 
 runner = CliRunner()
+
 
 @patch("app.tools.ingest.ContentService")
 @patch("app.tools.ingest.firestore.AsyncClient")
@@ -24,16 +26,14 @@ def test_ingest_about_file(mock_firestore_client, mock_content_service):
     with patch("builtins.open", mock_open(read_data=markdown_content)):
         result = runner.invoke(app, ["--about-file", "about.md"])
 
-    print(result.stdout) # DEBUG
+    print(result.stdout)  # DEBUG
     assert result.exit_code == 0
 
-    
     # Verify ContentService.create was called
     args, kwargs = mock_content_svc_instance.create.call_args
     content_obj = args[0]
-    
+
     assert content_obj.title == "About"
     assert content_obj.body == markdown_content
     # Expect item_id="about"
     assert kwargs.get("item_id") == "about"
-

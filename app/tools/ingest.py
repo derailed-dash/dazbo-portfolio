@@ -8,7 +8,7 @@ import asyncio
 import os
 import re
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import typer
 import yaml
@@ -135,14 +135,10 @@ async def ingest_resources(
     if about_file:
         console.print(f"[bold blue]Processing About File: {about_file}...[/bold blue]")
         try:
-            with open(about_file, "r", encoding="utf-8") as f:
+            with open(about_file, encoding="utf-8") as f:
                 about_body = f.read()
-            
-            content = Content(
-                title="About", 
-                body=about_body,
-                last_updated=datetime.now(timezone.utc)
-            )
+
+            content = Content(title="About", body=about_body, last_updated=datetime.now(UTC))
             # Create or update 'about' document
             await content_service.create(content, item_id="about")
             console.print("[green]Successfully updated About page content.[/green]")

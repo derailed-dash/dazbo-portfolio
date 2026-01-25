@@ -11,13 +11,13 @@
 - [x] Task: Handle literal newlines in `AboutPage` content 5ed8bf9
 - [x] Task: Enable raw HTML rendering in `AboutPage` debfe44
 - [x] Task: Style inline code blocks as tags in `AboutPage` 8d2209c
-- [ ] Task: Conductor - User Manual Verification 'Frontend Fixes' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Fixes' (Protocol in workflow.md)
 
 ## Phase 1.5: Content Ingestion Update
 - [x] Task: Update `ingest.py` to support About Page ingestion 6ba8052
-    - [ ] Add `--about-file` argument to `ingest.py`.
-    - [ ] Implement logic to read the file and update `content/about` in Firestore using `ContentService`.
-- [ ] Task: Conductor - User Manual Verification 'Content Ingestion' (Protocol in workflow.md)
+    - [x] Add `--about-file` argument to `ingest.py`.
+    - [x] Implement logic to read the file and update `content/about` in Firestore using `ContentService`.
+- [x] Task: Conductor - User Manual Verification 'Content Ingestion' (Protocol in workflow.md)
 
 ## Phase 2: Agent Tooling Updates
 - [ ] Task: Update `get_content_details` tool
