@@ -155,3 +155,15 @@ variable "app_domain_name" {
   description = "A list of domain names to be mapped to the service"
   type        = list(string)
 }
+
+variable "log_level" {
+  description = "Log level for the application (e.g., INFO, DEBUG)."
+  type        = string
+  default     = "INFO"
+}
+
+variable "min_instances" {
+  description = "Minimum number of Cloud Run instances."
+  type        = string
+  default     = "0"
+}

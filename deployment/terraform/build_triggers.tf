@@ -34,9 +34,9 @@ resource "google_cloudbuild_trigger" "pr_checks" {
   ]
   include_build_logs = "INCLUDE_BUILD_LOGS_WITH_STATUS"
   depends_on = [
-    resource.google_project_service.cicd_services, 
-    resource.google_project_service.deploy_project_services, 
-    google_cloudbuildv2_connection.github_connection, 
+    resource.google_project_service.cicd_services,
+    resource.google_project_service.deploy_project_services,
+    google_cloudbuildv2_connection.github_connection,
     google_cloudbuildv2_repository.repo
   ]
 }
@@ -79,13 +79,14 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
     _GOOGLE_GENAI_USE_VERTEXAI   = var.google_genai_use_vertexai
     _MODEL                       = var.model
     _MAX_INSTANCES               = "1"
-    _LOG_LEVEL                   = "DEBUG"
+    _MIN_INSTANCES               = var.min_instances
+    _LOG_LEVEL                   = var.log_level
   }
 
   depends_on = [
-    resource.google_project_service.cicd_services, 
-    resource.google_project_service.deploy_project_services, 
-    google_cloudbuildv2_connection.github_connection, 
+    resource.google_project_service.cicd_services,
+    resource.google_project_service.deploy_project_services,
+    google_cloudbuildv2_connection.github_connection,
     google_cloudbuildv2_repository.repo
   ]
 

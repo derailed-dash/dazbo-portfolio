@@ -15,7 +15,7 @@ resource "google_cloud_run_v2_service" "app" {
   deletion_protection = false
   ingress             = "INGRESS_TRAFFIC_ALL"
   labels = {
-    "created-by"                  = "adk"
+    "created-by" = "adk"
   }
 
   template {
@@ -47,7 +47,7 @@ resource "google_cloud_run_v2_service" "app" {
       }
     }
 
-    service_account                = google_service_account.app_sa.email
+    service_account                  = google_service_account.app_sa.email
     max_instance_request_concurrency = 40
 
     scaling {
