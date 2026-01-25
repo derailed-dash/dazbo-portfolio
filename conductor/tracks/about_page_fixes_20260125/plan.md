@@ -26,7 +26,7 @@
     - [x] Ensure it returns the formatted content body.
 - [x] Task: Conductor - User Manual Verification 'Agent Tooling Updates' (Protocol in workflow.md) 5ae10f9
 
-## Phase 3: Integration & Verification
+## Phase 3: Integration & Verification [checkpoint: 79bb998]
 - [x] Task: Verify Agent Behavior ef8245d
     - [x] Run the agent locally.
     - [x] Ask "Who are you?" or "Tell me about yourself".
