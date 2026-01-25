@@ -8,6 +8,7 @@
     - [ ] Investigate `ReactMarkdown` usage in `frontend/src/pages/AboutPage.tsx`.
     - [ ] Ensure proper styling/CSS is applied for Markdown elements.
     - [ ] Verify content refreshing behavior (ensure `useEffect` dependency array is correct or logic is sound).
+- [x] Task: Handle literal newlines in `AboutPage` content 5ed8bf9
 - [ ] Task: Conductor - User Manual Verification 'Frontend Fixes' (Protocol in workflow.md)
 
 ## Phase 2: Agent Tooling Updates
