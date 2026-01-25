@@ -27,8 +27,8 @@
 - [x] Task: Conductor - User Manual Verification 'Agent Tooling Updates' (Protocol in workflow.md) 5ae10f9
 
 ## Phase 3: Integration & Verification
-- [ ] Task: Verify Agent Behavior
-    - [ ] Run the agent locally.
-    - [ ] Ask "Who are you?" or "Tell me about yourself".
-    - [ ] Verify the agent calls the updated tool and responds with information from the `about` document.
-- [ ] Task: Conductor - User Manual Verification 'Integration & Verification' (Protocol in workflow.md)
+- [x] Task: Verify Agent Behavior ef8245d
+    - [x] Run the agent locally.
+    - [x] Ask "Who are you?" or "Tell me about yourself".
+    - [x] Verify the agent calls the updated tool and responds with information from the `about` document.
+- [x] Task: Conductor - User Manual Verification 'Integration & Verification' (Protocol in workflow.md) ef8245d
