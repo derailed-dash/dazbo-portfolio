@@ -1,0 +1,8 @@
+{
+  "track_id": "about_page_fixes_20260125",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-25T14:00:00Z",
+  "updated_at": "2026-01-25T14:00:00Z",
+  "description": "About page is not rendering markdown properly; nor is it refreshign when I update the \"body\" value in the \"about\" doc in Firestore; also, I don't think the Chatbot knows about it, but it needs to."
+}
