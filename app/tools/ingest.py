@@ -8,6 +8,7 @@ import asyncio
 import os
 import re
 import zipfile
+from datetime import datetime, timezone
 
 import typer
 import yaml
@@ -25,6 +26,7 @@ from rich.progress import (
 from app.config import settings
 from app.models.application import Application
 from app.models.blog import Blog
+from app.models.content import Content
 from app.models.project import Project
 from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
@@ -33,6 +35,7 @@ from app.services.connectors.github_connector import GitHubConnector
 from app.services.connectors.medium_archive_connector import MediumArchiveConnector
 from app.services.connectors.medium_connector import MediumConnector
 from app.services.content_enrichment_service import ContentEnrichmentService
+from app.services.content_service import ContentService
 from app.services.project_service import ProjectService
 
 app = typer.Typer(help="Ingest portfolio resources from external platforms.")
@@ -116,6 +119,7 @@ async def ingest_resources(
     medium_zip: str | None,
     devto_user: str | None,
     yaml_file: str | None,
+    about_file: str | None,
     project_id: str,
 ):
     """
@@ -125,6 +129,25 @@ async def ingest_resources(
     project_service = ProjectService(db)
     application_service = ApplicationService(db)
     blog_service = BlogService(db)
+    content_service = ContentService(db)
+
+    # --- About Page ---
+    if about_file:
+        console.print(f"[bold blue]Processing About File: {about_file}...[/bold blue]")
+        try:
+            with open(about_file, "r", encoding="utf-8") as f:
+                about_body = f.read()
+            
+            content = Content(
+                title="About", 
+                body=about_body,
+                last_updated=datetime.now(timezone.utc)
+            )
+            # Create or update 'about' document
+            await content_service.create(content, item_id="about")
+            console.print("[green]Successfully updated About page content.[/green]")
+        except Exception as e:
+            console.print(f"[bold red]Error processing About file:[/bold red] {e}")
 
     # --- GitHub ---
     if github_user:
@@ -420,6 +443,7 @@ def main(
     medium_zip: str = typer.Option(None, help="Path to Medium export zip file"),
     devto_user: str = typer.Option(None, help="Dev.to username"),
     yaml_file: str = typer.Option(None, help="Path to manual resources YAML file"),
+    about_file: str = typer.Option(None, help="Path to Markdown file for About page"),
     project_id: str = typer.Option(settings.google_cloud_project, help="GCP Project ID"),
 ):
     """
@@ -431,7 +455,7 @@ def main(
         )
         raise typer.Exit(code=1)
 
-    asyncio.run(ingest_resources(github_user, medium_user, medium_zip, devto_user, yaml_file, project_id))
+    asyncio.run(ingest_resources(github_user, medium_user, medium_zip, devto_user, yaml_file, about_file, project_id))
 
 
 if __name__ == "__main__":
