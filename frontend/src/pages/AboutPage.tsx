@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner, Alert, Button } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { getContentBySlug } from '../services/contentService';
@@ -95,7 +96,10 @@ const AboutPage: React.FC = () => {
               }}
             >
               {/* Replace literal \n with actual newlines to fix Firestore console input issues */}
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]} 
+                rehypePlugins={[rehypeRaw]}
+              >
                 {content.body.replace(/\\n/g, '\n')}
               </ReactMarkdown>
             </div>
