@@ -110,11 +110,11 @@ code.glass-tag {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   padding: 0.3em 0.6em;
-  margin: 0.4em 0.2em; /* Added vertical margin to handle wrapping */
+  margin: 0.4em 0.2em; /* Vertical margin handles spacing when tags wrap to new lines */
   font-family: inherit;
   font-size: 0.75em;
   color: #e0e0e0 !important; /* Override Bootstrap pink color */
   display: inline-block;
   backdrop-filter: blur(4px);
-  white-space: nowrap;
+  white-space: nowrap; /* Prevent tag text itself from wrapping */
 }

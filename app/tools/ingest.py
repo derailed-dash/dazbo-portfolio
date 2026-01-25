@@ -122,9 +122,8 @@ async def ingest_resources(
     about_file: str | None,
     project_id: str,
 ):
-    """
-    Async logic for ingestion.
-    """
+    """Ingests portfolio resources from various sources into Firestore."""
+
     db = firestore.AsyncClient(project=project_id)
     project_service = ProjectService(db)
     application_service = ApplicationService(db)
