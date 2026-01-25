@@ -31,6 +31,7 @@ steps:
       - "--region=$_REGION"
       - "--project=$PROJECT_ID"
       - "--max-instances=$_MAX_INSTANCES"
+      - "--min-instances=$_MIN_INSTANCES"
       - "--cpu-boost"
       - "--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GOOGLE_CLOUD_LOCATION=$_LOCATION,LOG_LEVEL=$_LOG_LEVEL,APP_NAME=$_APP_NAME,AGENT_NAME=$_AGENT_NAME,GOOGLE_GENAI_USE_VERTEXAI=$_GOOGLE_GENAI_USE_VERTEXAI,MODEL=$_MODEL"
       - "--service-account=$_APP_SERVICE_ACCOUNT"
@@ -51,6 +52,7 @@ substitutions:
   _GOOGLE_GENAI_USE_VERTEXAI: "True"
   _MODEL: "gemini-3-flash-preview"
   _MAX_INSTANCES: "1"
+  _MIN_INSTANCES: "0"
   _LOG_LEVEL: INFO
   _APP_SERVICE_ACCOUNT: $_SERVICE_NAME-app@${PROJECT_ID}.iam.gserviceaccount.com
   _LOGS_BUCKET_NAME_PROD: "${PROJECT_ID}-logs"
