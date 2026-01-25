@@ -42,7 +42,7 @@
 }
 
 /* Glassmorphism tag style for inline code in markdown */
-.glass-tag {
+code.glass-tag {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
@@ -50,7 +50,7 @@
   margin: 0 0.2em;
   font-family: inherit;
   font-size: 0.9em;
-  color: #e0e0e0;
+  color: #e0e0e0 !important; /* Override Bootstrap pink color */
   display: inline-block;
   backdrop-filter: blur(4px);
   white-space: nowrap;
