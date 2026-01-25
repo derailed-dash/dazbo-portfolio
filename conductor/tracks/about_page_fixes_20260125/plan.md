@@ -9,6 +9,7 @@
     - [ ] Ensure proper styling/CSS is applied for Markdown elements.
     - [ ] Verify content refreshing behavior (ensure `useEffect` dependency array is correct or logic is sound).
 - [x] Task: Handle literal newlines in `AboutPage` content 5ed8bf9
+- [x] Task: Enable raw HTML rendering in `AboutPage` debfe44
 - [ ] Task: Conductor - User Manual Verification 'Frontend Fixes' (Protocol in workflow.md)
 
 ## Phase 1.5: Content Ingestion Update
