@@ -20,10 +20,10 @@
 - [x] Task: Conductor - User Manual Verification 'Content Ingestion' (Protocol in workflow.md)
 
 ## Phase 2: Agent Tooling Updates
-- [ ] Task: Update `get_content_details` tool
-    - [ ] Create a unit test for `get_content_details` with the ID `about`.
-    - [ ] Modify `app/tools/content_details.py` to check the `ContentService` if the item is not found in projects or blogs.
-    - [ ] Ensure it returns the formatted content body.
+- [x] Task: Update `get_content_details` tool 5ae10f9
+    - [x] Create a unit test for `get_content_details` with the ID `about`.
+    - [x] Modify `app/tools/content_details.py` to check the `ContentService` if the item is not found in projects or blogs.
+    - [x] Ensure it returns the formatted content body.
 - [ ] Task: Conductor - User Manual Verification 'Agent Tooling Updates' (Protocol in workflow.md)
 
 ## Phase 3: Integration & Verification
