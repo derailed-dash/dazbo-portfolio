@@ -10,7 +10,7 @@
     - [ ] Verify content refreshing behavior (ensure `useEffect` dependency array is correct or logic is sound).
 - [x] Task: Handle literal newlines in `AboutPage` content 5ed8bf9
 - [x] Task: Enable raw HTML rendering in `AboutPage` debfe44
-- [x] Task: Style inline code blocks as tags in `AboutPage` 933b675
+- [x] Task: Style inline code blocks as tags in `AboutPage` 21d5514
 - [ ] Task: Conductor - User Manual Verification 'Frontend Fixes' (Protocol in workflow.md)
 
 ## Phase 1.5: Content Ingestion Update
