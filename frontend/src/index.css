@@ -103,3 +103,18 @@ h1, h2, h3, h4, h5, h6 {
 .glass-card .card-text {
   color: rgba(255, 255, 255, 0.7) !important;
 }
+
+/* Glassmorphism tag style for inline code in markdown */
+code.glass-tag {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+  margin: 0 0.2em;
+  font-family: inherit;
+  font-size: 0.9em;
+  color: #e0e0e0 !important; /* Override Bootstrap pink color */
+  display: inline-block;
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+}
