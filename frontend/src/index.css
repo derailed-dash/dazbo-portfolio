@@ -112,7 +112,7 @@ code.glass-tag {
   padding: 0.3em 0.6em;
   margin: 0.4em 0.2em; /* Added vertical margin to handle wrapping */
   font-family: inherit;
-  font-size: 0.85em;
+  font-size: 0.8em;
   color: #e0e0e0 !important; /* Override Bootstrap pink color */
   display: inline-block;
   backdrop-filter: blur(4px);

@@ -332,6 +332,7 @@ uv run python -m app.tools.ingest \
   --medium-user <user-name> \
   --medium-zip <path-to-posts.zip> \
   --devto-user <user-name> \
+  --about-file <path-to-about.md> \
   --yaml-file manual_resources.yaml
 ```
 
@@ -340,8 +341,8 @@ uv run python -m app.tools.ingest \
 The ingestion tool is **not** a standalone script. It is an integral part of the application codebase and relies heavily on the same components used by the containerized FastAPI backend.
 
 **Shared Code:**
-*   **Models (`app.models`):** Uses the exact same Pydantic models (e.g., `Blog`, `Project`) to ensure data consistency between ingestion and serving.
-*   **Services (`app.services`):** Reuses the core business logic, including `FirestoreService` for database operations and `ContentEnrichmentService` for AI processing.
+*   **Models (`app.models`):** Uses the exact same Pydantic models (e.g., `Blog`, `Project`, `Content`) to ensure data consistency between ingestion and serving.
+*   **Services (`app.services`):** Reuses the core business logic, including `FirestoreService` and `ContentService` for database operations and `ContentEnrichmentService` for AI processing.
 *   **Configuration (`app.config`):** Loads settings (Project ID, API Keys) using the central `Settings` object.
 
 **Dependencies:**
@@ -357,6 +358,7 @@ The system uses modular "Connectors" to fetch data:
 *   **Medium Connector (RSS):** Parses the user's Medium RSS feed for the latest 10 posts. Provides the source of truth for current metadata (date, title).
 *   **Medium Archive Connector (Zip):** Parses a Medium export archive (`posts.zip`). Retrieves the full history of posts and provides the source of truth for post content.
 *   **Dev.to Connector:** Uses the Dev.to API to fetch published articles. Maps articles to `Blog` entries.
+*   **About Page Ingest:** Directly reads a Markdown file and updates the `content/about` document in Firestore using the `ContentService`. This ensures the About page can be managed as code and updated programmatically, avoiding manual entry in the Firestore console.
 *   **Manual YAML:** Parses a local YAML file for "Metadata Only" entries (e.g., private projects, external links, paywalled articles).
 
 ### Content Processing & AI Enrichment
