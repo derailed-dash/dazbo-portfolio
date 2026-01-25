@@ -4,7 +4,7 @@
 - [x] Task: Create reproduction test case for About Page rendering 45ef5b1
     - [ ] Create a unit test for `AboutPage` that mocks the API response with Markdown content.
     - [ ] Assert that the rendered output contains expected HTML elements (e.g., `<h1>`, `<strong>`), not raw Markdown characters.
-- [ ] Task: Fix Markdown Rendering in `AboutPage`
+- [x] Task: Fix Markdown Rendering in `AboutPage` eed8e0f
     - [ ] Investigate `ReactMarkdown` usage in `frontend/src/pages/AboutPage.tsx`.
     - [ ] Ensure proper styling/CSS is applied for Markdown elements.
     - [ ] Verify content refreshing behavior (ensure `useEffect` dependency array is correct or logic is sound).
