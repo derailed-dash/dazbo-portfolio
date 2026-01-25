@@ -94,7 +94,10 @@ const AboutPage: React.FC = () => {
                 color: 'var(--md-sys-color-on-background)'
               }}
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{content.body}</ReactMarkdown>
+              {/* Replace literal \n with actual newlines to fix Firestore console input issues */}
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {content.body.replace(/\\n/g, '\n')}
+              </ReactMarkdown>
             </div>
           </Col>
         </Row>
