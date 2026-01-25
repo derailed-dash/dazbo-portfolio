@@ -5,6 +5,7 @@ How: Queries ProjectService and BlogService by ID.
 """
 
 from app.services.blog_service import BlogService
+from app.services.content_service import ContentService
 from app.services.firestore import get_client
 from app.services.project_service import ProjectService
 
@@ -22,6 +23,7 @@ async def get_content_details(item_id: str) -> str:
     db = get_client()
     project_service = ProjectService(db)
     blog_service = BlogService(db)
+    content_service = ContentService(db)
 
     # Try finding in projects first
     project = await project_service.get(item_id)
@@ -55,4 +57,16 @@ async def get_content_details(item_id: str) -> str:
         ]
         return "\n".join(details)
 
-    return f"Item with ID '{item_id}' not found in projects or blogs."
+    # Try finding in general content (e.g. about page)
+    content = await content_service.get(item_id)
+    if content:
+        details = [
+            "Type: Page Content",
+            f"Title: {content.title}",
+            f"Last Updated: {content.last_updated}",
+            "--- Content Body ---",
+            content.body,
+        ]
+        return "\n".join(details)
+
+    return f"Item with ID '{item_id}' not found in projects, blogs, or content pages."
