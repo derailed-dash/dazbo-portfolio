@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Spinner, Alert, Button } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { getContentBySlug } from '../services/contentService';
@@ -93,7 +95,28 @@ const AboutPage: React.FC = () => {
                 color: 'var(--md-sys-color-on-background)'
               }}
             >
-              <ReactMarkdown>{content.body}</ReactMarkdown>
+              {/* Replace literal \n with actual newlines to fix Firestore console input issues */}
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]} 
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  code: ({className, children, ...props}) => {
+                    // Apply glass tag style to inline code blocks (those without language- class)
+                    const match = /language-(\w+)/.exec(className || '');
+                    const isInline = !match;
+                    return (
+                      <code 
+                        className={`${className || ''} ${isInline ? 'glass-tag' : ''}`} 
+                        {...props}
+                      >
+                        {children}
+                      </code>
+                    );
+                  }
+                }}
+              >
+                {content.body.replace(/\\n/g, '\n')}
+              </ReactMarkdown>
             </div>
           </Col>
         </Row>

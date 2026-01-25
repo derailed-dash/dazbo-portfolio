@@ -1,7 +1,7 @@
 """
-Description: Unit tests for hybrid Medium ingestion logic.
-Why: Verifies that metadata priority and zip enrichment work as expected.
-How: Mocks both Medium connectors and asserts correct merging of Blog models.
+Description: Unit tests for Hybrid Medium Ingestion (RSS + Archive).
+Why: Verifies that metadata from RSS is prioritized over Archive, while content is kept.
+How: Mocks connectors and services.
 """
 
 from unittest.mock import AsyncMock, patch
@@ -93,6 +93,7 @@ async def test_medium_hybrid_logic(
         medium_zip="test.zip",
         devto_user=None,
         yaml_file=None,
+        about_file=None,
         project_id="test-project",
     )
 
@@ -114,4 +115,4 @@ async def test_medium_hybrid_logic(
     # Check the archive-only blog
     archive_only = next(b for b in created_blogs if b.url == "http://medium.com/archive-only")
     assert archive_only.title == "Archive Only"
-    assert archive_only.summary == "Archive AI Summary"  # AI Summary used as fallback
+    assert archive_only.summary == "Archive AI Summary"  # AI Summary
