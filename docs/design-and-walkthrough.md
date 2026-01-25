@@ -335,6 +335,21 @@ uv run python -m app.tools.ingest \
   --yaml-file manual_resources.yaml
 ```
 
+### Code Sharing & Dependencies
+
+The ingestion tool is **not** a standalone script. It is an integral part of the application codebase and relies heavily on the same components used by the containerized FastAPI backend.
+
+**Shared Code:**
+*   **Models (`app.models`):** Uses the exact same Pydantic models (e.g., `Blog`, `Project`) to ensure data consistency between ingestion and serving.
+*   **Services (`app.services`):** Reuses the core business logic, including `FirestoreService` for database operations and `ContentEnrichmentService` for AI processing.
+*   **Configuration (`app.config`):** Loads settings (Project ID, API Keys) using the central `Settings` object.
+
+**Dependencies:**
+The tool runs within the same Python environment as the application (`uv` managed).
+*   **Shared:** `google-cloud-firestore`, `pydantic`, `google-genai`, `fastapi`, etc.
+*   **CLI-Specific:** `typer` (CLI framework), `rich` (Terminal UI), `pyyaml` (YAML parsing), `httpx` (HTTP client).
+
+
 ### Connectors
 
 The system uses modular "Connectors" to fetch data:
