@@ -19,7 +19,7 @@
     - [x] Implement logic to read the file and update `content/about` in Firestore using `ContentService`.
 - [x] Task: Conductor - User Manual Verification 'Content Ingestion' (Protocol in workflow.md)
 
-## Phase 2: Agent Tooling Updates
+## Phase 2: Agent Tooling Updates [checkpoint: a425918]
 - [x] Task: Update `get_content_details` tool 5ae10f9
     - [x] Create a unit test for `get_content_details` with the ID `about`.
     - [x] Modify `app/tools/content_details.py` to check the `ContentService` if the item is not found in projects or blogs.
