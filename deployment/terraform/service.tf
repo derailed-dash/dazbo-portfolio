@@ -24,12 +24,11 @@ resource "google_cloud_run_v2_service" "app" {
       image = "us-docker.pkg.dev/cloudrun/container/hello"
       resources {
         limits = {
-          cpu    = "2"
-          memory = "4Gi"
+          cpu    = "1"
+          memory = "2Gi"
         }
         cpu_idle = false
       }
-
 
       env {
         name  = "LOGS_BUCKET_NAME"
