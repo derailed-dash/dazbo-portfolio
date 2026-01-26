@@ -38,7 +38,6 @@ react-ui:
 deploy-cloud-run:
 	gcloud run deploy $(SERVICE_NAME) \
 		--source . \
-		--memory "4Gi" \
 		--project $(GOOGLE_CLOUD_PROJECT) \
 		--region $(GOOGLE_CLOUD_REGION) \
 		--service-account="$$SERVICE_SA_EMAIL" \
