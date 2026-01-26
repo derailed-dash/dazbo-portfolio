@@ -1,10 +1,30 @@
 # dazbo-portfolio
 
-A development portfolio application, with React frontend, and an ADK/Gemini-based chat interface. The goal of the portfolio application is to showcase my blogs, projects and public code repos.
+This is a development portfolio site. It's purpose is to showcase my blogs, projects and public code repos. But this repo and associated blog is a demonstration in building applciations like this using Google agentic tools.
+
+The portfolio site has:
+
+- React/Vite frontend
+- Python backend
+- Gemini Chatbot using Google ADK
+- Automated ingestion of content from blogs, GitHub, etc
+- AI-based content summarisation and metadata extraction
+
+In includes Terraform IaC for deployment to Google Cloud, using:
+
+- Cloud Run for the containerised application
+- Google Firestore for storing ingested content, AI summaries and metadata
+- Google Cloud Storage for static assets, like website images
+- Google Secret Manager for sensitive content
 
 ## Repo Metadata
 
 Author: Darren "Dazbo" Lester
+
+## Key Links
+
+- Check out the related [blog post](https://dev.to/gde/building-my-portfolio-site-in-2-days-using-gemini-cli-antigravity-conductor-and-agent-starter-3bke).
+- See the [portfolio site](https://darrenlester.net).
 
 ## Project Structure
 
