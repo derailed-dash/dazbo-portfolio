@@ -1,6 +1,6 @@
 # dazbo-portfolio
 
-This is a development portfolio site. It's purpose is to showcase my blogs, projects and public code repos. But this repo and associated blog is a demonstration in building applciations like this using Google agentic tools.
+This is a development portfolio site. Its purpose is to showcase my blogs, projects and public code repos. But this repo and associated blog is a demonstration in building applications like this using Google agentic tools.
 
 The portfolio site has:
 

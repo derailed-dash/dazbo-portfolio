@@ -32,7 +32,7 @@ const AppsCarousel: React.FC = () => {
   if (error) return <Alert variant="danger">{error}</Alert>;
   if (apps.length === 0) return null;
 
-  return <ShowcaseCarousel items={apps} title="Applications" />;
+  return <ShowcaseCarousel items={apps} title="Applications & Sites" />;
 };
 
 export default AppsCarousel;
