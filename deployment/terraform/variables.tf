@@ -167,3 +167,8 @@ variable "min_instances" {
   type        = string
   default     = "0"
 }
+
+variable "base_url" {
+  description = "The base URL for the application, used for sitemap generation."
+  type        = string
+}
