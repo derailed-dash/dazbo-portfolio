@@ -20,6 +20,7 @@ def test_sitemap_xml():
             assert "<urlset" in content
             # Check for static pages
             assert "<loc>https://darrenlester.net/</loc>" in content
+            assert "<loc>https://darrenlester.net/about</loc>" in content
 
             # Verify dynamic details are NOT present
             assert "/details/" not in content

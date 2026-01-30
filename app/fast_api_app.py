@@ -237,6 +237,7 @@ async def sitemap_xml(request: Request):
 
     # Static pages
     add_url(f"{base_url}/", changefreq="daily", priority="1.0")
+    add_url(f"{base_url}/about", changefreq="monthly", priority="0.8")
 
     xml_content = f'<?xml version="1.0" encoding="UTF-8"?>\n{ET.tostring(urlset, encoding="unicode")}'
 
