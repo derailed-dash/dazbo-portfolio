@@ -5,6 +5,7 @@ APP_NAME ?= dazbo_portfolio
 AGENT_NAME ?= dazbo_portfolio_chat_agent
 MODEL ?= gemini-2.5-flash
 MIN_INSTANCES ?= 0
+MEMORY ?= "2Gi"
 GOOGLE_CLOUD_REGION ?= europe-west1
 GOOGLE_CLOUD_LOCATION ?= global
 GOOGLE_CLOUD_PROJECT ?= $(shell gcloud config get-value project)
@@ -38,7 +39,7 @@ react-ui:
 deploy-cloud-run:
 	gcloud run deploy $(SERVICE_NAME) \
 		--source . \
-		--memory "4Gi" \
+		--memory "$(MEMORY)" \
 		--project $(GOOGLE_CLOUD_PROJECT) \
 		--region $(GOOGLE_CLOUD_REGION) \
 		--service-account="$$SERVICE_SA_EMAIL" \
