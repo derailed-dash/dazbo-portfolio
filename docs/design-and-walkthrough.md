@@ -44,6 +44,9 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **AI-Powered Markdown Creation** | Uses Gemini to generate structured Markdown from raw blog HTML. |
 | **Use Cloud Run Domain Mapping** | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. |
 | **Use React 19 Native Metadata** | Leverages built-in hoisting for `<title>` and `<meta>` tags, eliminating the need for external libraries like `react-helmet`. |
+| **Disable Session Affinity** | Removed to encourage stateless design and ensure even load balancing when scaling beyond one instance in the future. |
+| **Enable CPU Idle (Throttling)** | `cpu_idle = true` reduces costs by throttling CPU between requests. Verified safe for async Gemini streaming as the request remains active during the stream. |
+| **Enable Startup CPU Boost** | Provides additional CPU during instance startup to mitigate cold start latency for the Python application. |
 
 ## Application Design
 
