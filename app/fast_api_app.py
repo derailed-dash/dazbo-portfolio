@@ -223,21 +223,29 @@ async def sitemap_xml(request: Request):
     """Generate XML sitemap."""
     import xml.etree.ElementTree as ET
 
-    base_url = settings.base_url
+    base_url = settings.base_url.rstrip("/") if settings.base_url else ""
+
+    if not base_url:
+        logger.log_text(
+            "BASE_URL is not set in environment variables. Sitemap URLs will be relative, which may be rejected by search engines.",
+            severity="WARNING",
+        )
 
     urlset = ET.Element("urlset", xmlns="http://www.sitemaps.org/schemas/sitemap/0.9")
 
     def add_url(loc: str, lastmod: str | None = None, changefreq: str = "monthly", priority: str = "0.7"):
         url = ET.SubElement(urlset, "url")
-        ET.SubElement(url, "loc").text = loc
+        # Ensure loc starts with base_url if it's not already absolute
+        full_url = loc if loc.startswith("http") else f"{base_url}{loc}"
+        ET.SubElement(url, "loc").text = full_url
         if lastmod:
             ET.SubElement(url, "lastmod").text = lastmod
         ET.SubElement(url, "changefreq").text = changefreq
         ET.SubElement(url, "priority").text = priority
 
     # Static pages
-    add_url(f"{base_url}/", changefreq="daily", priority="1.0")
-    add_url(f"{base_url}/about", changefreq="monthly", priority="0.8")
+    add_url("/", changefreq="daily", priority="1.0")
+    add_url("/about", changefreq="monthly", priority="0.8")
 
     xml_content = f'<?xml version="1.0" encoding="UTF-8"?>\n{ET.tostring(urlset, encoding="unicode")}'
 
