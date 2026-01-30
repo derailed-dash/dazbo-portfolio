@@ -80,6 +80,7 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
     _MODEL                       = var.model
     _MAX_INSTANCES               = "1"
     _MIN_INSTANCES               = var.min_instances
+    _BASE_URL                    = var.base_url
     _LOG_LEVEL                   = var.log_level
   }
 
