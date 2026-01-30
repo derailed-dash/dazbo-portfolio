@@ -223,11 +223,11 @@ async def sitemap_xml(request: Request):
     """Generate XML sitemap."""
     import xml.etree.ElementTree as ET
 
-    base_url = settings.base_url.rstrip("/") if settings.base_url else ""
+    base_url = settings.base_url.rstrip("/") if settings.base_url else str(request.base_url).rstrip("/")
 
-    if not base_url:
+    if not settings.base_url:
         logger.log_text(
-            "BASE_URL is not set in environment variables. Sitemap URLs will be relative, which may be rejected by search engines.",
+            "BASE_URL environment variable not set. Using request URL as base for sitemap. This may be incorrect if the application is behind a reverse proxy. Set BASE_URL for production environments.",
             severity="WARNING",
         )
 
