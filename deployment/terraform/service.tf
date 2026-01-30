@@ -27,7 +27,9 @@ resource "google_cloud_run_v2_service" "app" {
           cpu    = "1"
           memory = "1Gi"
         }
-        cpu_idle = false
+
+        cpu_idle          = true
+        startup_cpu_boost = true
       }
 
       env {
@@ -52,8 +54,6 @@ resource "google_cloud_run_v2_service" "app" {
     scaling {
       max_instance_count = 1
     }
-
-    session_affinity = true
   }
 
   traffic {
