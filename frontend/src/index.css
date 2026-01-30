@@ -118,3 +118,39 @@ code.glass-tag {
   backdrop-filter: blur(4px);
   white-space: nowrap; /* Prevent tag text itself from wrapping */
 }
+
+/* Premium Blockquote Style for Markdown Content */
+.markdown-content blockquote {
+  margin: 1.5rem 0;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 4px solid var(--md-sys-color-primary);
+  border-radius: 0 8px 8px 0;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.markdown-content blockquote p {
+  margin-bottom: 0.5rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.markdown-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Style for attribution in blockquotes */
+.markdown-content blockquote strong {
+  color: var(--md-sys-color-secondary);
+  font-style: normal;
+  display: block; /* Change to block for cleaner spacing */
+  margin-top: 0.25rem;
+  font-weight: 600;
+  font-size: 0.85rem; /* Smaller size to avoid uneven spacing */
+  letter-spacing: 0.05em;
+  text-transform: uppercase; /* Add uppercase for a more professional "label" look */
+  opacity: 0.8;
+}
