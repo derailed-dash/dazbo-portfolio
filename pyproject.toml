@@ -5,6 +5,7 @@ description = "Portfolio site for Dazbo, with agentic features"
 authors = [
     {name = "Darren (Dazbo) Lester", email = "derailed.dash@gmail.com"},
 ]
+license = { file = "LICENSE" }
 dependencies = [
     "google-adk>=1.22.0,<2.0.0",
     "opentelemetry-instrumentation-google-genai>=0.1.0,<1.0.0",
