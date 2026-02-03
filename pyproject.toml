@@ -3,9 +3,10 @@ name = "dazbo-portfolio"
 version = "0.1.0"
 description = "Portfolio site for Dazbo, with agentic features"
 authors = [
-    {name = "Darren (Dazbo) Lester", email = "derailed.dash@gmail.com"},
+    { name = "Darren (Dazbo) Lester", email = "derailed.dash@gmail.com" },
 ]
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
     "google-adk>=1.22.0,<2.0.0",
     "opentelemetry-instrumentation-google-genai>=0.1.0,<1.0.0",
@@ -36,14 +37,8 @@ dev = [
 ]
 
 [project.optional-dependencies]
-jupyter = [
-    "jupyter>=1.0.0,<2.0.0",
-]
-lint = [
-    "ruff>=0.4.6,<1.0.0",
-    "ty>=0.0.1a0",
-    "codespell>=2.2.0,<3.0.0",
-]
+jupyter = ["jupyter>=1.0.0,<2.0.0"]
+lint = ["ruff>=0.4.6,<1.0.0", "ty>=0.0.1a0", "codespell>=2.2.0,<3.0.0"]
 
 [tool.ruff]
 line-length = 125
@@ -55,12 +50,17 @@ select = [
     "F",   # pyflakes
     "W",   # pycodestyle warnings
     "I",   # isort
-    "C",  # flake8-comprehensions
+    "C",   # flake8-comprehensions
     "B",   # flake8-bugbear
-    "UP", # pyupgrade
+    "UP",  # pyupgrade
     "RUF", # ruff specific rules
 ]
-ignore = ["E501", "C901", "B006", "B008"] # ignore line too long, too complex, FastAPI Depends
+ignore = [
+    "E501",
+    "C901",
+    "B006",
+    "B008",
+] # ignore line too long, too complex, FastAPI Depends
 
 [tool.ruff.lint.isort]
 known-first-party = ["app", "frontend"]
@@ -108,7 +108,7 @@ filterwarnings = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["app","frontend"]
+packages = ["app", "frontend"]
 
 [tool.agent-starter-pack]
 # Generation metadata - enables CLI commands to understand project context
