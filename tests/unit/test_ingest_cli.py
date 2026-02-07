@@ -16,9 +16,10 @@ runner = CliRunner()
 @patch("app.tools.ingest.DevToConnector")
 @patch("app.tools.ingest.ProjectService")
 @patch("app.tools.ingest.BlogService")
+@patch("app.tools.ingest.ContentEnrichmentService")
 @patch("app.tools.ingest.firestore.AsyncClient")
 def test_ingest_command(
-    mock_firestore_client, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
+    mock_firestore_client, mock_enrichment_service, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
 ):
     from app.models.blog import Blog
     from app.models.project import Project
