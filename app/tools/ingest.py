@@ -68,8 +68,8 @@ async def _process_manual_projects(
     Helper to process manual project/application entries.
     """
     existing_items = await service.list()
-    existing_urls = {p.repo_url: p.id for p in existing_items if p.repo_url}
-    existing_demo_urls = {p.demo_url: p.id for p in existing_items if p.demo_url}
+    existing_urls = {normalize_url(p.repo_url): p.id for p in existing_items if p.repo_url}
+    existing_demo_urls = {normalize_url(p.demo_url): p.id for p in existing_items if p.demo_url}
 
     for proj_data in project_list:
         # Enforce manual flags if not already set
@@ -91,10 +91,13 @@ async def _process_manual_projects(
             existing_title_map[existing_p.title] = existing_p.id
 
         match_id = None
-        if p.repo_url and p.repo_url in existing_urls:
-            match_id = existing_urls[p.repo_url]
-        elif p.demo_url and p.demo_url in existing_demo_urls:
-            match_id = existing_demo_urls[p.demo_url]
+        norm_repo = normalize_url(p.repo_url)
+        norm_demo = normalize_url(p.demo_url)
+
+        if norm_repo and norm_repo in existing_urls:
+            match_id = existing_urls[norm_repo]
+        elif norm_demo and norm_demo in existing_demo_urls:
+            match_id = existing_demo_urls[norm_demo]
         elif p.title in existing_title_map:
             if p.title in ambiguous_titles:
                 console.print(
@@ -257,8 +260,10 @@ async def ingest_resources(
             for p in projects:
                 normalized_url = normalize_url(p.repo_url)
                 if normalized_url in existing_urls:
-                    stats["github"]["skipped"] += 1
-                    continue
+                    p.id = existing_urls[normalized_url]
+                    await project_service.update(p.id, p.model_dump(exclude={"id"}))
+                    console.print(f"Updated: {p.title}")
+                    stats["github"]["updated"] += 1
                 else:
                     slug = f"github:{slugify(p.title)}"
                     await project_service.create(p, item_id=slug)
