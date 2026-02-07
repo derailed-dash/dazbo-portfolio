@@ -106,6 +106,10 @@ class MediumArchiveConnector:
             canonical_tag = soup.find("a", class_="p-canonical")
             if canonical_tag and canonical_tag.has_attr("href"):
                 url = canonical_tag["href"]
+        
+        # Normalize URL: strip query parameters and trailing slashes
+        if url:
+            url = url.split("?")[0].rstrip("/")
 
         # Check if URL already exists
         if url and url in existing_urls:

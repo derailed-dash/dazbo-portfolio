@@ -92,7 +92,7 @@ applications:
     call_args = mock_app_svc.create.call_args
     # item_id should not be empty or random
     # https://trailing.com/ -> split -> trailing.com -> slugify -> trailing-com
-    assert call_args[1]["item_id"] == "trailing-com"
+    assert call_args[1]["item_id"] == "application:trailing-com"
 
 
 @patch("app.tools.ingest.ApplicationService")

@@ -101,7 +101,7 @@ async def test_fetch_posts_content_retrieval():
     mock_detail_json = {
         "id": 1,
         "title": "Markdown Post",
-        "body_markdown": "# Hello World\nThis is markdown.",
+        "body_markdown": ("Word " * 210),
         # ... other fields
     }
 
@@ -124,7 +124,7 @@ async def test_fetch_posts_content_retrieval():
         blogs = await connector.fetch_posts("deraileddash")
 
         assert len(blogs) == 1
-        assert blogs[0].markdown_content == "# Hello World\nThis is markdown."
+        assert blogs[0].markdown_content == ("Word " * 210)
 
         # Verify calls
         assert mock_get.call_count == 2
