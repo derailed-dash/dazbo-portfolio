@@ -69,6 +69,7 @@ resource "google_cloud_run_v2_service" "app" {
       client_version,
       template[0].containers[0].image,
       template[0].containers[0].env,
+      template[0].scaling[0].min_instance_count,
     ]
   }
 
