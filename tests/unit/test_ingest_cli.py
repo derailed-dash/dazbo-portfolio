@@ -71,16 +71,16 @@ def test_ingest_command(
     assert result.exit_code == 0
     mock_gh_instance.fetch_repositories.assert_called_once_with("testuser")
     mock_med_instance.fetch_posts.assert_called_once_with("testuser")
-    mock_dev_instance.fetch_posts.assert_called_once_with("testuser")
+    mock_dev_instance.fetch_posts.assert_called_once_with("testuser", existing_urls=set())
 
     # Verify GitHub create called with slug
-    # We expect create(project, item_id="test-repo")
+    # We expect create(project, item_id="github:test-repo")
     args, kwargs = mock_proj_svc_instance.create.call_args
     assert args[0].title == "Test Repo"
-    assert kwargs.get("item_id") == "test-repo"
+    assert kwargs.get("item_id") == "github:test-repo"
 
     # Verify Medium create called with slug
-    # We expect create(blog, item_id="test-blog")
+    # We expect create(blog, item_id="medium:test-blog")
     args, kwargs = mock_blog_svc_instance.create.call_args
     assert args[0].title == "Test Blog"
-    assert kwargs["item_id"] == "test-blog"
+    assert kwargs["item_id"] == "medium:test-blog"

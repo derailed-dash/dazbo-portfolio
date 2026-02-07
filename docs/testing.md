@@ -33,6 +33,10 @@ Located in `tests/unit/`.
 Unit tests focus on isolating individual components, particularly Models and Services.
 
 *   **Models**: Verify Pydantic validation logic and defaults (e.g., `tests/unit/test_models.py`).
+*   **Ingestion Refinements**: `tests/unit/test_ingestion_refinement.py` verifies:
+    *   **Platform-Scoped IDs**: Documents are correctly prefixed based on their source (e.g., `medium:`, `devto:`).
+    *   **Metadata Patching**: Tool triggers AI enrichment only when mandatory fields like `ai_summary` are missing.
+    *   **dev.to Filtering**: Articles with < 200 words are skipped.
 *   **Services**: Test business logic without connecting to external services. We use `unittest.mock` to mock the `google.cloud.firestore.AsyncClient` and other dependencies to ensure tests are fast and deterministic.
 *   **Adherence to Standards**: Tests like `test_firestore_session_service_implements_base` ensure that our implementations correctly follow required interfaces (e.g., Google ADK).
 

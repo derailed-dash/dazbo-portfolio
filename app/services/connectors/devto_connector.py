@@ -17,10 +17,11 @@ class DevToConnector:
     def __init__(self, base_url: str = "https://dev.to/api"):
         self.base_url = base_url
 
-    async def fetch_posts(self, username: str, limit: int | None = None) -> list[Blog]:
+    async def fetch_posts(self, username: str, limit: int | None = None, existing_urls: set[str] | None = None) -> list[Blog]:
         """
         Fetches blog posts for a given Dev.to username.
         """
+        existing_urls = existing_urls or set()
         url = f"{self.base_url}/articles?username={username}"
         async with httpx.AsyncClient() as client:
             response = await client.get(url)
@@ -36,16 +37,25 @@ class DevToConnector:
                 if title.startswith("[Boost]"):
                     logger.info(f"Skipping (quickie): {title}")
                     continue
-
-                # Fetch full article content to get markdown
+                
+                article_url = article.get("url")
+                
+                # Fetch full article content to get markdown if not already existing
                 article_id = article.get("id")
                 body_markdown = None
-                if article_id:
+                if article_id and article_url not in existing_urls:
                     try:
                         detail_url = f"{self.base_url}/articles/{article_id}"
                         detail_resp = await client.get(detail_url)
                         if detail_resp.status_code == 200:
                             body_markdown = detail_resp.json().get("body_markdown")
+                            
+                            # Filter "quickie" posts based on word count
+                            if body_markdown:
+                                word_count = len(body_markdown.split())
+                                if word_count < 200:
+                                    logger.info(f"Skipping (quickie - too short): {title} ({word_count} words)")
+                                    continue
                     except Exception as e:
                         logger.warning(f"Failed to fetch content for article {article_id}: {e}")
 
@@ -59,7 +69,7 @@ class DevToConnector:
                     summary=article.get("description") or "",
                     date=date_iso,
                     platform="Dev.to",
-                    url=article.get("url"),
+                    url=article_url,
                     source_platform="devto_api",
                     is_manual=False,
                     markdown_content=body_markdown,

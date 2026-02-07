@@ -95,7 +95,7 @@ def test_ingest_yaml(mock_firestore, mock_blog_service, mock_project_service):
     call_args_2 = mock_proj_svc.create.call_args_list[1]
     proj_2, kwargs_2 = call_args_2[0][0], call_args_2[1]
     assert proj_2.title == "Project No ID"
-    assert kwargs_2["item_id"] == "fallback-repo"
+    assert kwargs_2["item_id"] == "manual:fallback-repo"
 
     # Verify Blog creation calls
     # Should have 2 calls
@@ -111,4 +111,4 @@ def test_ingest_yaml(mock_firestore, mock_blog_service, mock_project_service):
     call_args_b2 = mock_blog_svc.create.call_args_list[1]
     blog_2, kwargs_b2 = call_args_b2[0][0], call_args_b2[1]
     assert blog_2.title == "Blog No ID"
-    assert kwargs_b2["item_id"] == "fallback-blog"
+    assert kwargs_b2["item_id"] == "manual:fallback-blog"
