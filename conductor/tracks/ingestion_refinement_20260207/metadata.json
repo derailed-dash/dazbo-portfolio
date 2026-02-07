@@ -1,8 +1,0 @@
-{
-  "track_id": "ingestion_refinement_20260207",
-  "type": "refinement",
-  "status": "new",
-  "created_at": "2026-02-07T11:45:00Z",
-  "updated_at": "2026-02-07T11:45:00Z",
-  "description": "Review the ingestion tool for uploading content from Medium and dev.to. Ignore existing entries unless missing ai_summary. Filter dev.to 'quickie' posts (< 200 words)."
-}
