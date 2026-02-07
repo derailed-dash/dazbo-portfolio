@@ -29,7 +29,8 @@
 - [x] Add SEO.
 - [x] Add professional profile information.
 - [ ] Add YouTube content.
-- [ ] Prevent adding duplicates in dev.to connector.
+- [x] Prevent adding duplicates in dev.to connector.
+- [ ] Avoid unnecessary updates when running Medium RSS after zip ingestion, or vice versa.  
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
 - [ ] Implement RAG with Vector Search:
     - [ ] Generate embeddings for Blogs and Projects using Gemini Embeddings.
