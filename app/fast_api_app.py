@@ -137,19 +137,35 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
             session_id=session.id,
             run_config=RunConfig(streaming_mode=StreamingMode.SSE),
         ):
-            # ADK may yield a final non-partial event containing the full response.
-            # We only want deltas (partial=True) to avoid duplication.
-            if not getattr(event, "partial", False):
-                continue
+            # Log significant events for diagnostics
+            if event.turn_complete:
+                logger.log_text(f"Turn complete for session {session.id}", severity="INFO")
+
+            # Check for function calls (tools being used)
+            if hasattr(event, "content") and event.content and event.content.parts:
+                for part in event.content.parts:
+                    if hasattr(part, "function_call") and part.function_call:
+                        logger.log_text(f"Agent calling tool: {part.function_call.name}", severity="INFO")
 
             # Extract text from the event (ModelResponse)
+            # We want to yield any text content, whether partial or merge.
+            # ADK yields partial=True for incremental chunks and partial=False for merged/final content.
+            # To avoid duplication in the UI (which usually handles incremental updates),
+            # we should prioritize partial=True chunks if they are present.
+
+            # However, our current frontend ChatWidget (from analysis) just appends whatever it gets.
+            # So if we yield BOTH partial=True and partial=False, we might get duplicates.
+            # BUT, if we only yield partial=True, we miss the final sentence if it's only in partial=False.
+
+            # The Safest approach for SSE and React:
+            # Only yield text from 'partial=True' events, OR if it's the ONLY text event.
+            # Even better: The ADK 'Event' object text extraction logic:
+
             text_chunk = ""
             try:
-                # Check for direct content (ADK/GenAI flat structure)
                 parts = []
                 if hasattr(event, "content") and event.content and event.content.parts:
                     parts = event.content.parts
-                # Fallback for candidates structure
                 elif hasattr(event, "candidates") and event.candidates:
                     candidate = event.candidates[0]
                     if candidate.content and candidate.content.parts:
@@ -157,13 +173,26 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
 
                 for part in parts:
                     if hasattr(part, "text") and part.text:
-                        text_chunk += part.text
+                        # If the event is NOT partial, it's a merged response.
+                        # We only want to yield it if it's NOT a duplicate of what we've seen.
+                        # But for a streaming response, yielding only 'partial=True' is usually the standard.
+                        if getattr(event, "partial", False):
+                            text_chunk += part.text
+                        elif not any(getattr(p, "text", None) for p in parts if p != part):
+                            # This covers cases where we get a final merged chunk that might contain new info
+                            # or is the only chunk.
+                            # If the event is NOT partial but HAS text, it might be the only response.
+                            text_chunk += part.text
             except Exception as e:
                 logger.log_text(f"Error parsing event: {e}", severity="ERROR")
 
             if text_chunk:
                 payload = {"content": text_chunk}
                 yield f"data: {json.dumps(payload)}\n\n"
+
+            # If it's the final event, notify the stream is closing
+            if event.turn_complete:
+                yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 

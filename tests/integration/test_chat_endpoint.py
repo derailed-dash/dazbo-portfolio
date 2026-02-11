@@ -62,3 +62,59 @@ def test_chat_streaming_endpoint():
                     break
 
             assert has_data, "Expected SSE data starting with 'data:'"
+
+
+def test_chat_streaming_endpoint_with_tool_call():
+    # Mock the tool call event
+    mock_tool_event = MagicMock()
+    mock_tool_event.content = types.Content(
+        role="model",
+        parts=[types.Part(function_call=types.FunctionCall(name="search_portfolio", args={"query": "python"}))]
+    )
+    mock_tool_event.partial = False
+    mock_tool_event.turn_complete = False
+
+    # Mock the text response event
+    mock_text_event = MagicMock()
+    mock_text_event.content = types.Content(role="model", parts=[types.Part.from_text(text="I found some projects.")])
+    mock_text_event.partial = True
+    mock_text_event.turn_complete = False
+
+    # Mock the final completion event
+    mock_done_event = MagicMock()
+    mock_done_event.partial = False
+    mock_done_event.turn_complete = True
+
+    async def mock_run_async(*args, **kwargs):
+        yield mock_tool_event
+        yield mock_text_event
+        yield mock_done_event
+
+    with (
+        patch("app.fast_api_app.ProjectService") as _,
+        patch("app.fast_api_app.BlogService") as _,
+        patch("app.fast_api_app.ExperienceService") as _,
+        patch("app.fast_api_app.get_client", new_callable=MagicMock) as MockGetClient,
+        patch.object(PortfolioAgent, "run_async", side_effect=mock_run_async),
+    ):
+        mock_db_client = MagicMock()
+        MockGetClient.return_value = mock_db_client
+        mock_db_client.close.return_value = None
+
+        with TestClient(app) as client:
+            response = client.post(
+                "/api/chat/stream",
+                json={"user_id": "test_user", "message": "Search for python"},
+            )
+            assert response.status_code == 200
+
+            lines = list(response.iter_lines())
+            # We expect:
+            # 1. Text chunk from mock_text_event
+            # 2. [DONE] signal from mock_done_event (because turn_complete is True)
+
+            has_text = any("I found some projects." in line for line in lines)
+            has_done = any("data: [DONE]" in line for line in lines)
+
+            assert has_text, "Should have received text content"
+            assert has_done, "Should have received [DONE] signal"
