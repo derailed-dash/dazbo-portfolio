@@ -167,3 +167,51 @@ def test_chat_streaming_endpoint_non_partial_multi_part():
 
             has_p1p2 = any("Part1Part2" in line for line in lines)
             assert has_p1p2, f"Expected content 'Part1Part2' in response lines: {lines}"
+
+def test_chat_streaming_endpoint_no_duplicates():
+    # Mock sequence:
+    # 1. Partial event with "Hello"
+    # 2. Final event with "Hello" (accumulated)
+
+    mock_partial_event = MagicMock()
+    mock_partial_event.content = types.Content(role="model", parts=[types.Part.from_text(text="Hello")])
+    mock_partial_event.partial = True
+    mock_partial_event.turn_complete = False
+
+    mock_final_event = MagicMock()
+    mock_final_event.content = types.Content(role="model", parts=[types.Part.from_text(text="Hello")])
+    mock_final_event.partial = False
+    mock_final_event.turn_complete = True
+
+    async def mock_run_async(*args, **kwargs):
+        yield mock_partial_event
+        yield mock_final_event
+
+    with (
+        patch("app.fast_api_app.ProjectService") as _,
+        patch("app.fast_api_app.BlogService") as _,
+        patch("app.fast_api_app.ExperienceService") as _,
+        patch("app.fast_api_app.get_client", new_callable=MagicMock) as MockGetClient,
+        patch.object(PortfolioAgent, "run_async", side_effect=mock_run_async),
+    ):
+        mock_db_client = MagicMock()
+        MockGetClient.return_value = mock_db_client
+        mock_db_client.close.return_value = None
+
+        with TestClient(app) as client:
+            response = client.post(
+                "/api/chat/stream",
+                json={"user_id": "test_user", "message": "Hi"},
+            )
+            assert response.status_code == 200
+
+            lines = [line for line in response.iter_lines() if line]
+
+            # We expect:
+            # data: {"content": "Hello"}
+            # data: [DONE]
+
+            content_lines = [line for line in lines if '"content"' in line]
+            assert len(content_lines) == 1, f"Expected 1 content line, got {len(content_lines)}: {content_lines}"
+            assert '{"content": "Hello"}' in content_lines[0]
+            assert any("data: [DONE]" in line for line in lines)
