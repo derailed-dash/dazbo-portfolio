@@ -37,9 +37,9 @@ class DevToConnector:
                 if title.startswith("[Boost]"):
                     logger.info(f"Skipping (quickie): {title}")
                     continue
-                
+
                 article_url = article.get("url")
-                
+
                 # Fetch full article content to get markdown if not already existing
                 article_id = article.get("id")
                 body_markdown = None
@@ -49,7 +49,7 @@ class DevToConnector:
                         detail_resp = await client.get(detail_url)
                         if detail_resp.status_code == 200:
                             body_markdown = detail_resp.json().get("body_markdown")
-                            
+
                             # Filter "quickie" posts based on word count
                             if body_markdown:
                                 word_count = len(body_markdown.split())
