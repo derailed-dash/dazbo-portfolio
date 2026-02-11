@@ -173,18 +173,16 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                     if candidate.content and candidate.content.parts:
                         parts = candidate.content.parts
 
+                # Collect all text from parts first to handle multi-part events (partial or not)
+                current_text_parts = []
                 for part in parts:
                     if hasattr(part, "text") and part.text:
-                        # If the event is NOT partial, it's a merged response.
-                        # We only want to yield it if it's NOT a duplicate of what we've seen.
-                        # But for a streaming response, yielding only 'partial=True' is usually the standard.
-                        if getattr(event, "partial", False):
-                            text_chunk += part.text
-                        elif not any(getattr(p, "text", None) for p in parts if p != part):
-                            # This covers cases where we get a final merged chunk that might contain new info
-                            # or is the only chunk.
-                            # If the event is NOT partial but HAS text, it might be the only response.
-                            text_chunk += part.text
+                        current_text_parts.append(part.text)
+
+                if current_text_parts:
+                    # Join all parts. This fixes the bug where non-partial events with >1 part were dropped.
+                    # We yield content regardless of 'partial' flag to ensure we don't miss final non-partial chunks.
+                    text_chunk += "".join(current_text_parts)
             except Exception as e:
                 logger.log_text(f"Error parsing event: {e}", severity="ERROR")
 
