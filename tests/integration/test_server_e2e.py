@@ -120,7 +120,7 @@ def test_chat_stream(server_fixture: subprocess.Popen[str]) -> None:
         "message": message,
     }
 
-    response = requests.post(custom_stream_url, headers=HEADERS, json=data, stream=True, timeout=60)
+    response = requests.post(custom_stream_url, headers=HEADERS, json=data, stream=True, timeout=120)
     assert response.status_code == 200
     # Parse SSE events from response
     events = []

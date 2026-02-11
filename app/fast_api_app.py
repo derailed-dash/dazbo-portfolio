@@ -137,33 +137,62 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
             session_id=session.id,
             run_config=RunConfig(streaming_mode=StreamingMode.SSE),
         ):
-            # ADK may yield a final non-partial event containing the full response.
-            # We only want deltas (partial=True) to avoid duplication.
-            if not getattr(event, "partial", False):
-                continue
+            logger.log_text(f"Received event: partial={getattr(event, 'partial', 'N/A')}, turn_complete={getattr(event, 'turn_complete', 'N/A')}", severity="DEBUG")
+
+            # Log significant events for diagnostics
+            if event.turn_complete:
+                logger.log_text(f"Turn complete for session {session.id}", severity="INFO")
+
+            # Check for function calls (tools being used)
+            if hasattr(event, "content") and event.content and event.content.parts:
+                for part in event.content.parts:
+                    if hasattr(part, "function_call") and part.function_call:
+                        logger.log_text(f"Agent calling tool: {part.function_call.name}", severity="INFO")
 
             # Extract text from the event (ModelResponse)
+            # We want to yield any text content, whether partial or merge.
+            # ADK yields partial=True for incremental chunks and partial=False for merged/final content.
+            # To avoid duplication in the UI (which usually handles incremental updates),
+            # we should prioritize partial=True chunks if they are present.
+
+            # However, our current frontend ChatWidget (from analysis) just appends whatever it gets.
+            # So if we yield BOTH partial=True and partial=False, we might get duplicates.
+            # BUT, if we only yield partial=True, we miss the final sentence if it's only in partial=False.
+
+            # The Safest approach for SSE and React:
+            # Only yield text from 'partial=True' events, OR if it's the ONLY text event.
+            # Even better: The ADK 'Event' object text extraction logic:
+
             text_chunk = ""
             try:
-                # Check for direct content (ADK/GenAI flat structure)
                 parts = []
                 if hasattr(event, "content") and event.content and event.content.parts:
                     parts = event.content.parts
-                # Fallback for candidates structure
                 elif hasattr(event, "candidates") and event.candidates:
                     candidate = event.candidates[0]
                     if candidate.content and candidate.content.parts:
                         parts = candidate.content.parts
 
+                # Collect all text from parts first to handle multi-part events (partial or not)
+                current_text_parts = []
                 for part in parts:
                     if hasattr(part, "text") and part.text:
-                        text_chunk += part.text
+                        current_text_parts.append(part.text)
+
+                if current_text_parts:
+                    # Join all parts. This fixes the bug where non-partial events with >1 part were dropped.
+                    # We yield content regardless of 'partial' flag to ensure we don't miss final non-partial chunks.
+                    text_chunk += "".join(current_text_parts)
             except Exception as e:
                 logger.log_text(f"Error parsing event: {e}", severity="ERROR")
 
             if text_chunk:
                 payload = {"content": text_chunk}
                 yield f"data: {json.dumps(payload)}\n\n"
+
+            # If it's the final event, notify the stream is closing
+            if event.turn_complete:
+                yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 

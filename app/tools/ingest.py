@@ -158,9 +158,9 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
             title_slug = slugify(first_item.title)
             if not title_slug:
                 title_slug = slugify(url.split("/")[-1]) or "untitled"
-            
+
             expected_id = f"{prefix}:{title_slug}"
-            
+
             # Basic collision avoidance for different URLs with same title
             if expected_id in seen_expected_ids:
                 expected_id = f"{expected_id}-{slugify(url[-10:])}"
@@ -184,13 +184,13 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
                 # CRITICAL FIX: Clear the ID on the model so service.create uses our expected_id
                 migrated_item = best_item.model_copy(update={"id": None})
                 await service.create(migrated_item, item_id=expected_id)
-                
+
                 # Delete all others in the group (including the old version if ID changed)
                 for item in group:
                     if item.id != expected_id:
                         await service.delete(item.id)
                         console.print(f"[dim]Removed old/duplicate ID: {item.id}[/dim]")
-                
+
                 if best_item.id != expected_id:
                     console.print(f"Migrated: {best_item.id} -> {expected_id}")
 
@@ -386,7 +386,7 @@ async def ingest_resources(
         # 4. Process remaining RSS blogs (those not in archive)
         if rss_posts:
             enrichment_service = ContentEnrichmentService()
-            
+
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
@@ -396,18 +396,18 @@ async def ingest_resources(
                 console=console,
             ) as progress:
                 task = progress.add_task("Processing Medium RSS...", total=len(rss_posts))
-                
+
                 for blog in rss_posts:
                     progress.update(task, description=f"[cyan]Processing[/cyan] [white]{blog.title[:30]}...[/white]")
                     normalized_url = normalize_url(blog.url)
                     existing = existing_blog_map.get(normalized_url)
-                    
+
                     # 1. Skip if already exists and has summary
                     if existing and existing.ai_summary:
                         stats["medium"]["skipped"] += 1
                         progress.advance(task)
                         continue
-                    
+
                     # 2. Enrich if we have content and summary is missing
                     if blog.markdown_content and (not existing or not existing.ai_summary):
                         progress.update(task, description=f"[green]Enriching[/green] [white]{blog.title[:30]}...[/white]")
@@ -431,7 +431,7 @@ async def ingest_resources(
                         slug = f"medium:{slugify(blog.title)}"
                         await blog_service.create(blog, item_id=slug)
                         stats["medium"]["new"] += 1
-                    
+
                     progress.advance(task)
 
     # --- Dev.to ---
@@ -580,7 +580,7 @@ async def ingest_resources(
     console.print("\n" + "=" * 50)
     console.print("[bold green]Ingestion Summary[/bold green]")
     console.print("=" * 50)
-    
+
     for platform, data in stats.items():
         if sum(data.values()) > 0:
             console.print(f"[bold cyan]{platform.upper()}[/bold cyan]")
@@ -592,7 +592,7 @@ async def ingest_resources(
             if data.get("filtered"): summary_parts.append(f"Filtered (quickies): {data['filtered']}")
             if data.get("drafts"): summary_parts.append(f"Drafts: {data['drafts']}")
             console.print("  " + ", ".join(summary_parts))
-    
+
     console.print("=" * 50)
 
 

@@ -4,10 +4,13 @@ Why: Verifies platform-scoped IDs, metadata patching, and quickie filtering.
 How: Uses pytest with mocks for services and connectors.
 """
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+
 from app.models.blog import Blog
 from app.models.project import Project
+
 
 @pytest.mark.asyncio
 @patch("app.tools.ingest.GitHubConnector")
@@ -21,19 +24,19 @@ async def test_platform_scoped_ids(
     mock_firestore_client, mock_enrichment_service, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
 ):
     from app.tools.ingest import ingest_resources
-    
+
     # Setup GitHub mock
     mock_gh_instance = mock_github.return_value
     mock_gh_instance.fetch_repositories = AsyncMock(return_value=[
         Project(title="My Project", description="Desc", repo_url="http://gh.com/p1", source_platform="github", tags=["test"])
     ])
-    
+
     # Setup Blog mocks
     mock_med_instance = mock_medium.return_value
     mock_med_instance.fetch_posts = AsyncMock(return_value=[
         Blog(title="My Blog", summary="Sum", platform="Medium", url="http://med.com/b1", source_platform="medium_rss", date="2026-01-01")
     ])
-    
+
     mock_dev_instance = mock_devto.return_value
     mock_dev_instance.fetch_posts = AsyncMock(return_value=[
         Blog(title="My Blog", summary="Sum", platform="Dev.to", url="http://dev.to/b1", source_platform="devto_api", date="2026-01-01", markdown_content="Long enough content " * 50)
@@ -42,7 +45,7 @@ async def test_platform_scoped_ids(
     mock_blog_svc = mock_blog_service.return_value
     mock_blog_svc.list = AsyncMock(return_value=[])
     mock_blog_svc.create = AsyncMock()
-    
+
     mock_proj_svc = mock_project_service.return_value
     mock_proj_svc.list = AsyncMock(return_value=[])
     mock_proj_svc.create = AsyncMock()
@@ -74,7 +77,7 @@ async def test_metadata_patching(
     mock_firestore_client, mock_enrich_service, mock_blog_service, mock_devto
 ):
     from app.tools.ingest import ingest_resources
-    
+
     # 1. Blog exists with ai_summary -> should skip enrichment
     existing_blog_with_summary = Blog(
         id="devto:exists", title="Existing", summary="Sum", platform="Dev.to", date="2026-01-01", url="http://dev.to/exists", ai_summary="Already here", source_platform="devto_api"
@@ -89,7 +92,7 @@ async def test_metadata_patching(
     mock_blog_svc.update = AsyncMock()
     mock_blog_svc.create = AsyncMock()
     mock_blog_svc.delete = AsyncMock()
-    
+
     mock_dev_instance = mock_devto.return_value
     mock_dev_instance.fetch_posts = AsyncMock(return_value=[
         Blog(title="Existing", summary="Sum", platform="Dev.to", date="2026-01-01", url="http://dev.to/exists", source_platform="devto_api", markdown_content="Content " * 50),
@@ -108,7 +111,7 @@ async def test_metadata_patching(
     # Verify update called ONLY for "Patch Me"
     calls = mock_blog_svc.update.call_args_list
     assert len(calls) == 1
-    
+
     # Check "Patch Me" update
     assert calls[0][0][0] == "devto:patch"
     assert calls[0][0][1]["ai_summary"] == "New Summary"
@@ -117,9 +120,9 @@ async def test_metadata_patching(
 @patch("app.services.connectors.devto_connector.httpx.AsyncClient")
 async def test_devto_quickie_filtering(mock_httpx_client):
     from app.services.connectors.devto_connector import DevToConnector
-    
+
     mock_client_instance = mock_httpx_client.return_value.__aenter__.return_value
-    
+
     # Mock articles list
     mock_client_instance.get.side_effect = [
         # List response

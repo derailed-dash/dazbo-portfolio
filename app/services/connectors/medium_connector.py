@@ -37,11 +37,11 @@ class MediumConnector:
         for item in items:
             title = item.find("title").text if item.find("title") is not None else "Untitled"
             link = item.find("link").text if item.find("link") is not None else ""
-            
+
             # Normalize URL: strip query parameters and ensure trailing slash consistency
             if link:
                 link = link.split("?")[0].rstrip("/")
-                
+
             pub_date_raw = item.find("pubDate").text if item.find("pubDate") is not None else ""
 
             # Convert RFC 2822 to ISO 8601
@@ -55,11 +55,11 @@ class MediumConnector:
             content_encoded = item.find("{http://purl.org/rss/1.0/modules/content/}encoded")
             summary = None
             markdown_content = None
-            
+
             if content_encoded is not None and content_encoded.text:
                 # Convert full HTML content to Markdown
                 markdown_content = md(content_encoded.text, heading_style="ATX", bullets="-")
-                
+
                 # Simple HTML strip for basic summary fallback
                 clean_text = re.sub(r"<[^>]+>", "", content_encoded.text)
                 clean_text = " ".join(clean_text.split())
