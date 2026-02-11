@@ -131,6 +131,7 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
     )
 
     async def event_generator():
+        yielded_partial = False
         async for event in runner.run_async(
             new_message=msg,
             user_id=chat_request.user_id,
@@ -150,18 +151,10 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                         logger.log_text(f"Agent calling tool: {part.function_call.name}", severity="INFO")
 
             # Extract text from the event (ModelResponse)
-            # We want to yield any text content, whether partial or merge.
             # ADK yields partial=True for incremental chunks and partial=False for merged/final content.
-            # To avoid duplication in the UI (which usually handles incremental updates),
-            # we should prioritize partial=True chunks if they are present.
-
-            # However, our current frontend ChatWidget (from analysis) just appends whatever it gets.
-            # So if we yield BOTH partial=True and partial=False, we might get duplicates.
-            # BUT, if we only yield partial=True, we miss the final sentence if it's only in partial=False.
-
-            # The Safest approach for SSE and React:
-            # Only yield text from 'partial=True' events, OR if it's the ONLY text event.
-            # Even better: The ADK 'Event' object text extraction logic:
+            # To avoid duplication in the UI, we prioritize partial=True chunks.
+            # If we've yielded ANY partial chunks, we ignore the final non-partial chunk.
+            # If we HAVEN'T yielded any partial chunks, we yield the non-partial chunk (supports non-streaming models).
 
             text_chunk = ""
             try:
@@ -173,16 +166,18 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                     if candidate.content and candidate.content.parts:
                         parts = candidate.content.parts
 
-                # Collect all text from parts first to handle multi-part events (partial or not)
-                current_text_parts = []
-                for part in parts:
-                    if hasattr(part, "text") and part.text:
-                        current_text_parts.append(part.text)
+                # Only process text if parts exist
+                if parts:
+                    is_partial = getattr(event, "partial", False)
 
-                if current_text_parts:
-                    # Join all parts. This fixes the bug where non-partial events with >1 part were dropped.
-                    # We yield content regardless of 'partial' flag to ensure we don't miss final non-partial chunks.
-                    text_chunk += "".join(current_text_parts)
+                    # Yield text if it's a partial chunk OR if we haven't yielded any partials yet.
+                    if is_partial or not yielded_partial:
+                        current_text_parts = [p.text for p in parts if hasattr(p, "text") and p.text]
+                        if current_text_parts:
+                            text_chunk = "".join(current_text_parts)
+                            if is_partial:
+                                yielded_partial = True
+
             except Exception as e:
                 logger.log_text(f"Error parsing event: {e}", severity="ERROR")
 
