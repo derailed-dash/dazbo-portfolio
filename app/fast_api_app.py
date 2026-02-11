@@ -137,6 +137,8 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
             session_id=session.id,
             run_config=RunConfig(streaming_mode=StreamingMode.SSE),
         ):
+            logger.log_text(f"Received event: partial={getattr(event, 'partial', 'N/A')}, turn_complete={getattr(event, 'turn_complete', 'N/A')}", severity="DEBUG")
+
             # Log significant events for diagnostics
             if event.turn_complete:
                 logger.log_text(f"Turn complete for session {session.id}", severity="INFO")
