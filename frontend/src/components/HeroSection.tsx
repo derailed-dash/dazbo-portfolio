@@ -26,9 +26,10 @@ const HeroSection: React.FC = () => {
                         <div className="d-inline-flex flex-column align-items-center">
                             <img
                                 src="/images/dazbo-profile.png"
-                                alt="Dazbo"
+                                alt="Darren 'Dazbo' Lester"
                                 className="shadow-lg hero-profile-img"
                             />
+                            <h1 className="mt-3 mb-0 fs-6 fw-light text-white-50 text-center" style={{ letterSpacing: '0.5px' }}>Darren (Dazbo) Lester</h1>
                             <div className="mt-3">
                                 <Link 
                                     to="/about" 

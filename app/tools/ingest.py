@@ -585,12 +585,18 @@ async def ingest_resources(
         if sum(data.values()) > 0:
             console.print(f"[bold cyan]{platform.upper()}[/bold cyan]")
             summary_parts = []
-            if data.get("new"): summary_parts.append(f"New: {data['new']}")
-            if data.get("updated"): summary_parts.append(f"Updated/Patched: {data['updated']}")
-            if data.get("enriched"): summary_parts.append(f"AI Enriched: {data['enriched']}")
-            if data.get("skipped"): summary_parts.append(f"Skipped (existing): {data['skipped']}")
-            if data.get("filtered"): summary_parts.append(f"Filtered (quickies): {data['filtered']}")
-            if data.get("drafts"): summary_parts.append(f"Drafts: {data['drafts']}")
+            if data.get("new"):
+                summary_parts.append(f"New: {data['new']}")
+            if data.get("updated"):
+                summary_parts.append(f"Updated/Patched: {data['updated']}")
+            if data.get("enriched"):
+                summary_parts.append(f"AI Enriched: {data['enriched']}")
+            if data.get("skipped"):
+                summary_parts.append(f"Skipped (existing): {data['skipped']}")
+            if data.get("filtered"):
+                summary_parts.append(f"Filtered (quickies): {data['filtered']}")
+            if data.get("drafts"):
+                summary_parts.append(f"Drafts: {data['drafts']}")
             console.print("  " + ", ".join(summary_parts))
 
     console.print("=" * 50)

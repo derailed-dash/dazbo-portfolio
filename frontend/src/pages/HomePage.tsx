@@ -10,7 +10,7 @@ const HomePage: React.FC = () => {
   return (
     <>
       <SEO 
-        title="Home"
+        title="Darren 'Dazbo' Lester | Enterprise Cloud Architect"
         description='Explore the professional portfolio of Darren "Dazbo" Lester, an Enterprise Cloud Architect and Google Cloud expert, specialising in agentic AI, open-source craftsmanship, and technical writing.'
         jsonLd={{
           "@context": "https://schema.org",
@@ -24,7 +24,9 @@ const HomePage: React.FC = () => {
             "https://www.linkedin.com/in/darren-lester-architect/",
             "https://medium.com/@derailed.dash",
             "https://dev.to/deraileddash"
-          ]
+          ],
+          "knowsAbout": ["Google Cloud", "Generative AI", "Model Context Protocol", "Architecture"],
+          "description": "Enterprise Cloud Architect and Google Developer Expert (GDE) specializing in agentic workflows and cloud architecture."
         }}
       />
       <HeroSection />
