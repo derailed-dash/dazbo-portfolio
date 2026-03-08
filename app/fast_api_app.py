@@ -287,9 +287,11 @@ assets_dir = os.path.join(frontend_dist, "assets")
 if os.path.exists(assets_dir):
     app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
-def _generate_head_tags(title: str, description: str, path: str, json_ld: dict | None = None) -> str:
-    default_image = 'https://darrenlester.net/images/dazbo-profile.png'
-    url = f"https://darrenlester.net{path}" if path != "/" else "https://darrenlester.net/"
+def _generate_head_tags(title: str, description: str, path: str, base_url: str, json_ld: dict | None = None) -> str:
+    default_image = f"{base_url}/images/dazbo-profile.png"
+    # Ensure path starts with /
+    normalized_path = f"/{path.lstrip('/')}"
+    url = f"{base_url}{normalized_path}" if normalized_path != "/" else f"{base_url}/"
     full_title = title if title == SITE_TITLE else f"{title} | {SITE_TITLE}"
 
     esc_title = html.escape(full_title, quote=True)
@@ -319,7 +321,7 @@ def _generate_head_tags(title: str, description: str, path: str, json_ld: dict |
 
     return "".join(tags)
 
-def _get_seo_data_dict(path: str) -> dict:
+def _get_seo_data_dict(path: str, base_url: str) -> dict:
     seo_map = {
         "/": {
             "title": SITE_TITLE,
@@ -330,7 +332,7 @@ def _get_seo_data_dict(path: str) -> dict:
                 "name": "Darren Lester",
                 "alternateName": "Dazbo",
                 "jobTitle": "Enterprise Cloud Architect",
-                "url": "https://darrenlester.net",
+                "url": base_url,
                 "sameAs": [
                     "https://github.com/derailed-dash",
                     "https://www.linkedin.com/in/darren-lester-architect/",
@@ -348,11 +350,11 @@ def _get_seo_data_dict(path: str) -> dict:
     }
 
     seo_data = seo_map.get(path, {
-        "title": "Darren Lester | Portfolio",
-        "description": "Portfolio of Darren Lester."
+        "title": path.lstrip("/").replace("-", " ").title(),
+        "description": f"View {path.lstrip('/').replace('-', ' ')} on Darren Lester's portfolio."
     })
 
-    head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, seo_data.get("json_ld"))
+    head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, base_url, seo_data.get("json_ld"))
 
     full_title = seo_data["title"] if seo_data["title"] == SITE_TITLE else f"{seo_data['title']} | {SITE_TITLE}"
     return {"head_tags": head_tags, "title": full_title}
@@ -361,7 +363,8 @@ def _get_seo_data_dict(path: str) -> dict:
 @limiter.limit("60/minute")
 async def get_seo_data(request: Request, path: str = "/"):
     """Return SEO title and description for a given path."""
-    return JSONResponse(content=_get_seo_data_dict(path))
+    base_url = settings.base_url or str(request.base_url).rstrip("/")
+    return JSONResponse(content=_get_seo_data_dict(path, base_url))
 
 @app.get("/{full_path:path}")
 async def serve_spa(request: Request, full_path: str):
@@ -388,7 +391,8 @@ async def serve_spa(request: Request, full_path: str):
 
     # Inject SEO tags for known routes
     path = f"/{full_path}" if full_path else "/"
-    seo_data = _get_seo_data_dict(path)
+    base_url = settings.base_url or str(request.base_url).rstrip("/")
+    seo_data = _get_seo_data_dict(path, base_url)
     head_tags = seo_data.get("head_tags")
 
     if head_tags:
