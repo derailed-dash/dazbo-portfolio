@@ -39,6 +39,9 @@ Unit tests focus on isolating individual components, particularly Models and Ser
     *   **dev.to Filtering**: Articles with < 200 words are skipped.
 *   **Services**: Test business logic without connecting to external services. We use `unittest.mock` to mock the `google.cloud.firestore.AsyncClient` and other dependencies to ensure tests are fast and deterministic.
 *   **Adherence to Standards**: Tests like `test_firestore_session_service_implements_base` ensure that our implementations correctly follow required interfaces (e.g., Google ADK).
+*   **SEO & Security**:
+    *   `tests/unit/test_seo_injection.py`: Verifies dynamic injection of meta tags, OpenGraph, JSON-LD, and canonical URLs into the `index.html` stream.
+    *   `tests/unit/test_security_traversal.py`: Verifies the block-list and allow-list logic in the `serve_spa` function to prevent path traversal attacks.
 
 ## Integration Tests
 

@@ -4,6 +4,7 @@ Why: Initializes the web server, middleware, routes, and application lifespan ev
 How: Configures FastAPI with ADK integration, Telemetry, and Firestore services. Uses a lifespan context manager for startup/shutdown logic.
 """
 
+import html
 import json
 import logging
 import os
@@ -13,7 +14,7 @@ import anyio
 import google.auth
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.cli.fast_api import get_fast_api_app
@@ -57,9 +58,18 @@ logging.getLogger("opentelemetry.attributes").setLevel(logging.ERROR)
 # Rate Limiter Initialization
 limiter = Limiter(key_func=get_remote_address, headers_enabled=True)
 
-_, project_id = google.auth.default()
-logging_client = google_cloud_logging.Client()
-logger = logging_client.logger(__name__)
+# Cloud Logging initialization
+try:
+    _, project_id = google.auth.default()
+    logging_client = google_cloud_logging.Client()
+    # This automatically captures standard logging and sends to Cloud Logging
+    logging_client.setup_logging()
+    logger = logging.getLogger(__name__)
+except Exception:
+    # Fallback to standard logging if not in GCP
+    logging.basicConfig(level=getattr(logging, settings.log_level))
+    logger = logging.getLogger(__name__)
+    cloud_logger = None
 allow_origins = os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
 
 AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -97,6 +107,8 @@ app: FastAPI = get_fast_api_app(
 app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
 
+SITE_TITLE = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
+
 # Add Limiter to app state and exception handler
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -132,62 +144,50 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
 
     async def event_generator():
         yielded_partial = False
-        async for event in runner.run_async(
-            new_message=msg,
-            user_id=chat_request.user_id,
-            session_id=session.id,
-            run_config=RunConfig(streaming_mode=StreamingMode.SSE),
-        ):
-            logger.log_text(f"Received event: partial={getattr(event, 'partial', 'N/A')}, turn_complete={getattr(event, 'turn_complete', 'N/A')}", severity="DEBUG")
+        try:
+            async for event in runner.run_async(
+                new_message=msg,
+                user_id=chat_request.user_id,
+                session_id=session.id,
+                run_config=RunConfig(streaming_mode=StreamingMode.SSE),
+            ):
 
-            # Log significant events for diagnostics
-            if event.turn_complete:
-                logger.log_text(f"Turn complete for session {session.id}", severity="INFO")
+                # Extract text from the event (ModelResponse)
+                text_chunk = ""
+                try:
+                    parts = []
+                    if hasattr(event, "content") and event.content and event.content.parts:
+                        parts = event.content.parts
+                    elif hasattr(event, "candidates") and event.candidates:
+                        candidate = event.candidates[0]
+                        if candidate.content and candidate.content.parts:
+                            parts = candidate.content.parts
 
-            # Check for function calls (tools being used)
-            if hasattr(event, "content") and event.content and event.content.parts:
-                for part in event.content.parts:
-                    if hasattr(part, "function_call") and part.function_call:
-                        logger.log_text(f"Agent calling tool: {part.function_call.name}", severity="INFO")
+                    # Only process text if parts exist
+                    if parts:
+                        is_partial = getattr(event, "partial", False)
 
-            # Extract text from the event (ModelResponse)
-            # ADK yields partial=True for incremental chunks and partial=False for merged/final content.
-            # To avoid duplication in the UI, we prioritize partial=True chunks.
-            # If we've yielded ANY partial chunks, we ignore the final non-partial chunk.
-            # If we HAVEN'T yielded any partial chunks, we yield the non-partial chunk (supports non-streaming models).
+                        # Yield text if it's a partial chunk OR if we haven't yielded any partials yet.
+                        if is_partial or not yielded_partial:
+                            current_text_parts = [p.text for p in parts if hasattr(p, "text") and p.text]
+                            if current_text_parts:
+                                text_chunk = "".join(current_text_parts)
+                                if is_partial:
+                                    yielded_partial = True
 
-            text_chunk = ""
-            try:
-                parts = []
-                if hasattr(event, "content") and event.content and event.content.parts:
-                    parts = event.content.parts
-                elif hasattr(event, "candidates") and event.candidates:
-                    candidate = event.candidates[0]
-                    if candidate.content and candidate.content.parts:
-                        parts = candidate.content.parts
+                except Exception as e:
+                    logger.error(f"Error parsing event: {e}")
 
-                # Only process text if parts exist
-                if parts:
-                    is_partial = getattr(event, "partial", False)
+                if text_chunk:
+                    payload = {"content": text_chunk}
+                    yield f"data: {json.dumps(payload)}\n\n"
 
-                    # Yield text if it's a partial chunk OR if we haven't yielded any partials yet.
-                    if is_partial or not yielded_partial:
-                        current_text_parts = [p.text for p in parts if hasattr(p, "text") and p.text]
-                        if current_text_parts:
-                            text_chunk = "".join(current_text_parts)
-                            if is_partial:
-                                yielded_partial = True
-
-            except Exception as e:
-                logger.log_text(f"Error parsing event: {e}", severity="ERROR")
-
-            if text_chunk:
-                payload = {"content": text_chunk}
-                yield f"data: {json.dumps(payload)}\n\n"
-
-            # If it's the final event, notify the stream is closing
-            if event.turn_complete:
-                yield "data: [DONE]\n\n"
+                # If it's the final event, notify the stream is closing
+                if event.turn_complete:
+                    yield "data: [DONE]\n\n"
+        except Exception as e:
+            logger.error(f"Critical error in event generator: {e}")
+            raise
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
@@ -195,7 +195,7 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
 @app.post("/api/feedback")
 def collect_feedback(feedback: Feedback) -> dict[str, str]:
     """Collect and log feedback."""
-    logger.log_struct(feedback.model_dump(), severity="INFO")
+    logger.info(f"Feedback received: {feedback.model_dump()}")
     return {"status": "success"}
 
 
@@ -280,21 +280,126 @@ async def sitemap_xml(request: Request):
 
 # Mount static files if they exist (production/container mode)
 frontend_dist = os.path.join(AGENT_DIR, "frontend", "dist")
-if os.path.exists(frontend_dist):
-    # Mount assets folder for images, css, js
-    assets_dir = os.path.join(frontend_dist, "assets")
-    if os.path.exists(assets_dir):
-        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+assets_dir = os.path.join(frontend_dist, "assets")
+if os.path.exists(assets_dir):
+    app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        # Check if a static file exists (e.g. favicon.ico, manifest.json)
-        file_path = os.path.join(frontend_dist, full_path)
-        if full_path and await anyio.to_thread.run_sync(os.path.isfile, file_path):
-            return FileResponse(file_path)
+def _generate_head_tags(title: str, description: str, path: str, base_url: str, json_ld: dict | None = None) -> str:
+    default_image = f"{base_url}/images/dazbo-profile.png"
+    # Ensure path starts with /
+    normalized_path = f"/{path.lstrip('/')}"
+    url = f"{base_url}{normalized_path}" if normalized_path != "/" else f"{base_url}/"
+    full_title = title if title == SITE_TITLE else f"{title} | {SITE_TITLE}"
 
-        # Default to index.html for React Router (client-side routing)
-        return FileResponse(os.path.join(frontend_dist, "index.html"))
+    esc_title = html.escape(full_title, quote=True)
+    esc_desc = html.escape(description, quote=True)
+    esc_url = html.escape(url, quote=True)
+    esc_image = html.escape(default_image, quote=True)
+
+    # Base tags
+    tags = [
+        f"<title>{esc_title}</title>",
+        f'<meta name="description" content="{esc_desc}" />',
+        f'<link rel="canonical" href="{esc_url}" />'
+    ]
+
+    # Open Graph
+    tags.extend([
+        f'<meta property="og:title" content="{esc_title}" />',
+        f'<meta property="og:description" content="{esc_desc}" />',
+        '<meta property="og:type" content="website" />',
+        f'<meta property="og:url" content="{esc_url}" />',
+        f'<meta property="og:image" content="{esc_image}" />'
+    ])
+
+    # Twitter tags intentionally omitted as per user request
+
+    if json_ld:
+        # We do not HTML escape JSON-LD; we dump it safely into the script tag.
+        # However, we must ensure that no </script> tags reside within the JSON.
+        json_str = json.dumps(json_ld).replace("</script>", "<\\/script>")
+        tags.append(f'<script type="application/ld+json">\n{json_str}\n</script>')
+
+    return "".join(tags)
+
+def _get_seo_data_dict(path: str, base_url: str) -> dict:
+    seo_map = {
+        "/": {
+            "title": SITE_TITLE,
+            "description": 'Explore the professional portfolio of Darren "Dazbo" Lester, an Enterprise Cloud Architect and Google Cloud expert, specialising in agentic AI, open-source craftsmanship, and technical writing.',
+            "json_ld": {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                "name": "Darren Lester",
+                "alternateName": "Dazbo",
+                "jobTitle": "Enterprise Cloud Architect",
+                "url": base_url,
+                "sameAs": [
+                    "https://github.com/derailed-dash",
+                    "https://www.linkedin.com/in/darren-lester-architect/",
+                    "https://medium.com/@derailed.dash",
+                    "https://dev.to/deraileddash"
+                ],
+                "knowsAbout": ["Google Cloud", "Generative AI", "Model Context Protocol", "Architecture"],
+                "description": "Enterprise Cloud Architect and Google Developer Expert (GDE) specializing in agentic workflows and cloud architecture."
+            }
+        },
+        "/about": {
+            "title": "About Darren Lester",
+            "description": "Learn more about Dazbo, his background, and the tech stack behind this portfolio site."
+        }
+    }
+
+    seo_data = seo_map.get(path, {
+        "title": path.lstrip("/").replace("-", " ").title(),
+        "description": f"View {path.lstrip('/').replace('-', ' ')} on Darren Lester's portfolio."
+    })
+
+    head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, base_url, seo_data.get("json_ld"))
+
+    full_title = seo_data["title"] if seo_data["title"] == SITE_TITLE else f"{seo_data['title']} | {SITE_TITLE}"
+    return {"head_tags": head_tags, "title": full_title}
+
+@app.get("/api/seo")
+@limiter.limit("60/minute")
+async def get_seo_data(request: Request, path: str = "/"):
+    """Return SEO title and description for a given path."""
+    base_url = settings.base_url or str(request.base_url).rstrip("/")
+    return JSONResponse(content=_get_seo_data_dict(path, base_url))
+
+@app.get("/{full_path:path}")
+async def serve_spa(request: Request, full_path: str):
+    # Security: Prevent path traversal
+    # Resolve the absolute path of the requested file
+    actual_frontend_dist = os.path.abspath(frontend_dist)
+    requested_path = os.path.abspath(os.path.join(actual_frontend_dist, full_path))
+
+    # Check if the requested path is within the frontend_dist directory
+    if not requested_path.startswith(actual_frontend_dist):
+        return JSONResponse(status_code=403, content={"message": "Forbidden"})
+
+    # Check if a static file exists (e.g. favicon.ico, manifest.json)
+    if full_path and await anyio.to_thread.run_sync(os.path.isfile, requested_path):
+        return FileResponse(requested_path)
+
+    # It's a route, serve index.html with SEO injection
+    index_path = os.path.join(actual_frontend_dist, "index.html")
+    if not await anyio.to_thread.run_sync(os.path.isfile, index_path):
+        return JSONResponse(status_code=404, content={"message": "Frontend not built"})
+
+    with open(index_path, encoding="utf-8") as f:
+        html = f.read()
+
+    # Inject SEO tags for known routes
+    path = f"/{full_path}" if full_path else "/"
+    base_url = settings.base_url or str(request.base_url).rstrip("/")
+    seo_data = _get_seo_data_dict(path, base_url)
+    head_tags = seo_data.get("head_tags")
+
+    if head_tags:
+        html = html.replace("<!-- __SEO_TAGS__ -->", head_tags)
+
+    return HTMLResponse(content=html)
 
 
 # Main execution

@@ -3,7 +3,7 @@ GOOGLE_GENAI_USE_VERTEXAI = true
 SERVICE_NAME ?= dazbo-portfolio
 APP_NAME ?= dazbo_portfolio
 AGENT_NAME ?= dazbo_portfolio_chat_agent
-MODEL ?= gemini-2.5-flash
+MODEL ?= gemini-3-flash-preview
 MIN_INSTANCES ?= 0
 MEMORY ?= "1Gi"
 GOOGLE_CLOUD_REGION ?= europe-west1
@@ -47,7 +47,7 @@ deploy-cloud-run:
 		--min-instances=$(MIN_INSTANCES) \
 		--cpu-boost \
 		--allow-unauthenticated \
-		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(APP_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION),LOG_LEVEL=DEBUG" \
+		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(APP_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION),LOG_LEVEL=DEBUG,BASE_URL=$(BASE_URL)" \
 		--labels=dev-tutorial=devnewyear2026 \
 		$(if $(IAP),--iap)
 
@@ -63,6 +63,12 @@ docker-run:
 		-e GEMINI_API_KEY="$${GEMINI_API_KEY}" \
 		-e GOOGLE_GENAI_USE_VERTEXAI="$${GOOGLE_GENAI_USE_VERTEXAI}" \
 		-e MODEL="$${MODEL}" \
+		-e COMMIT_SHA=$(shell git rev-parse HEAD) \
+		-e APP_NAME=$(APP_NAME) \
+		-e AGENT_NAME=$(AGENT_NAME) \
+		-e GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION) \
+		-e LOG_LEVEL=DEBUG \
+		-e BASE_URL=$(BASE_URL) \
 		-e GOOGLE_APPLICATION_CREDENTIALS="/code/application_default_credentials.json" \
 		--mount type=bind,source=$${HOME}/.config/gcloud/application_default_credentials.json,target=/code/application_default_credentials.json,readonly \
 		dazbo-portfolio:latest
