@@ -21,8 +21,8 @@ def test_api_seo_home():
     data = response.json()
     assert "head_tags" in data
     assert "title" in data
-    assert data["title"] == 'Darren \'Dazbo\' Lester | Enterprise Cloud Architect | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
-    assert '<title>Darren \'Dazbo\' Lester | Enterprise Cloud Architect | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in data["head_tags"]
+    assert data["title"] == 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
+    assert '<title>Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in data["head_tags"]
     assert 'rel="canonical"' in data["head_tags"]
     assert 'property="og:title"' in data["head_tags"]
 
@@ -53,7 +53,7 @@ def test_serve_spa_injection_home():
         response = client.get("/")
         assert response.status_code == 200
         html = response.text
-        assert '<title>Darren \'Dazbo\' Lester | Enterprise Cloud Architect | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in html
+        assert '<title>Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in html
         assert 'property="og:title"' in html
         assert "<!-- __SEO_TAGS__ -->" not in html
 

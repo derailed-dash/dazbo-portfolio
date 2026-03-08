@@ -98,6 +98,8 @@ app: FastAPI = get_fast_api_app(
 app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
 
+SITE_TITLE = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
+
 # Add Limiter to app state and exception handler
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -286,10 +288,9 @@ if os.path.exists(assets_dir):
     app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
 def _generate_head_tags(title: str, description: str, path: str, json_ld: dict | None = None) -> str:
-    site_title = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
     default_image = 'https://darrenlester.net/images/dazbo-profile.png'
     url = f"https://darrenlester.net{path}" if path != "/" else "https://darrenlester.net/"
-    full_title = title if title == site_title else f"{title} | {site_title}"
+    full_title = title if title == SITE_TITLE else f"{title} | {SITE_TITLE}"
 
     esc_title = html.escape(full_title, quote=True)
     esc_desc = html.escape(description, quote=True)
@@ -321,7 +322,7 @@ def _generate_head_tags(title: str, description: str, path: str, json_ld: dict |
 def _get_seo_data_dict(path: str) -> dict:
     seo_map = {
         "/": {
-            "title": "Darren 'Dazbo' Lester | Enterprise Cloud Architect",
+            "title": SITE_TITLE,
             "description": 'Explore the professional portfolio of Darren "Dazbo" Lester, an Enterprise Cloud Architect and Google Cloud expert, specialising in agentic AI, open-source craftsmanship, and technical writing.',
             "json_ld": {
                 "@context": "https://schema.org",
@@ -353,8 +354,7 @@ def _get_seo_data_dict(path: str) -> dict:
 
     head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, seo_data.get("json_ld"))
 
-    site_title = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
-    full_title = seo_data["title"] if seo_data["title"] == site_title else f"{seo_data['title']} | {site_title}"
+    full_title = seo_data["title"] if seo_data["title"] == SITE_TITLE else f"{seo_data['title']} | {SITE_TITLE}"
     return {"head_tags": head_tags, "title": full_title}
 
 @app.get("/api/seo")
