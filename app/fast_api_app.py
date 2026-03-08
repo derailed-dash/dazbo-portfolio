@@ -352,7 +352,10 @@ def _get_seo_data_dict(path: str) -> dict:
     })
 
     head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, seo_data.get("json_ld"))
-    return {"head_tags": head_tags}
+    
+    site_title = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
+    full_title = seo_data["title"] if seo_data["title"] == site_title else f"{seo_data['title']} | {site_title}"
+    return {"head_tags": head_tags, "title": full_title}
 
 @app.get("/api/seo")
 @limiter.limit("60/minute")

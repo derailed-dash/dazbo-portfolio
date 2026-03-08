@@ -5,10 +5,12 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useSeo } from '../hooks/useSeo';
 import { getContentBySlug } from '../services/contentService';
 import type { Content } from '../types';
 
 const AboutPage: React.FC = () => {
+  useSeo();
   const [content, setContent] = useState<Content | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

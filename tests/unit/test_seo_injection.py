@@ -20,6 +20,8 @@ def test_api_seo_home():
     assert response.status_code == 200
     data = response.json()
     assert "head_tags" in data
+    assert "title" in data
+    assert data["title"] == 'Darren \'Dazbo\' Lester | Enterprise Cloud Architect | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
     assert '<title>Darren \'Dazbo\' Lester | Enterprise Cloud Architect | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in data["head_tags"]
     assert 'rel="canonical"' in data["head_tags"]
     assert 'property="og:title"' in data["head_tags"]
@@ -31,6 +33,8 @@ def test_api_seo_about():
     assert response.status_code == 200
     data = response.json()
     assert "head_tags" in data
+    assert "title" in data
+    assert data["title"] == 'About Darren Lester | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
     assert '<title>About Darren Lester | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in data["head_tags"]
     assert 'rel="canonical"' in data["head_tags"]
     assert 'property="og:title"' in data["head_tags"]
