@@ -281,111 +281,109 @@ async def sitemap_xml(request: Request):
 
 # Mount static files if they exist (production/container mode)
 frontend_dist = os.path.join(AGENT_DIR, "frontend", "dist")
-if os.path.exists(frontend_dist):
-    # Mount assets folder for images, css, js
-    assets_dir = os.path.join(frontend_dist, "assets")
-    if os.path.exists(assets_dir):
-        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+assets_dir = os.path.join(frontend_dist, "assets")
+if os.path.exists(assets_dir):
+    app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
-    def _generate_head_tags(title: str, description: str, path: str, json_ld: dict | None = None) -> str:
-        site_title = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
-        default_image = 'https://darrenlester.net/images/dazbo-profile.png'
-        url = f"https://darrenlester.net{path}" if path != "/" else "https://darrenlester.net/"
-        full_title = title if title == site_title else f"{title} | {site_title}"
+def _generate_head_tags(title: str, description: str, path: str, json_ld: dict | None = None) -> str:
+    site_title = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
+    default_image = 'https://darrenlester.net/images/dazbo-profile.png'
+    url = f"https://darrenlester.net{path}" if path != "/" else "https://darrenlester.net/"
+    full_title = title if title == site_title else f"{title} | {site_title}"
 
-        esc_title = html.escape(full_title, quote=True)
-        esc_desc = html.escape(description, quote=True)
+    esc_title = html.escape(full_title, quote=True)
+    esc_desc = html.escape(description, quote=True)
 
-        # Base tags
-        tags = [
-            f"<title>{full_title}</title>",
-            f'<meta name="description" content="{esc_desc}" />',
-            f'<link rel="canonical" href="{url}" />'
-        ]
+    # Base tags
+    tags = [
+        f"<title>{full_title}</title>",
+        f'<meta name="description" content="{esc_desc}" />',
+        f'<link rel="canonical" href="{url}" />'
+    ]
 
-        # Open Graph
-        tags.extend([
-            f'<meta property="og:title" content="{esc_title}" />',
-            f'<meta property="og:description" content="{esc_desc}" />',
-            '<meta property="og:type" content="website" />',
-            f'<meta property="og:url" content="{url}" />',
-            f'<meta property="og:image" content="{default_image}" />'
-        ])
+    # Open Graph
+    tags.extend([
+        f'<meta property="og:title" content="{esc_title}" />',
+        f'<meta property="og:description" content="{esc_desc}" />',
+        '<meta property="og:type" content="website" />',
+        f'<meta property="og:url" content="{url}" />',
+        f'<meta property="og:image" content="{default_image}" />'
+    ])
 
-        # Twitter tags intentionally omitted as per user request
+    # Twitter tags intentionally omitted as per user request
 
-        if json_ld:
-            # We do not HTML escape JSON-LD; we dump it safely into the script tag
-            tags.append(f'<script type="application/ld+json">\n{json.dumps(json_ld)}\n</script>')
+    if json_ld:
+        # We do not HTML escape JSON-LD; we dump it safely into the script tag
+        tags.append(f'<script type="application/ld+json">\n{json.dumps(json_ld)}\n</script>')
 
-        return "".join(tags)
+    return "".join(tags)
 
-    def _get_seo_data_dict(path: str) -> dict:
-        seo_map = {
-            "/": {
-                "title": "Darren 'Dazbo' Lester | Enterprise Cloud Architect",
-                "description": 'Explore the professional portfolio of Darren "Dazbo" Lester, an Enterprise Cloud Architect and Google Cloud expert, specialising in agentic AI, open-source craftsmanship, and technical writing.',
-                "json_ld": {
-                    "@context": "https://schema.org",
-                    "@type": "Person",
-                    "name": "Darren Lester",
-                    "alternateName": "Dazbo",
-                    "jobTitle": "Enterprise Cloud Architect",
-                    "url": "https://darrenlester.net",
-                    "sameAs": [
-                        "https://github.com/derailed-dash",
-                        "https://www.linkedin.com/in/darren-lester-architect/",
-                        "https://medium.com/@derailed.dash",
-                        "https://dev.to/deraileddash"
-                    ],
-                    "knowsAbout": ["Google Cloud", "Generative AI", "Model Context Protocol", "Architecture"],
-                    "description": "Enterprise Cloud Architect and Google Developer Expert (GDE) specializing in agentic workflows and cloud architecture."
-                }
-            },
-            "/about": {
-                "title": "About Darren Lester",
-                "description": "Learn more about Dazbo, his background, and the tech stack behind this portfolio site."
+def _get_seo_data_dict(path: str) -> dict:
+    seo_map = {
+        "/": {
+            "title": "Darren 'Dazbo' Lester | Enterprise Cloud Architect",
+            "description": 'Explore the professional portfolio of Darren "Dazbo" Lester, an Enterprise Cloud Architect and Google Cloud expert, specialising in agentic AI, open-source craftsmanship, and technical writing.',
+            "json_ld": {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                "name": "Darren Lester",
+                "alternateName": "Dazbo",
+                "jobTitle": "Enterprise Cloud Architect",
+                "url": "https://darrenlester.net",
+                "sameAs": [
+                    "https://github.com/derailed-dash",
+                    "https://www.linkedin.com/in/darren-lester-architect/",
+                    "https://medium.com/@derailed.dash",
+                    "https://dev.to/deraileddash"
+                ],
+                "knowsAbout": ["Google Cloud", "Generative AI", "Model Context Protocol", "Architecture"],
+                "description": "Enterprise Cloud Architect and Google Developer Expert (GDE) specializing in agentic workflows and cloud architecture."
             }
+        },
+        "/about": {
+            "title": "About Darren Lester",
+            "description": "Learn more about Dazbo, his background, and the tech stack behind this portfolio site."
         }
+    }
 
-        seo_data = seo_map.get(path, {
-            "title": "Darren Lester | Portfolio",
-            "description": "Portfolio of Darren Lester."
-        })
+    seo_data = seo_map.get(path, {
+        "title": "Darren Lester | Portfolio",
+        "description": "Portfolio of Darren Lester."
+    })
 
-        head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, seo_data.get("json_ld"))
-        return {"head_tags": head_tags}
+    head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, seo_data.get("json_ld"))
+    return {"head_tags": head_tags}
 
-    @app.get("/api/seo")
-    @limiter.limit("60/minute")
-    async def get_seo_data(request: Request, path: str = "/"):
-        """Return SEO title and description for a given path."""
-        return JSONResponse(content=_get_seo_data_dict(path))
+@app.get("/api/seo")
+@limiter.limit("60/minute")
+async def get_seo_data(request: Request, path: str = "/"):
+    """Return SEO title and description for a given path."""
+    return JSONResponse(content=_get_seo_data_dict(path))
 
-    @app.get("/{full_path:path}")
-    async def serve_spa(request: Request, full_path: str):
-        # Check if a static file exists (e.g. favicon.ico, manifest.json)
-        file_path = os.path.join(frontend_dist, full_path)
-        if full_path and await anyio.to_thread.run_sync(os.path.isfile, file_path):
-            return FileResponse(file_path)
+@app.get("/{full_path:path}")
+async def serve_spa(request: Request, full_path: str):
+    # Check if a static file exists (e.g. favicon.ico, manifest.json)
+    file_path = os.path.join(frontend_dist, full_path)
+    if full_path and await anyio.to_thread.run_sync(os.path.isfile, file_path):
+        return FileResponse(file_path)
 
-        # It's a route, serve index.html with SEO injection
-        index_path = os.path.join(frontend_dist, "index.html")
-        if not await anyio.to_thread.run_sync(os.path.isfile, index_path):
-            return JSONResponse(status_code=404, content={"message": "Frontend not built"})
+    # It's a route, serve index.html with SEO injection
+    index_path = os.path.join(frontend_dist, "index.html")
+    if not await anyio.to_thread.run_sync(os.path.isfile, index_path):
+        return JSONResponse(status_code=404, content={"message": "Frontend not built"})
 
-        with open(index_path, encoding="utf-8") as f:
-            html = f.read()
+    with open(index_path, encoding="utf-8") as f:
+        html = f.read()
 
-        # Inject SEO tags for known routes
-        path = f"/{full_path}" if full_path else "/"
-        seo_data = _get_seo_data_dict(path)
-        head_tags = seo_data.get("head_tags")
+    # Inject SEO tags for known routes
+    path = f"/{full_path}" if full_path else "/"
+    seo_data = _get_seo_data_dict(path)
+    head_tags = seo_data.get("head_tags")
 
-        if head_tags:
-            html = html.replace("<!-- __SEO_TAGS__ -->", head_tags)
+    if head_tags:
+        html = html.replace("<!-- __SEO_TAGS__ -->", head_tags)
 
-        return HTMLResponse(content=html)
+    return HTMLResponse(content=html)
 
 
 # Main execution
