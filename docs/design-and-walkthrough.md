@@ -49,6 +49,8 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Disable Session Affinity** | Removed to encourage stateless design and ensure even load balancing when scaling beyond one instance in the future. |
 | **Enable CPU Idle (Throttling)** | `cpu_idle = true` reduces costs by throttling CPU between requests. Verified safe for async Gemini streaming as the request remains active during the stream. |
 | **Enable Startup CPU Boost** | Provides additional CPU during instance startup to mitigate cold start latency for the Python application. |
+| **FastAPI SEO Injection** | Dynamically injects SEO tags into `index.html` on the first request, ensuring optimal crawling and social previews for the SPA. |
+| **Server-Side Path Validation** | Robust path traversal protection using high-probability absolute path resolution within `serve_spa`. |
 
 ## Application Design
 
@@ -109,28 +111,36 @@ The application implements a multi-tier rate limiting strategy using `slowapi` (
 
 ## Search Engine Optimization (SEO)
 
-The application implements a comprehensive SEO strategy to ensure visibility and professional presentation on social media and search engines.
+The application implements a hybrid SEO strategy that combines server-side tag injection for crawlers with client-side updates for real-world user navigation.
 
-### Document Metadata (React 19)
+### Hybrid SEO Architecture
 
-We leverage **React 19's native support for document metadata**. This allows components to define `<title>`, `<meta>`, and `<link>` tags directly in their render output. React automatically hoists these tags to the `<head>` of the document and manages updates during client-side navigation.
+Since the frontend is a Single Page Application (SPA), search engines and social media bots often see only an empty `index.html` before the Javascript executes. To solve this, we use a hybrid approach:
 
-*   **`SEO` Component**: A reusable component (`frontend/src/components/SEO.tsx`) that centralizes the management of:
-    *   **Standard Tags**: Title, Description.
-    *   **Open Graph (OG)**: `og:title`, `og:description`, `og:image`, `og:url`, `og:type`.
-    *   **Twitter Cards**: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`.
-    *   **Structured Data**: Injects JSON-LD (Schema.org) scripts for rich search results (e.g., `Person` schema on the Home page).
+1.  **Backend Tag Injection**: When the FastAPI backend serves the initial `index.html` (via `serve_spa`), it fetches the relevant SEO metadata (title, description, OG tags, JSON-LD) from a server-side `seo_map`.
+2.  **Placeholder Replacement**: The backend replaces a `<!-- __SEO_TAGS__ -->` placeholder in the HTML stream with the actual tags.
+3.  **Client-Side Parity**: A custom `useSeo` hook (`frontend/src/hooks/useSeo.ts`) fetches the same metadata from `/api/seo` during client-side navigation (e.g., clicking a link) to update the browser's document title and meta tags manually.
 
-### Static XML Sitemap
+### SEO Components & Tools
 
-To facilitate discovery of the application, the FastAPI backend provides a sitemap at `/sitemap.xml`.
+*   **`SEO.tsx` (Legacy)**: (Now primarily for structured code reference) Originally managed tags via React 19's native hoisting.
+*   **Vite SEO Plugin**: For local development, a custom `seoInjectorPlugin` in `vite.config.ts` calls the backend `/api/seo` endpoint to inject tags into the dev server's HTML, maintaining parity with production.
+*   **Dynamic URLs**: The system uses a configurable `BASE_URL` (from `settings.base_url` or `request.base_url`) to generate absolute canonical and OpenGraph URLs, ensuring portability across environments.
 
-*   **Implementation**: The endpoint (`app/fast_api_app.py`) constructs a simple XML response pointing to the root URL.
-*   **Static Pages**: Includes the home page.
+### Static XML Sitemap & Robots.txt
+*   **Sitemap**: Provided at `/sitemap.xml`, dynamically generated pointing to search-friendly routes.
+*   **Robots.txt**: Located in `frontend/public/`, directing crawlers to the sitemap.
 
-### Robots.txt
+## Security
 
-A static `robots.txt` file in `frontend/public/` directs crawlers to the sitemap endpoint.
+The application follows a "defense-in-depth" approach to security, particularly concerning file serving and origin protection.
+
+### Path Traversal Protection
+
+Serving a SPA catch-all route carries the risk of "Path Traversal" attacks (e.g., `/../../etc/passwd`). We mitigated this in the `serve_spa` endpoint with robust validation:
+1.  **Absolute Path Resolution**: We resolve the requested path relative to the `frontend/dist` directory using `os.path.abspath`.
+2.  **Restricted Root**: We verify that the resolved absolute path actually resides *within* the intended directory.
+3.  **Explicit Fallbacks**: Invalid or out-of-bounds requests are rejected with a 404, while valid non-file requests default to serving `index.html`.
 
 ## Service Layer
 

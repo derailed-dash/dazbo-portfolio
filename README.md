@@ -9,6 +9,7 @@ The portfolio site has:
 - Gemini Chatbot using Google ADK
 - Automated ingestion of content from blogs, GitHub, etc
 - AI-based content summarisation and metadata extraction
+- Dynamic SEO tag injection (SSR for SPA)
 
 In includes Terraform IaC for deployment to Google Cloud, using:
 
@@ -165,7 +166,7 @@ make docker-build
 make docker-run
 ```
 
-Access the application at `http://localhost:8080`.
+Access the application at `http://localhost:8080`. The container implementation uses a hybrid SSR/SPA approach to inject SEO tags dynamically on the first request, ensuring optimal crawling and social previews.
 
 ### Production Deployment
 
