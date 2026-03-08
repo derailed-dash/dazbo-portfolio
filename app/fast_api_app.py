@@ -352,7 +352,7 @@ def _get_seo_data_dict(path: str) -> dict:
     })
 
     head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, seo_data.get("json_ld"))
-    
+
     site_title = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
     full_title = seo_data["title"] if seo_data["title"] == site_title else f"{seo_data['title']} | {site_title}"
     return {"head_tags": head_tags, "title": full_title}
@@ -365,13 +365,21 @@ async def get_seo_data(request: Request, path: str = "/"):
 
 @app.get("/{full_path:path}")
 async def serve_spa(request: Request, full_path: str):
+    # Security: Prevent path traversal
+    # Resolve the absolute path of the requested file
+    actual_frontend_dist = os.path.abspath(frontend_dist)
+    requested_path = os.path.abspath(os.path.join(actual_frontend_dist, full_path))
+
+    # Check if the requested path is within the frontend_dist directory
+    if not requested_path.startswith(actual_frontend_dist):
+        return JSONResponse(status_code=403, content={"message": "Forbidden"})
+
     # Check if a static file exists (e.g. favicon.ico, manifest.json)
-    file_path = os.path.join(frontend_dist, full_path)
-    if full_path and await anyio.to_thread.run_sync(os.path.isfile, file_path):
-        return FileResponse(file_path)
+    if full_path and await anyio.to_thread.run_sync(os.path.isfile, requested_path):
+        return FileResponse(requested_path)
 
     # It's a route, serve index.html with SEO injection
-    index_path = os.path.join(frontend_dist, "index.html")
+    index_path = os.path.join(actual_frontend_dist, "index.html")
     if not await anyio.to_thread.run_sync(os.path.isfile, index_path):
         return JSONResponse(status_code=404, content={"message": "Frontend not built"})
 
