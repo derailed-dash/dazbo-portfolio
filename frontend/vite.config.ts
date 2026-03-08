@@ -8,10 +8,9 @@ function seoInjectorPlugin(): Plugin {
     name: 'html-seo-injector',
     apply: 'serve',
     transformIndexHtml: async (html, ctx) => {
-      // For local dev, path is usually raw URL path
-      // e.g. / or /about
-      // Note: Vite's ctx.path might include trailing slash or be undefined if root
-      const path = ctx.originalUrl || ctx.path || '/';
+      // Extract just the path part to ignore query parameters (e.g. /about?foo=bar -> /about)
+      const rawUrl = ctx.originalUrl || ctx.path || '/';
+      const path = rawUrl.split('?')[0];
       return await injectSeoTags(html, path);
     }
   }
