@@ -58,9 +58,18 @@ logging.getLogger("opentelemetry.attributes").setLevel(logging.ERROR)
 # Rate Limiter Initialization
 limiter = Limiter(key_func=get_remote_address, headers_enabled=True)
 
-_, project_id = google.auth.default()
-logging_client = google_cloud_logging.Client()
-logger = logging_client.logger(__name__)
+# Cloud Logging initialization
+try:
+    _, project_id = google.auth.default()
+    logging_client = google_cloud_logging.Client()
+    # This automatically captures standard logging and sends to Cloud Logging
+    logging_client.setup_logging()
+    logger = logging.getLogger(__name__)
+except Exception:
+    # Fallback to standard logging if not in GCP
+    logging.basicConfig(level=getattr(logging, settings.log_level))
+    logger = logging.getLogger(__name__)
+    cloud_logger = None
 allow_origins = os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
 
 AGENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -135,7 +144,6 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
 
     async def event_generator():
         yielded_partial = False
-        logger.log_text(f"Starting event generator for session {session.id}", severity="INFO")
         try:
             async for event in runner.run_async(
                 new_message=msg,
@@ -143,17 +151,6 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                 session_id=session.id,
                 run_config=RunConfig(streaming_mode=StreamingMode.SSE),
             ):
-                logger.log_text(f"Event received: partial={getattr(event, 'partial', 'N/A')}, turn_complete={getattr(event, 'turn_complete', 'N/A')}", severity="INFO")
-
-                # Log significant events for diagnostics
-                if event.turn_complete:
-                    logger.log_text(f"Turn complete for session {session.id}", severity="INFO")
-
-                # Check for function calls (tools being used)
-                if hasattr(event, "content") and event.content and event.content.parts:
-                    for part in event.content.parts:
-                        if hasattr(part, "function_call") and part.function_call:
-                            logger.log_text(f"Agent calling tool: {part.function_call.name}", severity="INFO")
 
                 # Extract text from the event (ModelResponse)
                 text_chunk = ""
@@ -179,7 +176,7 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                                     yielded_partial = True
 
                 except Exception as e:
-                    logger.log_text(f"Error parsing event: {e}", severity="ERROR")
+                    logger.error(f"Error parsing event: {e}")
 
                 if text_chunk:
                     payload = {"content": text_chunk}
@@ -189,7 +186,7 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                 if event.turn_complete:
                     yield "data: [DONE]\n\n"
         except Exception as e:
-            logger.log_text(f"Critical error in event generator: {e}", severity="ERROR")
+            logger.error(f"Critical error in event generator: {e}")
             raise
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
@@ -198,7 +195,7 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
 @app.post("/api/feedback")
 def collect_feedback(feedback: Feedback) -> dict[str, str]:
     """Collect and log feedback."""
-    logger.log_struct(feedback.model_dump(), severity="INFO")
+    logger.info(f"Feedback received: {feedback.model_dump()}")
     return {"status": "success"}
 
 

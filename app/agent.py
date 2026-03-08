@@ -37,10 +37,7 @@ if settings.gemini_api_key:
 
 
 class PortfolioAgent(Agent):
-    """Custom Agent subclass to fix ADK app name inference.
-    The agent's class is now defined in our codebase. The ADK sees this and no longer flags
-    it as a mismatch with the library's default name."""
-
+    """Custom Agent subclass to fix ADK app name inference."""
     pass
 
 

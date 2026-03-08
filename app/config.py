@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     app_name: str = "dazbo_portfolio"  # must use underscores, not hyphens
     agent_name: str = "dazbo_portfolio_chat_agent"
     log_level: str = "INFO"
-    model: str = "gemini-3.1-flash-preview"
+    model: str = "gemini-3-flash-preview"
     max_enrichment_input_chars: int = 15000
     gemini_temp: float = 0.8
 

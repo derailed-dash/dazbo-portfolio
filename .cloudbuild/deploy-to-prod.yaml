@@ -50,7 +50,7 @@ substitutions:
   _APP_NAME: "dazbo_portfolio"
   _AGENT_NAME: "dazbo_portfolio_chat_agent"
   _GOOGLE_GENAI_USE_VERTEXAI: "True"
-  _MODEL: "gemini-3.1-flash-preview"
+  _MODEL: "gemini-3-flash-preview"
   _ARTIFACT_REGISTRY_REPO_NAME: "dazbo-portfolio-repo"
   _MAX_INSTANCES: "1"
   _MIN_INSTANCES: "0"
