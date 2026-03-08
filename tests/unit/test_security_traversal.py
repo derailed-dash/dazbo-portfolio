@@ -1,3 +1,8 @@
+"""
+Description: Unit tests for path traversal security in the `serve_spa` endpoint.
+Why: To ensure that the application is not vulnerable to directory traversal attacks when serving static files or the SPA.
+How: Uses FastAPI's TestClient to make requests with malicious and safe paths and asserts that the application behaves as expected.
+"""
 import unittest
 from unittest.mock import patch, mock_open
 import os
