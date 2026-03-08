@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { getContentBySlug } from '../services/contentService';
 import type { Content } from '../types';
-import SEO from '../components/SEO';
 
 const AboutPage: React.FC = () => {
   const [content, setContent] = useState<Content | null>(null);
@@ -51,11 +50,6 @@ const AboutPage: React.FC = () => {
 
   return (
     <>
-      <SEO 
-        title={content.title}
-        description={`About Darren "Dazbo" Lester - ${content.title}`}
-      />
-      
       {/* Header Section (Banner Only with Back Button) */}
       <div className="hero-wrapper position-relative text-white mb-4">
         <div className="position-absolute top-0 start-0 w-100 h-100 hero-banner"></div>
