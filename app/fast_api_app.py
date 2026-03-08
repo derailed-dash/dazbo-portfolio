@@ -135,62 +135,62 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
 
     async def event_generator():
         yielded_partial = False
-        async for event in runner.run_async(
-            new_message=msg,
-            user_id=chat_request.user_id,
-            session_id=session.id,
-            run_config=RunConfig(streaming_mode=StreamingMode.SSE),
-        ):
-            logger.log_text(f"Received event: partial={getattr(event, 'partial', 'N/A')}, turn_complete={getattr(event, 'turn_complete', 'N/A')}", severity="DEBUG")
+        logger.log_text(f"Starting event generator for session {session.id}", severity="INFO")
+        try:
+            async for event in runner.run_async(
+                new_message=msg,
+                user_id=chat_request.user_id,
+                session_id=session.id,
+                run_config=RunConfig(streaming_mode=StreamingMode.SSE),
+            ):
+                logger.log_text(f"Event received: partial={getattr(event, 'partial', 'N/A')}, turn_complete={getattr(event, 'turn_complete', 'N/A')}", severity="INFO")
 
-            # Log significant events for diagnostics
-            if event.turn_complete:
-                logger.log_text(f"Turn complete for session {session.id}", severity="INFO")
+                # Log significant events for diagnostics
+                if event.turn_complete:
+                    logger.log_text(f"Turn complete for session {session.id}", severity="INFO")
 
-            # Check for function calls (tools being used)
-            if hasattr(event, "content") and event.content and event.content.parts:
-                for part in event.content.parts:
-                    if hasattr(part, "function_call") and part.function_call:
-                        logger.log_text(f"Agent calling tool: {part.function_call.name}", severity="INFO")
-
-            # Extract text from the event (ModelResponse)
-            # ADK yields partial=True for incremental chunks and partial=False for merged/final content.
-            # To avoid duplication in the UI, we prioritize partial=True chunks.
-            # If we've yielded ANY partial chunks, we ignore the final non-partial chunk.
-            # If we HAVEN'T yielded any partial chunks, we yield the non-partial chunk (supports non-streaming models).
-
-            text_chunk = ""
-            try:
-                parts = []
+                # Check for function calls (tools being used)
                 if hasattr(event, "content") and event.content and event.content.parts:
-                    parts = event.content.parts
-                elif hasattr(event, "candidates") and event.candidates:
-                    candidate = event.candidates[0]
-                    if candidate.content and candidate.content.parts:
-                        parts = candidate.content.parts
+                    for part in event.content.parts:
+                        if hasattr(part, "function_call") and part.function_call:
+                            logger.log_text(f"Agent calling tool: {part.function_call.name}", severity="INFO")
 
-                # Only process text if parts exist
-                if parts:
-                    is_partial = getattr(event, "partial", False)
+                # Extract text from the event (ModelResponse)
+                text_chunk = ""
+                try:
+                    parts = []
+                    if hasattr(event, "content") and event.content and event.content.parts:
+                        parts = event.content.parts
+                    elif hasattr(event, "candidates") and event.candidates:
+                        candidate = event.candidates[0]
+                        if candidate.content and candidate.content.parts:
+                            parts = candidate.content.parts
 
-                    # Yield text if it's a partial chunk OR if we haven't yielded any partials yet.
-                    if is_partial or not yielded_partial:
-                        current_text_parts = [p.text for p in parts if hasattr(p, "text") and p.text]
-                        if current_text_parts:
-                            text_chunk = "".join(current_text_parts)
-                            if is_partial:
-                                yielded_partial = True
+                    # Only process text if parts exist
+                    if parts:
+                        is_partial = getattr(event, "partial", False)
 
-            except Exception as e:
-                logger.log_text(f"Error parsing event: {e}", severity="ERROR")
+                        # Yield text if it's a partial chunk OR if we haven't yielded any partials yet.
+                        if is_partial or not yielded_partial:
+                            current_text_parts = [p.text for p in parts if hasattr(p, "text") and p.text]
+                            if current_text_parts:
+                                text_chunk = "".join(current_text_parts)
+                                if is_partial:
+                                    yielded_partial = True
 
-            if text_chunk:
-                payload = {"content": text_chunk}
-                yield f"data: {json.dumps(payload)}\n\n"
+                except Exception as e:
+                    logger.log_text(f"Error parsing event: {e}", severity="ERROR")
 
-            # If it's the final event, notify the stream is closing
-            if event.turn_complete:
-                yield "data: [DONE]\n\n"
+                if text_chunk:
+                    payload = {"content": text_chunk}
+                    yield f"data: {json.dumps(payload)}\n\n"
+
+                # If it's the final event, notify the stream is closing
+                if event.turn_complete:
+                    yield "data: [DONE]\n\n"
+        except Exception as e:
+            logger.log_text(f"Critical error in event generator: {e}", severity="ERROR")
+            raise
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
@@ -296,12 +296,14 @@ def _generate_head_tags(title: str, description: str, path: str, base_url: str, 
 
     esc_title = html.escape(full_title, quote=True)
     esc_desc = html.escape(description, quote=True)
+    esc_url = html.escape(url, quote=True)
+    esc_image = html.escape(default_image, quote=True)
 
     # Base tags
     tags = [
-        f"<title>{full_title}</title>",
+        f"<title>{esc_title}</title>",
         f'<meta name="description" content="{esc_desc}" />',
-        f'<link rel="canonical" href="{url}" />'
+        f'<link rel="canonical" href="{esc_url}" />'
     ]
 
     # Open Graph
@@ -309,15 +311,17 @@ def _generate_head_tags(title: str, description: str, path: str, base_url: str, 
         f'<meta property="og:title" content="{esc_title}" />',
         f'<meta property="og:description" content="{esc_desc}" />',
         '<meta property="og:type" content="website" />',
-        f'<meta property="og:url" content="{url}" />',
-        f'<meta property="og:image" content="{default_image}" />'
+        f'<meta property="og:url" content="{esc_url}" />',
+        f'<meta property="og:image" content="{esc_image}" />'
     ])
 
     # Twitter tags intentionally omitted as per user request
 
     if json_ld:
-        # We do not HTML escape JSON-LD; we dump it safely into the script tag
-        tags.append(f'<script type="application/ld+json">\n{json.dumps(json_ld)}\n</script>')
+        # We do not HTML escape JSON-LD; we dump it safely into the script tag.
+        # However, we must ensure that no </script> tags reside within the JSON.
+        json_str = json.dumps(json_ld).replace("</script>", "<\\/script>")
+        tags.append(f'<script type="application/ld+json">\n{json_str}\n</script>')
 
     return "".join(tags)
 

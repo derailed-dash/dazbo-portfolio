@@ -22,7 +22,7 @@ def test_api_seo_home():
     assert "head_tags" in data
     assert "title" in data
     assert data["title"] == 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
-    assert '<title>Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in data["head_tags"]
+    assert '<title>Darren &quot;Dazbo&quot; Lester - Enterprise Cloud Architect and Google Evangelist</title>' in data["head_tags"]
     assert 'rel="canonical"' in data["head_tags"]
     assert 'property="og:title"' in data["head_tags"]
 
@@ -35,7 +35,7 @@ def test_api_seo_about():
     assert "head_tags" in data
     assert "title" in data
     assert data["title"] == 'About Darren Lester | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
-    assert '<title>About Darren Lester | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in data["head_tags"]
+    assert '<title>About Darren Lester | Darren &quot;Dazbo&quot; Lester - Enterprise Cloud Architect and Google Evangelist</title>' in data["head_tags"]
     assert 'rel="canonical"' in data["head_tags"]
     assert 'property="og:title"' in data["head_tags"]
 
@@ -53,7 +53,7 @@ def test_serve_spa_injection_home():
         response = client.get("/")
         assert response.status_code == 200
         html = response.text
-        assert '<title>Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in html
+        assert '<title>Darren &quot;Dazbo&quot; Lester - Enterprise Cloud Architect and Google Evangelist</title>' in html
         assert 'property="og:title"' in html
         assert "<!-- __SEO_TAGS__ -->" not in html
 
@@ -71,7 +71,25 @@ def test_serve_spa_injection_about():
         response = client.get("/about")
         assert response.status_code == 200
         html = response.text
-        assert '<title>About Darren Lester | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist</title>' in html
+        assert '<title>About Darren Lester | Darren &quot;Dazbo&quot; Lester - Enterprise Cloud Architect and Google Evangelist</title>' in html
         assert 'property="og:title"' in html
         assert "<!-- __SEO_TAGS__ -->" not in html
+
+
+def test_api_seo_xss_protection():
+    """Test that the /api/seo endpoint escapes malicious paths to prevent XSS."""
+    malicious_path = "</title><script>alert(1)</script>"
+    response = client.get(f"/api/seo?path={malicious_path}")
+    assert response.status_code == 200
+    data = response.json()
+
+    # The title in head_tags should be escaped (and handle default title casing)
+    assert "&lt;/Title&gt;&lt;Script&gt;Alert(1)&lt;/Script&gt;" in data["head_tags"]
+    assert "<script>alert(1)</script>" not in data["head_tags"]
+
+    # The canonical URL should also be escaped
+    # Use BASE_URL from settings/env
+    from app.config import settings
+    base_url = settings.base_url or "http://testserver"
+    assert f'rel="canonical" href="{base_url}/&lt;/title&gt;&lt;script&gt;alert(1)&lt;/script&gt;"' in data["head_tags"]
 

@@ -130,8 +130,15 @@ def test_chat_stream(server_fixture: subprocess.Popen[str]) -> None:
             line_str = line.decode("utf-8")
             if line_str.startswith("data: "):
                 event_json = line_str[6:]  # Remove "data: " prefix
-                event = json.loads(event_json)
-                events.append(event)
+                if event_json == "[DONE]":
+                    logger.info("Received [DONE] sentinel")
+                    continue
+                try:
+                    event = json.loads(event_json)
+                    events.append(event)
+                except json.JSONDecodeError as e:
+                    logger.error(f"Failed to parse event JSON: {event_json}. Error: {e}")
+                    raise
 
     assert events, "No events received from stream"
 

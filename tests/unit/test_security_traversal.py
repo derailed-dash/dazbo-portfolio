@@ -3,11 +3,14 @@ Description: Unit tests for path traversal security in the `serve_spa` endpoint.
 Why: To ensure that the application is not vulnerable to directory traversal attacks when serving static files or the SPA.
 How: Uses FastAPI's TestClient to make requests with malicious and safe paths and asserts that the application behaves as expected.
 """
-import unittest
-from unittest.mock import patch, mock_open
 import os
+import unittest
+from unittest.mock import mock_open, patch
+
 from fastapi.testclient import TestClient
+
 from app.fast_api_app import app
+
 
 class TestSecurityTraversal(unittest.TestCase):
     def setUp(self):
@@ -16,7 +19,7 @@ class TestSecurityTraversal(unittest.TestCase):
     def test_path_traversal_protection_logic(self):
         # This tests the logic used in serve_spa directly
         actual_frontend_dist = os.path.abspath("/mock/frontend/dist")
-        
+
         # Test 1: Dangerous path (Traversal)
         full_path = "../../.env"
         requested_path = os.path.abspath(os.path.join(actual_frontend_dist, full_path))
@@ -37,7 +40,7 @@ class TestSecurityTraversal(unittest.TestCase):
     def test_valid_path_allowed(self, mock_file, mock_isfile):
         # Mock index.html existence
         mock_isfile.side_effect = lambda p: p.endswith("index.html")
-        
+
         # Valid SPA route
         response = self.client.get("/about")
         self.assertEqual(response.status_code, 200)
@@ -49,7 +52,7 @@ class TestSecurityTraversal(unittest.TestCase):
         # Mock a static file like favicon.ico
         mock_isfile.side_effect = lambda p: p.endswith("favicon.ico")
         mock_file_response.return_value = "Mocked FileResponse"
-        
+
         response = self.client.get("/favicon.ico")
         # If it reaches FileResponse, it's passed the 403 check
         self.assertNotEqual(response.status_code, 403)

@@ -142,6 +142,12 @@ Serving a SPA catch-all route carries the risk of "Path Traversal" attacks (e.g.
 2.  **Restricted Root**: We verify that the resolved absolute path actually resides *within* the intended directory.
 3.  **Explicit Fallbacks**: Invalid or out-of-bounds requests are rejected with a 404, while valid non-file requests default to serving `index.html`.
 
+### XSS Protection in SEO Injection
+
+Dynamic SEO injection involves inserting user-supplied paths into HTML tags (like `<title>` and `<link>`). We protect against reflected Cross-Site Scripting (XSS) by:
+- **HTML Escaping**: All variables injected into the HTML stream (e.g., `full_title`, `description`, `url`) are strictly escaped using `html.escape()`.
+- **JSON-LD Safety**: Structured data is serialized using `json.dumps()`, ensuring safe injection into the `<script>` block.
+
 ## Service Layer
 
 *   **Generic Data Access**: `app/services/firestore_base.py` defines a generic `FirestoreService[T]` class. It handles common CRUD operations (create, get, list, update, delete) for any Pydantic model.
