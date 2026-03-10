@@ -28,8 +28,10 @@
 - [x] Add application ingestion with yaml.
 - [x] Add SEO.
 - [x] Add professional profile information.
-- [ ] Add YouTube content.
 - [x] Prevent adding duplicates in dev.to connector.
+- [ ] Show help with ingest tool if no parameters given.
+- [ ] Check devto ingestion working properly.
+- [ ] Add YouTube content.
 - [ ] Avoid unnecessary updates when running Medium RSS after zip ingestion, or vice versa.  
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
 - [ ] Implement RAG with Vector Search:
