@@ -22,8 +22,15 @@ class DevToConnector:
         Fetches blog posts for a given Dev.to username.
         """
         existing_urls = existing_urls or set()
-        url = f"{self.base_url}/articles?username={username}"
         async with httpx.AsyncClient() as client:
+            # Dev.to /articles?username=... returns [] for non-existent users
+            # We first check if the user exists to throw a helpful error
+            user_url = f"{self.base_url}/users/by_username?url={username}"
+            user_resp = await client.get(user_url)
+            if user_resp.status_code == 404:
+                raise ValueError(f"Dev.to user '{username}' not found.")
+
+            url = f"{self.base_url}/articles?username={username}"
             response = await client.get(url)
             response.raise_for_status()
             articles_data = response.json()

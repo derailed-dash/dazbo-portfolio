@@ -27,6 +27,8 @@ class MediumConnector:
         url = self.feed_url_template.format(username=clean_username)
         async with httpx.AsyncClient() as client:
             response = await client.get(url)
+            if response.status_code == 404:
+                raise ValueError(f"Medium user '{username}' not found or no public feed available.")
             response.raise_for_status()
             rss_content = response.text
 
