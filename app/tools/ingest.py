@@ -343,6 +343,7 @@ async def ingest_resources(
                         console=console,
                         redirect_stdout=False,
                         redirect_stderr=False,
+                        transient=True,
                     ) as progress:
                         task_id = progress.add_task("Processing Medium Archive...", total=total_files_in_zip)
 
@@ -412,11 +413,12 @@ async def ingest_resources(
                 TaskProgressColumn(),
                 TimeRemainingColumn(),
                 console=console,
+                transient=True,
             ) as progress:
                 task = progress.add_task("Processing Medium RSS...", total=len(rss_posts))
 
                 for blog in rss_posts:
-                    progress.update(task, description=f"[cyan]Processing[/cyan] [white]{blog.title[:30]}...[/white]")
+                    progress.update(task, description=f"[cyan]Checking[/cyan] [white]{blog.title[:30]}...[/white]")
                     normalized_url = normalize_url(blog.url)
                     existing = existing_blog_map.get(normalized_url)
 
@@ -473,11 +475,12 @@ async def ingest_resources(
                 TaskProgressColumn(),
                 TimeRemainingColumn(),
                 console=console,
+                transient=True,
             ) as progress:
                 task = progress.add_task("Processing Dev.to posts...", total=len(blogs))
 
                 for b in blogs:
-                    progress.update(task, description=f"[cyan]Processing[/cyan] [white]{b.title[:30]}...[/white]")
+                    progress.update(task, description=f"[cyan]Checking[/cyan] [white]{b.title[:30]}...[/white]")
 
                     normalized_url = normalize_url(b.url)
                     existing = existing_blog_map.get(normalized_url)
