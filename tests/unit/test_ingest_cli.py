@@ -85,3 +85,12 @@ def test_ingest_command(
     args, kwargs = mock_blog_svc_instance.create.call_args
     assert args[0].title == "Test Blog"
     assert kwargs["item_id"] == "medium:test-blog"
+
+
+def test_ingest_command_no_args():
+    from app.tools.ingest import app
+
+    result = runner.invoke(app, [])
+    assert result.exit_code == 0
+    assert "Ingest data from configured sources." in result.stdout
+    assert "Usage:" in result.stdout

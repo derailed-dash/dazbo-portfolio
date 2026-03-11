@@ -604,6 +604,7 @@ async def ingest_resources(
 
 @app.command()
 def main(
+    ctx: typer.Context,
     github_user: str = typer.Option(None, help="GitHub username"),
     medium_user: str = typer.Option(None, help="Medium username"),
     medium_zip: str = typer.Option(None, help="Path to Medium export zip file"),
@@ -615,6 +616,10 @@ def main(
     """
     Ingest data from configured sources.
     """
+    if not any([github_user, medium_user, medium_zip, devto_user, yaml_file, about_file]):
+        typer.echo(ctx.get_help())
+        raise typer.Exit()
+
     if not project_id:
         console.print(
             "[bold red]Error: GOOGLE_CLOUD_PROJECT environment variable or --project-id option required.[/bold red]"

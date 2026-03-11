@@ -30,6 +30,7 @@
 - [x] Add professional profile information.
 - [x] Prevent adding duplicates in dev.to connector.
 - [ ] Show help with ingest tool if no parameters given.
+- [ ] Add a test mode to the ingest tool.
 - [ ] Check devto ingestion working properly.
 - [ ] Add YouTube content.
 - [ ] Avoid unnecessary updates when running Medium RSS after zip ingestion, or vice versa.  
