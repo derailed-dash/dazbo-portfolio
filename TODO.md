@@ -32,6 +32,7 @@
 - [x] Show help with ingest tool if no parameters given.
 - [x] Add a test mode to the ingest tool.
 - [x] Check devto ingestion working properly.
+- [ ] Why can't the chatbot count how many articles I've got?
 - [ ] Add YouTube content.
 - [ ] Avoid unnecessary updates when running Medium RSS after zip ingestion, or vice versa.  
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
