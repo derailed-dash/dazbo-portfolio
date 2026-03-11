@@ -23,6 +23,8 @@ class GitHubConnector:
         params = {"type": "public"}
         async with httpx.AsyncClient() as client:
             response = await client.get(url, params=params)
+            if response.status_code == 404:
+                raise ValueError(f"GitHub user '{username}' not found.")
             response.raise_for_status()
             repos_data = response.json()
 

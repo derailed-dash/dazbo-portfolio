@@ -37,11 +37,15 @@ Unit tests focus on isolating individual components, particularly Models and Ser
     *   **Platform-Scoped IDs**: Documents are correctly prefixed based on their source (e.g., `medium:`, `devto:`).
     *   **Metadata Patching**: Tool triggers AI enrichment only when mandatory fields like `ai_summary` are missing.
     *   **dev.to Filtering**: Articles with < 200 words are skipped.
+*   **Ingestion Tool CLI**:
+    *   `tests/unit/test_ingest_cli.py`: Verifies the Typer CLI commands, including the `--simulate` flag which performs a dry-run without modifying the database.
+    *   `tests/unit/test_ingest_*.py` (e.g., `_about.py`, `_yaml.py`, `_hybrid.py`, `_applications.py`): Test specific ingestion paths and data sources (Markdown, YAML, RSS vs Archive).
 *   **Services**: Test business logic without connecting to external services. We use `unittest.mock` to mock the `google.cloud.firestore.AsyncClient` and other dependencies to ensure tests are fast and deterministic.
 *   **Adherence to Standards**: Tests like `test_firestore_session_service_implements_base` ensure that our implementations correctly follow required interfaces (e.g., Google ADK).
 *   **SEO & Security**:
     *   `tests/unit/test_seo_injection.py`: Verifies dynamic injection of meta tags, OpenGraph, JSON-LD, and canonical URLs into the `index.html` stream.
     *   `tests/unit/test_security_traversal.py`: Verifies the block-list and allow-list logic in the `serve_spa` function to prevent path traversal attacks.
+    *   `tests/unit/test_tool_content_details_security.py`: Verify that tools handles file paths securely.
 
 ## Integration Tests
 
@@ -61,6 +65,9 @@ These tests verify that the API routes return the correct status codes and data 
 *   **Search Logic**: `tests/unit/test_search_portfolio_tool.py` verifies the priority logic (Title > Tags > Summary > AI Summary) and deduplication for the search tool.
 *   **Rate Limiting**: Verifies that global and agent-specific limits are enforced (returning HTTP 429).
 *   **E2E Server**: Tests the full server stack, including Server-Sent Events (SSE) for streaming agent responses.
+
+### Data Ingestion (`test_ingest_e2e.py`)
+*   **E2E Ingestion**: Tests the full data ingestion pipeline from mock external sources (GitHub, Medium, Dev.to) down to the Firestore emulator.
 
 ## Manual Verification
 

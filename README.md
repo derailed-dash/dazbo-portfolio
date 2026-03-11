@@ -140,6 +140,10 @@ direnv allow
 
 For full command options and usage, refer to the [Makefile](Makefile).
 
+### Ingestion Tool
+
+The ingestion tool supports a `--simulate` flag. Use `uv run python -m app.tools.ingest --simulate [OPTIONS]` to perform a dry run without modifying the Firestore database. This mode will print before and after snapshots showing exactly what actions would be performed.
+
 ## Deployment
 
 ### Dev Environment
