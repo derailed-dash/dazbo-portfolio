@@ -173,4 +173,4 @@ async def test_search_priority_and_deduplication(mock_projects):
 
         # A better check for deduplication is counting the number of lines starting with "[Blog]"
         lines = result.strip().split("\n")
-        assert len(lines) == 5  # 5 unique blogs matched
+        assert len(lines) == 6  # Header + 5 unique blogs matched
