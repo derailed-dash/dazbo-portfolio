@@ -37,7 +37,7 @@ from app.services.connectors.medium_connector import MediumConnector
 from app.services.content_enrichment_service import ContentEnrichmentService
 from app.services.content_service import ContentService
 from app.services.project_service import ProjectService
-from app.services.simulated_service import SimulatedFirestoreService
+from app.services.simulated_service import SimulatedContentEnrichmentService, SimulatedFirestoreService
 
 app = typer.Typer(help="Ingest portfolio resources from external platforms.")
 console = Console()
@@ -220,6 +220,7 @@ async def ingest_resources(
     application_service = ApplicationService(db)
     blog_service = BlogService(db)
     content_service = ContentService(db)
+    enrichment_service = ContentEnrichmentService()
 
     if simulate:
         console.print("[bold yellow]*** RUNNING IN SIMULATION MODE ***[/bold yellow]")
@@ -227,6 +228,7 @@ async def ingest_resources(
         application_service = SimulatedFirestoreService(application_service)
         blog_service = SimulatedFirestoreService(blog_service)
         content_service = SimulatedFirestoreService(content_service)
+        enrichment_service = SimulatedContentEnrichmentService()
 
         console.print("\n[bold magenta]--- BEFORE SNAPSHOT ---[/bold magenta]")
         for name, svc in [
@@ -315,7 +317,6 @@ async def ingest_resources(
         # 3. Process Archive (streaming)
         if medium_zip:
             console.print("[bold blue]Processing Medium archive...[/bold blue]")
-            enrichment_service = ContentEnrichmentService()
             archive_connector = MediumArchiveConnector(ai_service=enrichment_service)
             try:
                 # Count total files first
@@ -404,8 +405,6 @@ async def ingest_resources(
 
         # 4. Process remaining RSS blogs (those not in archive)
         if rss_posts:
-            enrichment_service = ContentEnrichmentService()
-
             with Progress(
                 SpinnerColumn(),
                 TextColumn("[progress.description]{task.description}"),
@@ -466,8 +465,6 @@ async def ingest_resources(
             # We fetch all basic metadata first
             blogs = await connector.fetch_posts(devto_user, existing_urls=urls_to_skip_detail)
             console.print(f"Found {len(blogs)} Dev.to posts (filtered).")
-
-            enrichment_service = ContentEnrichmentService()
 
             with Progress(
                 SpinnerColumn(),

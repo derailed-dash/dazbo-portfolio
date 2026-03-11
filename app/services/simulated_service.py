@@ -62,3 +62,15 @@ class SimulatedFirestoreService[T: BaseModel]:
             del self._items[item_id]
             return True
         return False
+
+
+class SimulatedContentEnrichmentService:
+    async def enrich_content(self, text: str) -> dict:
+        """
+        Simulates AI enrichment without making API calls.
+        Returns a dummy summary and tags.
+        """
+        return {
+            "summary": "[SIMULATED] This is a mock AI summary generated during a dry run. It prevents actual Gemini API calls to save time and tokens.",
+            "tags": ["simulated", "dry-run", "mock"]
+        }

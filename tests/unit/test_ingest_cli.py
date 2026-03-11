@@ -135,7 +135,20 @@ def test_ingest_simulate_mode(
     )
 
     mock_med_instance = mock_medium.return_value
-    mock_med_instance.fetch_posts = AsyncMock(return_value=[])
+    from app.models.blog import Blog
+    mock_med_instance.fetch_posts = AsyncMock(
+        return_value=[
+            Blog(
+                title="Test Blog",
+                markdown_content="Some content",
+                date="2026-01-01",
+                platform="Medium",
+                url="http://med.com/post",
+                source_platform="medium_rss",
+                is_manual=False,
+            )
+        ]
+    )
     mock_dev_instance = mock_devto.return_value
     mock_dev_instance.fetch_posts = AsyncMock(return_value=[])
 
@@ -153,12 +166,18 @@ def test_ingest_simulate_mode(
     mock_content_svc_instance.list = AsyncMock(return_value=[])
 
     # Invoke CLI with simulate
-    result = runner.invoke(app, ["--github-user", "testuser", "--simulate"])
+    result = runner.invoke(app, ["--github-user", "testuser", "--medium-user", "testuser", "--simulate"])
 
     assert result.exit_code == 0
-    assert "*** RUNNING IN SIMULATION MODE ***" in result.stdout
+    assert "RUNNING IN SIMULATION" in result.stdout
     assert "BEFORE SNAPSHOT" in result.stdout
     assert "AFTER SNAPSHOT" in result.stdout
+    assert "AI Enriched:" in result.stdout
 
     # Real service create shouldn't be called because SimulatedService intercepts it
     mock_proj_svc_instance.create.assert_not_called()
+    mock_blog_svc_instance.create.assert_not_called()
+
+    # The real enrichment service should not have been called
+    mock_enrichment_instance = mock_enrichment_service.return_value
+    mock_enrichment_instance.enrich_content.assert_not_called()
