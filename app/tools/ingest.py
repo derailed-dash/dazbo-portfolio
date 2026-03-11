@@ -37,6 +37,7 @@ from app.services.connectors.medium_connector import MediumConnector
 from app.services.content_enrichment_service import ContentEnrichmentService
 from app.services.content_service import ContentService
 from app.services.project_service import ProjectService
+from app.services.simulated_service import SimulatedFirestoreService
 
 app = typer.Typer(help="Ingest portfolio resources from external platforms.")
 console = Console()
@@ -210,6 +211,7 @@ async def ingest_resources(
     yaml_file: str | None,
     about_file: str | None,
     project_id: str,
+    simulate: bool = False,
 ):
     """Ingests portfolio resources from various sources into Firestore."""
 
@@ -218,6 +220,23 @@ async def ingest_resources(
     application_service = ApplicationService(db)
     blog_service = BlogService(db)
     content_service = ContentService(db)
+
+    if simulate:
+        console.print("[bold yellow]*** RUNNING IN SIMULATION MODE ***[/bold yellow]")
+        project_service = SimulatedFirestoreService(project_service)
+        application_service = SimulatedFirestoreService(application_service)
+        blog_service = SimulatedFirestoreService(blog_service)
+        content_service = SimulatedFirestoreService(content_service)
+
+        console.print("\n[bold magenta]--- BEFORE SNAPSHOT ---[/bold magenta]")
+        for name, svc in [
+            ("Projects", project_service),
+            ("Applications", application_service),
+            ("Blogs", blog_service),
+            ("Content", content_service),
+        ]:
+            items = await svc.list()
+            console.print(f"{name}: {len(items)} items")
 
     # 0. Migrate existing data to new ID format
     await _migrate_existing_items(blog_service, project_service, application_service)
@@ -578,6 +597,18 @@ async def ingest_resources(
 
     # --- FINAL SUMMARY ---
     console.print("\n" + "=" * 50)
+
+    if simulate:
+        console.print("[bold magenta]--- AFTER SNAPSHOT ---[/bold magenta]")
+        for name, svc in [
+            ("Projects", project_service),
+            ("Applications", application_service),
+            ("Blogs", blog_service),
+            ("Content", content_service),
+        ]:
+            items = await svc.list()
+            console.print(f"{name}: {len(items)} items")
+        console.print("=" * 50)
     console.print("[bold green]Ingestion Summary[/bold green]")
     console.print("=" * 50)
 
@@ -612,6 +643,7 @@ def main(
     yaml_file: str = typer.Option(None, help="Path to manual resources YAML file"),
     about_file: str = typer.Option(None, help="Path to Markdown file for About page"),
     project_id: str = typer.Option(settings.google_cloud_project, help="GCP Project ID"),
+    simulate: bool = typer.Option(False, "--simulate", help="Run in simulation mode without updating the database"),
 ):
     """
     Ingest data from configured sources.
@@ -626,7 +658,7 @@ def main(
         )
         raise typer.Exit(code=1)
 
-    asyncio.run(ingest_resources(github_user, medium_user, medium_zip, devto_user, yaml_file, about_file, project_id))
+    asyncio.run(ingest_resources(github_user, medium_user, medium_zip, devto_user, yaml_file, about_file, project_id, simulate))
 
 
 if __name__ == "__main__":

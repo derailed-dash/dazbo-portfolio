@@ -16,10 +16,12 @@ runner = CliRunner()
 @patch("app.tools.ingest.DevToConnector")
 @patch("app.tools.ingest.ProjectService")
 @patch("app.tools.ingest.BlogService")
+@patch("app.tools.ingest.ApplicationService")
+@patch("app.tools.ingest.ContentService")
 @patch("app.tools.ingest.ContentEnrichmentService")
 @patch("app.tools.ingest.firestore.AsyncClient")
 def test_ingest_command(
-    mock_firestore_client, mock_enrichment_service, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
+    mock_firestore_client, mock_enrichment_service, mock_content_service, mock_application_service, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
 ):
     from app.models.blog import Blog
     from app.models.project import Project
@@ -62,9 +64,15 @@ def test_ingest_command(
     mock_proj_svc_instance.create = AsyncMock()
     mock_proj_svc_instance.list = AsyncMock(return_value=[])  # Mock existing items check if implemented
 
+    mock_app_svc_instance = mock_application_service.return_value
+    mock_app_svc_instance.list = AsyncMock(return_value=[])
+
     mock_blog_svc_instance = mock_blog_service.return_value
     mock_blog_svc_instance.create = AsyncMock()
     mock_blog_svc_instance.list = AsyncMock(return_value=[])
+
+    mock_content_svc_instance = mock_content_service.return_value
+    mock_content_svc_instance.list = AsyncMock(return_value=[])
 
     # Invoke CLI
     result = runner.invoke(app, ["--github-user", "testuser", "--medium-user", "testuser", "--devto-user", "testuser"])
@@ -94,3 +102,63 @@ def test_ingest_command_no_args():
     assert result.exit_code == 0
     assert "Ingest data from configured sources." in result.stdout
     assert "Usage:" in result.stdout
+
+
+@patch("app.tools.ingest.GitHubConnector")
+@patch("app.tools.ingest.MediumConnector")
+@patch("app.tools.ingest.DevToConnector")
+@patch("app.tools.ingest.ProjectService")
+@patch("app.tools.ingest.BlogService")
+@patch("app.tools.ingest.ApplicationService")
+@patch("app.tools.ingest.ContentService")
+@patch("app.tools.ingest.ContentEnrichmentService")
+@patch("app.tools.ingest.firestore.AsyncClient")
+def test_ingest_simulate_mode(
+    mock_firestore_client, mock_enrichment_service, mock_content_service, mock_application_service, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
+):
+    from app.models.project import Project
+    from app.tools.ingest import app
+
+    # Setup mocks
+    mock_gh_instance = mock_github.return_value
+    mock_gh_instance.fetch_repositories = AsyncMock(
+        return_value=[
+            Project(
+                title="Test Repo",
+                description="Desc",
+                repo_url="http://gh.com/repo",
+                tags=["test"],
+                source_platform="github",
+                is_manual=False,
+            )
+        ]
+    )
+
+    mock_med_instance = mock_medium.return_value
+    mock_med_instance.fetch_posts = AsyncMock(return_value=[])
+    mock_dev_instance = mock_devto.return_value
+    mock_dev_instance.fetch_posts = AsyncMock(return_value=[])
+
+    mock_proj_svc_instance = mock_project_service.return_value
+    mock_proj_svc_instance.create = AsyncMock()
+    mock_proj_svc_instance.list = AsyncMock(return_value=[])
+
+    mock_app_svc_instance = mock_application_service.return_value
+    mock_app_svc_instance.list = AsyncMock(return_value=[])
+
+    mock_blog_svc_instance = mock_blog_service.return_value
+    mock_blog_svc_instance.list = AsyncMock(return_value=[])
+
+    mock_content_svc_instance = mock_content_service.return_value
+    mock_content_svc_instance.list = AsyncMock(return_value=[])
+
+    # Invoke CLI with simulate
+    result = runner.invoke(app, ["--github-user", "testuser", "--simulate"])
+
+    assert result.exit_code == 0
+    assert "*** RUNNING IN SIMULATION MODE ***" in result.stdout
+    assert "BEFORE SNAPSHOT" in result.stdout
+    assert "AFTER SNAPSHOT" in result.stdout
+
+    # Real service create shouldn't be called because SimulatedService intercepts it
+    mock_proj_svc_instance.create.assert_not_called()
