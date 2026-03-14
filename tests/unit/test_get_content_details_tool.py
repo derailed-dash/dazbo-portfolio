@@ -1,3 +1,8 @@
+"""
+Description: Unit tests for the get_content_details tool.
+Why: Verifies that the tool correctly retrieves detailed information for projects, blogs, and content pages.
+How: Uses unittest.mock to simulate service responses for different item types.
+"""
 from datetime import datetime
 from unittest.mock import AsyncMock, patch
 

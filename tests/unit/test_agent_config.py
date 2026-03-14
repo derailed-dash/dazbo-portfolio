@@ -1,3 +1,8 @@
+"""
+Description: Unit tests for agent configuration.
+Why: Verifies that agent settings and environment variables are correctly loaded and applied.
+How: Uses unittest.mock to patch environment variables and verify settings application.
+"""
 import importlib
 import os
 from unittest.mock import patch
