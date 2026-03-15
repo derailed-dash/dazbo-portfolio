@@ -1,7 +1,9 @@
 """
-Description: Firestore-backed session service.
-Why: Manages user sessions and event history in Firestore for persistence.
-How: Implements `BaseSessionService` interface, overriding methods to read/write to Firestore `sessions` collection.
+Description: Optional Firestore-backed session service.
+Why: Provides a blueprint for managing user sessions and event history in Firestore for persistence.
+How: Implements `BaseSessionService` interface.
+Note: This service is currently INACTIVE. The application uses `InMemorySessionService` by default
+to ensure chat history remains ephemeral and tied to the browser session.
 """
 
 from typing import Any

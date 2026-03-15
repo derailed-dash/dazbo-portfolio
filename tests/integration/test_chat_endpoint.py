@@ -68,8 +68,7 @@ def test_chat_streaming_endpoint_with_tool_call():
     # Mock the tool call event
     mock_tool_event = MagicMock()
     mock_tool_event.content = types.Content(
-        role="model",
-        parts=[types.Part(function_call=types.FunctionCall(name="search_portfolio", args={"query": "python"}))]
+        role="model", parts=[types.Part(function_call=types.FunctionCall(name="search_portfolio", args={"query": "python"}))]
     )
     mock_tool_event.partial = False
     mock_tool_event.turn_complete = False
@@ -123,13 +122,7 @@ def test_chat_streaming_endpoint_with_tool_call():
 def test_chat_streaming_endpoint_non_partial_multi_part():
     # Mock event with multiple text parts and partial=False
     mock_event = MagicMock()
-    mock_event.content = types.Content(
-        role="model",
-        parts=[
-            types.Part(text="Part1"),
-            types.Part(text="Part2")
-        ]
-    )
+    mock_event.content = types.Content(role="model", parts=[types.Part(text="Part1"), types.Part(text="Part2")])
     mock_event.partial = False
     mock_event.turn_complete = False
 
@@ -167,6 +160,7 @@ def test_chat_streaming_endpoint_non_partial_multi_part():
 
             has_p1p2 = any("Part1Part2" in line for line in lines)
             assert has_p1p2, f"Expected content 'Part1Part2' in response lines: {lines}"
+
 
 def test_chat_streaming_endpoint_no_duplicates():
     # Mock sequence:

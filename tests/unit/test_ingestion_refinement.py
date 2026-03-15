@@ -21,26 +21,55 @@ from app.models.project import Project
 @patch("app.tools.ingest.ContentEnrichmentService")
 @patch("app.tools.ingest.firestore.AsyncClient")
 async def test_platform_scoped_ids(
-    mock_firestore_client, mock_enrichment_service, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
+    mock_firestore_client,
+    mock_enrichment_service,
+    mock_blog_service,
+    mock_project_service,
+    mock_devto,
+    mock_medium,
+    mock_github,
 ):
     from app.tools.ingest import ingest_resources
 
     # Setup GitHub mock
     mock_gh_instance = mock_github.return_value
-    mock_gh_instance.fetch_repositories = AsyncMock(return_value=[
-        Project(title="My Project", description="Desc", repo_url="http://gh.com/p1", source_platform="github", tags=["test"])
-    ])
+    mock_gh_instance.fetch_repositories = AsyncMock(
+        return_value=[
+            Project(
+                title="My Project", description="Desc", repo_url="http://gh.com/p1", source_platform="github", tags=["test"]
+            )
+        ]
+    )
 
     # Setup Blog mocks
     mock_med_instance = mock_medium.return_value
-    mock_med_instance.fetch_posts = AsyncMock(return_value=[
-        Blog(title="My Blog", summary="Sum", platform="Medium", url="http://med.com/b1", source_platform="medium_rss", date="2026-01-01")
-    ])
+    mock_med_instance.fetch_posts = AsyncMock(
+        return_value=[
+            Blog(
+                title="My Blog",
+                summary="Sum",
+                platform="Medium",
+                url="http://med.com/b1",
+                source_platform="medium_rss",
+                date="2026-01-01",
+            )
+        ]
+    )
 
     mock_dev_instance = mock_devto.return_value
-    mock_dev_instance.fetch_posts = AsyncMock(return_value=[
-        Blog(title="My Blog", summary="Sum", platform="Dev.to", url="http://dev.to/b1", source_platform="devto_api", date="2026-01-01", markdown_content="Long enough content " * 50)
-    ])
+    mock_dev_instance.fetch_posts = AsyncMock(
+        return_value=[
+            Blog(
+                title="My Blog",
+                summary="Sum",
+                platform="Dev.to",
+                url="http://dev.to/b1",
+                source_platform="devto_api",
+                date="2026-01-01",
+                markdown_content="Long enough content " * 50,
+            )
+        ]
+    )
 
     mock_blog_svc = mock_blog_service.return_value
     mock_blog_svc.list = AsyncMock(return_value=[])
@@ -68,23 +97,35 @@ async def test_platform_scoped_ids(
     assert len(devto_call) == 1
     assert devto_call[0][1]["item_id"] == "devto:my-blog"
 
+
 @pytest.mark.asyncio
 @patch("app.tools.ingest.DevToConnector")
 @patch("app.tools.ingest.BlogService")
 @patch("app.tools.ingest.ContentEnrichmentService")
 @patch("app.tools.ingest.firestore.AsyncClient")
-async def test_metadata_patching(
-    mock_firestore_client, mock_enrich_service, mock_blog_service, mock_devto
-):
+async def test_metadata_patching(mock_firestore_client, mock_enrich_service, mock_blog_service, mock_devto):
     from app.tools.ingest import ingest_resources
 
     # 1. Blog exists with ai_summary -> should skip enrichment
     existing_blog_with_summary = Blog(
-        id="devto:exists", title="Existing", summary="Sum", platform="Dev.to", date="2026-01-01", url="http://dev.to/exists", ai_summary="Already here", source_platform="devto_api"
+        id="devto:exists",
+        title="Existing",
+        summary="Sum",
+        platform="Dev.to",
+        date="2026-01-01",
+        url="http://dev.to/exists",
+        ai_summary="Already here",
+        source_platform="devto_api",
     )
     # 2. Blog exists without ai_summary -> should enrich
     existing_blog_no_summary = Blog(
-        id="devto:patch", title="Patch Me", summary="Sum", platform="Dev.to", date="2026-01-01", url="http://dev.to/patch", source_platform="devto_api"
+        id="devto:patch",
+        title="Patch Me",
+        summary="Sum",
+        platform="Dev.to",
+        date="2026-01-01",
+        url="http://dev.to/patch",
+        source_platform="devto_api",
     )
 
     mock_blog_svc = mock_blog_service.return_value
@@ -94,10 +135,28 @@ async def test_metadata_patching(
     mock_blog_svc.delete = AsyncMock()
 
     mock_dev_instance = mock_devto.return_value
-    mock_dev_instance.fetch_posts = AsyncMock(return_value=[
-        Blog(title="Existing", summary="Sum", platform="Dev.to", date="2026-01-01", url="http://dev.to/exists", source_platform="devto_api", markdown_content="Content " * 50),
-        Blog(title="Patch Me", summary="Sum", platform="Dev.to", date="2026-01-01", url="http://dev.to/patch", source_platform="devto_api", markdown_content="Content " * 50)
-    ])
+    mock_dev_instance.fetch_posts = AsyncMock(
+        return_value=[
+            Blog(
+                title="Existing",
+                summary="Sum",
+                platform="Dev.to",
+                date="2026-01-01",
+                url="http://dev.to/exists",
+                source_platform="devto_api",
+                markdown_content="Content " * 50,
+            ),
+            Blog(
+                title="Patch Me",
+                summary="Sum",
+                platform="Dev.to",
+                date="2026-01-01",
+                url="http://dev.to/patch",
+                source_platform="devto_api",
+                markdown_content="Content " * 50,
+            ),
+        ]
+    )
 
     mock_enrich_instance = mock_enrich_service.return_value
     mock_enrich_instance.enrich_content = AsyncMock(return_value={"summary": "New Summary", "tags": ["test"]})
@@ -116,6 +175,7 @@ async def test_metadata_patching(
     assert calls[0][0][0] == "devto:patch"
     assert calls[0][0][1]["ai_summary"] == "New Summary"
 
+
 @pytest.mark.asyncio
 @patch("app.services.connectors.devto_connector.httpx.AsyncClient")
 async def test_devto_quickie_filtering(mock_httpx_client):
@@ -126,11 +186,32 @@ async def test_devto_quickie_filtering(mock_httpx_client):
     # Mock articles list
     mock_client_instance.get.side_effect = [
         # List response
-        MagicMock(status_code=200, json=lambda: [
-            {"id": 1, "title": "Full Article", "url": "http://dev.to/full", "published_at": "2026-01-01T10:00:00Z", "tag_list": ["test"]},
-            {"id": 2, "title": "Quickie", "url": "http://dev.to/short", "published_at": "2026-01-01T10:00:00Z", "tag_list": ["test"]},
-            {"id": 3, "title": "[Boost] something", "url": "http://dev.to/boost", "published_at": "2026-01-01T10:00:00Z", "tag_list": ["test"]}
-        ]),
+        MagicMock(
+            status_code=200,
+            json=lambda: [
+                {
+                    "id": 1,
+                    "title": "Full Article",
+                    "url": "http://dev.to/full",
+                    "published_at": "2026-01-01T10:00:00Z",
+                    "tag_list": ["test"],
+                },
+                {
+                    "id": 2,
+                    "title": "Quickie",
+                    "url": "http://dev.to/short",
+                    "published_at": "2026-01-01T10:00:00Z",
+                    "tag_list": ["test"],
+                },
+                {
+                    "id": 3,
+                    "title": "[Boost] something",
+                    "url": "http://dev.to/boost",
+                    "published_at": "2026-01-01T10:00:00Z",
+                    "tag_list": ["test"],
+                },
+            ],
+        ),
         # Detail 1: Full Article
         MagicMock(status_code=200, json=lambda: {"body_markdown": "Word " * 250}),
         # Detail 2: Quickie
@@ -144,4 +225,3 @@ async def test_devto_quickie_filtering(mock_httpx_client):
     # Boost is skipped by title, Quickie is skipped by word count
     assert len(blogs) == 1
     assert blogs[0].title == "Full Article"
-

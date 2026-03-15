@@ -3,6 +3,7 @@ Description: Integration tests for the sitemap.xml endpoint.
 Why: Verifies that the sitemap is correctly generated with both static and dynamic routes.
 How: Uses FastAPI TestClient to request /sitemap.xml and parses the XML response.
 """
+
 from fastapi.testclient import TestClient
 
 

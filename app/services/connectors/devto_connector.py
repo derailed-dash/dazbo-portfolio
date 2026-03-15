@@ -17,7 +17,9 @@ class DevToConnector:
     def __init__(self, base_url: str = "https://dev.to/api"):
         self.base_url = base_url
 
-    async def fetch_posts(self, username: str, limit: int | None = None, existing_urls: set[str] | None = None) -> list[Blog]:
+    async def fetch_posts(
+        self, username: str, limit: int | None = None, existing_urls: set[str] | None = None
+    ) -> list[Blog]:
         """
         Fetches blog posts for a given Dev.to username.
         """

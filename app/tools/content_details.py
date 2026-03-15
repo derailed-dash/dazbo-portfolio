@@ -23,8 +23,10 @@ async def get_content_details(item_id: str) -> str:
         A detailed string representation of the item, or a not found message.
     """
     # Security check: Validate item_id to prevent path traversal or injection
-    if not re.match(r"^[a-zA-Z0-9_\-]+$", item_id):
-        return f"Invalid item_id: '{item_id}'. IDs must contain only alphanumeric characters, underscores, and hyphens."
+    if not re.match(r"^[a-zA-Z0-9_\-:]+$", item_id):
+        return (
+            f"Invalid item_id: '{item_id}'. IDs must contain only alphanumeric characters, underscores, hyphens, and colons."
+        )
 
     db = get_client()
     project_service = ProjectService(db)

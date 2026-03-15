@@ -21,7 +21,15 @@ runner = CliRunner()
 @patch("app.tools.ingest.ContentEnrichmentService")
 @patch("app.tools.ingest.firestore.AsyncClient")
 def test_ingest_command(
-    mock_firestore_client, mock_enrichment_service, mock_content_service, mock_application_service, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
+    mock_firestore_client,
+    mock_enrichment_service,
+    mock_content_service,
+    mock_application_service,
+    mock_blog_service,
+    mock_project_service,
+    mock_devto,
+    mock_medium,
+    mock_github,
 ):
     from app.models.blog import Blog
     from app.models.project import Project
@@ -114,7 +122,15 @@ def test_ingest_command_no_args():
 @patch("app.tools.ingest.ContentEnrichmentService")
 @patch("app.tools.ingest.firestore.AsyncClient")
 def test_ingest_simulate_mode(
-    mock_firestore_client, mock_enrichment_service, mock_content_service, mock_application_service, mock_blog_service, mock_project_service, mock_devto, mock_medium, mock_github
+    mock_firestore_client,
+    mock_enrichment_service,
+    mock_content_service,
+    mock_application_service,
+    mock_blog_service,
+    mock_project_service,
+    mock_devto,
+    mock_medium,
+    mock_github,
 ):
     from app.models.project import Project
     from app.tools.ingest import app
@@ -136,6 +152,7 @@ def test_ingest_simulate_mode(
 
     mock_med_instance = mock_medium.return_value
     from app.models.blog import Blog
+
     mock_med_instance.fetch_posts = AsyncMock(
         return_value=[
             Blog(
