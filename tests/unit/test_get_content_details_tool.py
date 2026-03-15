@@ -3,6 +3,7 @@ Description: Unit tests for the get_content_details tool.
 Why: Verifies that the tool correctly retrieves detailed information for projects, blogs, and content pages.
 How: Uses unittest.mock to simulate service responses for different item types.
 """
+
 from datetime import datetime
 from unittest.mock import AsyncMock, patch
 
@@ -78,6 +79,47 @@ async def test_get_content_details_found_in_projects(mock_project):
         assert "Python Automation" in result
         assert "A generic python automation script" in result
         assert "http://github.com/user/repo" in result
+
+
+@pytest.mark.asyncio
+async def test_get_content_details_prefixed_id(mock_blog):
+    with (
+        patch("app.tools.content_details.ProjectService") as MockProjectService,
+        patch("app.tools.content_details.BlogService") as MockBlogService,
+        patch("app.tools.content_details.ContentService") as MockContentService,
+        patch("app.tools.content_details.get_client"),
+    ):
+        proj_service = AsyncMock()
+        proj_service.get.return_value = None
+        MockProjectService.return_value = proj_service
+
+        blog_service = AsyncMock()
+        blog_service.get.return_value = mock_blog
+        MockBlogService.return_value = blog_service
+
+        content_service = AsyncMock()
+        content_service.get.return_value = None
+        MockContentService.return_value = content_service
+
+        # Test with a prefixed ID which was failing previously
+        result = await get_content_details("medium:learning-python")
+
+        assert "Learning Python" in result
+        assert "Intro to Python" in result
+        assert "http://medium.com/post1" in result
+
+
+@pytest.mark.asyncio
+async def test_get_content_details_invalid_id():
+    # Test with characters that should still be rejected (e.g. spaces, dots, slashes)
+    result = await get_content_details("invalid id")
+    assert "Invalid item_id" in result
+
+    result = await get_content_details("invalid.id")
+    assert "Invalid item_id" in result
+
+    result = await get_content_details("invalid/id")
+    assert "Invalid item_id" in result
 
 
 @pytest.mark.asyncio

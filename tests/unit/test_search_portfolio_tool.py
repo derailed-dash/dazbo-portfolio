@@ -3,6 +3,7 @@ Description: Unit tests for the search_portfolio tool.
 Why: Verifies that the search tool correctly filters projects and blogs based on query strings.
 How: Uses unittest.mock to simulate ProjectService and BlogService responses.
 """
+
 from unittest.mock import AsyncMock, patch
 
 import pytest

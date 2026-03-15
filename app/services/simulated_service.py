@@ -72,5 +72,5 @@ class SimulatedContentEnrichmentService:
         """
         return {
             "summary": "[SIMULATED] This is a mock AI summary generated during a dry run. It prevents actual Gemini API calls to save time and tokens.",
-            "tags": ["simulated", "dry-run", "mock"]
+            "tags": ["simulated", "dry-run", "mock"],
         }

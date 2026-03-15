@@ -386,7 +386,9 @@ async def ingest_resources(
 
                             if status == "processed" and blog:
                                 # Merge with RSS if available
-                                matched_rss = next((p for p in rss_posts if normalize_url(p.url) == normalize_url(blog.url)), None)
+                                matched_rss = next(
+                                    (p for p in rss_posts if normalize_url(p.url) == normalize_url(blog.url)), None
+                                )
                                 if matched_rss:
                                     blog.title = matched_rss.title
                                     blog.date = matched_rss.date
@@ -665,7 +667,9 @@ def main(
         )
         raise typer.Exit(code=1)
 
-    asyncio.run(ingest_resources(github_user, medium_user, medium_zip, devto_user, yaml_file, about_file, project_id, simulate))
+    asyncio.run(
+        ingest_resources(github_user, medium_user, medium_zip, devto_user, yaml_file, about_file, project_id, simulate)
+    )
 
 
 if __name__ == "__main__":

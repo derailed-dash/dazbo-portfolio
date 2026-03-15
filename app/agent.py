@@ -38,6 +38,7 @@ if settings.gemini_api_key:
 
 class PortfolioAgent(Agent):
     """Custom Agent subclass to fix ADK app name inference."""
+
     pass
 
 

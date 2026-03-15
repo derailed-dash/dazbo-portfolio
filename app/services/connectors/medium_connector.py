@@ -75,7 +75,7 @@ class MediumConnector:
                 url=link,
                 source_platform="medium_rss",
                 is_manual=False,
-                markdown_content=markdown_content
+                markdown_content=markdown_content,
             )
             blogs.append(blog)
 

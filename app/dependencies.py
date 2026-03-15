@@ -5,13 +5,13 @@ How: Provides functions to retrieve services (ProjectService, BlogService, etc.)
 """
 
 from fastapi import Request
+from google.adk.sessions import InMemorySessionService
 
 from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
 from app.services.content_service import ContentService
 from app.services.experience_service import ExperienceService
 from app.services.project_service import ProjectService
-from app.services.session_service import FirestoreSessionService
 
 
 def get_project_service(request: Request) -> ProjectService:
@@ -34,5 +34,5 @@ def get_experience_service(request: Request) -> ExperienceService:
     return request.app.state.experience_service
 
 
-def get_session_service(request: Request) -> FirestoreSessionService:
+def get_session_service(request: Request) -> InMemorySessionService:
     return request.app.state.session_service

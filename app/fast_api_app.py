@@ -1,7 +1,8 @@
 """
 Description: FastAPI application entry point and configuration.
 Why: Initializes the web server, middleware, routes, and application lifespan events.
-How: Configures FastAPI with ADK integration, Telemetry, and Firestore services. Uses a lifespan context manager for startup/shutdown logic.
+How: Configures FastAPI with ADK integration, Telemetry, and Firestore services for content.
+Note: Chat sessions are ephemeral and stored in-memory (not persisted to Firestore).
 """
 
 import html
@@ -151,7 +152,6 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                 session_id=session.id,
                 run_config=RunConfig(streaming_mode=StreamingMode.SSE),
             ):
-
                 # Extract text from the event (ModelResponse)
                 text_chunk = ""
                 try:
@@ -284,6 +284,7 @@ assets_dir = os.path.join(frontend_dist, "assets")
 if os.path.exists(assets_dir):
     app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
 
+
 def _generate_head_tags(title: str, description: str, path: str, base_url: str, json_ld: dict | None = None) -> str:
     default_image = f"{base_url}/images/dazbo-profile.png"
     # Ensure path starts with /
@@ -300,17 +301,19 @@ def _generate_head_tags(title: str, description: str, path: str, base_url: str, 
     tags = [
         f"<title>{esc_title}</title>",
         f'<meta name="description" content="{esc_desc}" />',
-        f'<link rel="canonical" href="{esc_url}" />'
+        f'<link rel="canonical" href="{esc_url}" />',
     ]
 
     # Open Graph
-    tags.extend([
-        f'<meta property="og:title" content="{esc_title}" />',
-        f'<meta property="og:description" content="{esc_desc}" />',
-        '<meta property="og:type" content="website" />',
-        f'<meta property="og:url" content="{esc_url}" />',
-        f'<meta property="og:image" content="{esc_image}" />'
-    ])
+    tags.extend(
+        [
+            f'<meta property="og:title" content="{esc_title}" />',
+            f'<meta property="og:description" content="{esc_desc}" />',
+            '<meta property="og:type" content="website" />',
+            f'<meta property="og:url" content="{esc_url}" />',
+            f'<meta property="og:image" content="{esc_image}" />',
+        ]
+    )
 
     # Twitter tags intentionally omitted as per user request
 
@@ -321,6 +324,7 @@ def _generate_head_tags(title: str, description: str, path: str, base_url: str, 
         tags.append(f'<script type="application/ld+json">\n{json_str}\n</script>')
 
     return "".join(tags)
+
 
 def _get_seo_data_dict(path: str, base_url: str) -> dict:
     seo_map = {
@@ -338,27 +342,31 @@ def _get_seo_data_dict(path: str, base_url: str) -> dict:
                     "https://github.com/derailed-dash",
                     "https://www.linkedin.com/in/darren-lester-architect/",
                     "https://medium.com/@derailed.dash",
-                    "https://dev.to/deraileddash"
+                    "https://dev.to/deraileddash",
                 ],
                 "knowsAbout": ["Google Cloud", "Generative AI", "Model Context Protocol", "Architecture"],
-                "description": "Enterprise Cloud Architect and Google Developer Expert (GDE) specializing in agentic workflows and cloud architecture."
-            }
+                "description": "Enterprise Cloud Architect and Google Developer Expert (GDE) specializing in agentic workflows and cloud architecture.",
+            },
         },
         "/about": {
             "title": "About Darren Lester",
-            "description": "Learn more about Dazbo, his background, and the tech stack behind this portfolio site."
-        }
+            "description": "Learn more about Dazbo, his background, and the tech stack behind this portfolio site.",
+        },
     }
 
-    seo_data = seo_map.get(path, {
-        "title": path.lstrip("/").replace("-", " ").title(),
-        "description": f"View {path.lstrip('/').replace('-', ' ')} on Darren Lester's portfolio."
-    })
+    seo_data = seo_map.get(
+        path,
+        {
+            "title": path.lstrip("/").replace("-", " ").title(),
+            "description": f"View {path.lstrip('/').replace('-', ' ')} on Darren Lester's portfolio.",
+        },
+    )
 
     head_tags = _generate_head_tags(seo_data["title"], seo_data["description"], path, base_url, seo_data.get("json_ld"))
 
     full_title = seo_data["title"] if seo_data["title"] == SITE_TITLE else f"{seo_data['title']} | {SITE_TITLE}"
     return {"head_tags": head_tags, "title": full_title}
+
 
 @app.get("/api/seo")
 @limiter.limit("60/minute")
@@ -366,6 +374,7 @@ async def get_seo_data(request: Request, path: str = "/"):
     """Return SEO title and description for a given path."""
     base_url = settings.base_url or str(request.base_url).rstrip("/")
     return JSONResponse(content=_get_seo_data_dict(path, base_url))
+
 
 @app.get("/{full_path:path}")
 async def serve_spa(request: Request, full_path: str):

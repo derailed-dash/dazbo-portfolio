@@ -68,5 +68,7 @@ async def search_portfolio(query: str) -> str:
     if not results:
         return f"No projects or blogs found matching '{query}'. (Database contains {len(projects)} projects and {len(blogs)} blogs total)"
 
-    header = f"Found {len(results)} matching items (Database contains {len(projects)} projects and {len(blogs)} blogs total):"
+    header = (
+        f"Found {len(results)} matching items (Database contains {len(projects)} projects and {len(blogs)} blogs total):"
+    )
     return header + "\n" + "\n".join(results)
