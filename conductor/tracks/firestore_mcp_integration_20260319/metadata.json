@@ -1,0 +1,8 @@
+{
+  "track_id": "firestore_mcp_integration_20260319",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-19T10:00:00Z",
+  "updated_at": "2026-03-19T10:00:00Z",
+  "description": "Implement Google managed MCP for Firestore, such that my prompts to the chatbot can drive Firestore using natural language. Then we can remove the Firestore tools that are limited to specific tasks. We need to ensure that the relevant APIs are enabled (including MCP) and that the appropriate roles are added. This should be done in the Terraform, and the deployment documentation should be updated. Once done, the design documentation also needs to be updated to reflect this change. We should include a row that captures the rationale for this feature."
+}
