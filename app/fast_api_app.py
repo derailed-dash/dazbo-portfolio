@@ -330,10 +330,11 @@ def _get_seo_data_dict(path: str, base_url: str) -> dict:
     seo_map = {
         "/": {
             "title": SITE_TITLE,
-            "description": 'Explore the professional portfolio of Darren "Dazbo" Lester, an Enterprise Cloud Architect and Google Cloud expert, specialising in agentic AI, open-source craftsmanship, and technical writing.',
+            "description": 'The professional portfolio of Darren "Dazbo" Lester: Enterprise Cloud Architect, Google Cloud Evangelist, AI Champion and Google Developer Expert (GDE).',
             "json_ld": {
                 "@context": "https://schema.org",
                 "@type": "Person",
+                "@id": "https://darrenlester.net/#person",
                 "name": "Darren Lester",
                 "alternateName": "Dazbo",
                 "jobTitle": "Enterprise Cloud Architect",
@@ -343,14 +344,15 @@ def _get_seo_data_dict(path: str, base_url: str) -> dict:
                     "https://www.linkedin.com/in/darren-lester-architect/",
                     "https://medium.com/@derailed.dash",
                     "https://dev.to/deraileddash",
+                    "https://sessionize.com/dazbo/",
                 ],
-                "knowsAbout": ["Google Cloud", "Generative AI", "Model Context Protocol", "Architecture"],
-                "description": "Enterprise Cloud Architect and Google Developer Expert (GDE) specializing in agentic workflows and cloud architecture.",
+                "knowsAbout": ["Google Cloud", "Generative AI", "Model Context Protocol", "Architecture", "ADK", "Agentic AI", "Gemini", "Gemini CLI"],
+                "description": "Enterprise Cloud Architect, Google Developer Expert (GDE), and Google AI Champion, specializing in Google Cloud, agentic AI, cloud architecture and cloud strategy. Note: Not to be confused with the frontend engineer or other individuals of the same name.",
             },
         },
         "/about": {
             "title": "About Darren Lester",
-            "description": "Learn more about Dazbo, his background, and the tech stack behind this portfolio site.",
+            "description": "Learn more about Darren \"Dazbo\" Lester, his background, skills and achievements.",
         },
     }
 
