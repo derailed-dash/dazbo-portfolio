@@ -35,3 +35,14 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 - [Vector Search in Firestore](https://docs.cloud.google.com/firestore/native/docs/vector-search)
 - [Text embeddings with Gemini Embeddings](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings)
 - [Configure Secrets for Cloud Run Services](https://docs.cloud.google.com/run/docs/configuring/services/secrets)
+ 
+### Firestore MCP
+
+- [ADK with MCP - Bakery Application](https://github.com/google/mcp/blob/main/examples/launchmybakery/adk_agent/mcp_bakery_app/tools.py)
+- [MCP in ADK](https://google.github.io/adk-docs/tools-custom/mcp-tools/)
+- [Use Firestore Remote MCP](https://docs.cloud.google.com/firestore/native/docs/use-firestore-mcp)
+- [firestore.googleapis.com reference](https://docs.cloud.google.com/firestore/docs/reference/mcp)
+- [Firestore list_documents](https://docs.cloud.google.com/firestore/docs/reference/mcp/tools_list/list_documents)
+- [Firestore get_document](https://docs.cloud.google.com/firestore/docs/reference/mcp/tools_list/get_document)
+- [Firestore get_collections](https://docs.cloud.google.com/firestore/docs/reference/mcp/tools_list/list_collections)
+- [Manage Firesetore via Firestore MCP Server](https://medium.com/google-cloud/how-to-manage-your-firestore-database-with-natural-language-step-by-step-examples-bbc764f93d70)
