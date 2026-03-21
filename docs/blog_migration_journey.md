@@ -10,6 +10,16 @@ I created a couple of Python-based tools — search_portfolio and get_content_de
 
 Enter the **Model Context Protocol (MCP)** and the managed Firestore MCP server. Today, I’m walking you through why — and how — I’m gutting those bespoke tools and replacing them with a standardised Google-managed service.
 
+## The Secret Sauce: Tooling and Context
+
+Before we dive into the "how," I want to highlight the tooling that’s making this migration possible. I’m not just "winging it" — I’m using the **Gemini CLI** with the **Conductor** extension to manage the entire implementation track. It keeps me on rails, ensuring I don't miss a single permission or test case.
+
+To make sure my Gemini agent really "gets" the Google Agent Development Kit (ADK), I used a cheeky little command: `npx skills add google/adk-docs/skills`. This essentially gives the agent a brain transplant, equipping it with the latest best practices and API patterns directly from the source.
+
+I've also been quite busy in my `GEMINI.md` file. I've populated it with a whole bunch of ADK + Firestore MCP references — think of it as a specialized knowledge base that the agent can tap into whenever it needs to verify a configuration detail.
+
+> **Dazbo Pro-Tip:** I've been guiding my agent to build its context iteratively. Every time we hit a milestone — like finishing the infrastructure phase or finalizing this blog draft — I use the `/resume save` command in the Gemini CLI to create a checkpoint. If I mess something up in Phase 2, I can just rewind to a known-good state. It’s like having a "Quick Save" button for your IDE!
+
 ## The Starting Point: A Tale of Two Custom Tools
 
 Let’s look at what we’re moving away from. My original setup was purely code-first. I had two main tools that I'd registered with my ADK agent:
