@@ -1,18 +1,18 @@
 # Implementation Plan: `firestore_mcp_integration`
 
-## Phase 1: Infrastructure and Permissions
-- [ ] Task: Update Terraform to enable Firestore API and assign roles
-    - [ ] Add `firestore.googleapis.com` to the enabled APIs list in `deployment/terraform/apis.tf`.
-    - [ ] Add `roles/mcp.toolUser` and `roles/datastore.user` to the application service account roles in `deployment/terraform/iam.tf`.
-- [ ] Task: Enable Firestore MCP server via script or Terraform
-    - [ ] Ensure the Firestore remote MCP server is enabled (using `gcloud beta services mcp enable firestore.googleapis.com`).
-- [ ] Task: Verify Infrastructure Deployment
-    - [ ] Run `make tf-plan` to verify the changes.
-    - [ ] Run `make tf-apply` to deploy the changes.
-- [ ] Task: Conductor - User Manual Verification 'Infrastructure and Permissions' (Protocol in workflow.md)
+## Phase 1: Infrastructure and Permissions [checkpoint: cd22a24]
+- [x] Task: Update Terraform to enable Firestore API and assign roles
+    - [x] Add `firestore.googleapis.com` to the enabled APIs list in `deployment/terraform/apis.tf`.
+    - [x] Add `roles/mcp.toolUser` and `roles/datastore.user` to the application service account roles in `deployment/terraform/iam.tf`.
+- [x] Task: Enable Firestore MCP server via script or Terraform
+    - [x] Ensure the Firestore remote MCP server is enabled (using `gcloud beta services mcp enable firestore.googleapis.com`).
+- [x] Task: Verify Infrastructure Deployment
+    - [x] Run `make tf-plan` to verify the changes.
+    - [x] Run `make tf-apply` to deploy the changes.
+- [x] Task: Conductor - User Manual Verification 'Infrastructure and Permissions' (Protocol in workflow.md)
 
 ## Phase 2: Agent Integration and Testing
-- [ ] Task: Integrate Firestore MCP into Agent
+...
     - [ ] Update `app/agent.py` to include the remote MCP endpoint `https://firestore.googleapis.com/mcp`.
     - [ ] Remove custom tool registrations for `portfolio_search` and `content_details`.
 - [ ] Task: Write Integration Tests for MCP Integration
