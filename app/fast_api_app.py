@@ -156,12 +156,18 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                 text_chunk = ""
                 try:
                     parts = []
-                    if hasattr(event, "content") and event.content and event.content.parts:
+                    if hasattr(event, "content") and event.content and getattr(event.content, "parts", None):
                         parts = event.content.parts
                     elif hasattr(event, "candidates") and event.candidates:
-                        candidate = event.candidates[0]
-                        if candidate.content and candidate.content.parts:
-                            parts = candidate.content.parts
+                        candidates = event.candidates
+                        if isinstance(candidates, list) and candidates:
+                            candidate = candidates[0]
+                            if (
+                                hasattr(candidate, "content")
+                                and candidate.content
+                                and getattr(candidate.content, "parts", None)
+                            ):
+                                parts = candidate.content.parts
 
                     # Only process text if parts exist
                     if parts:
@@ -346,13 +352,22 @@ def _get_seo_data_dict(path: str, base_url: str) -> dict:
                     "https://dev.to/deraileddash",
                     "https://sessionize.com/dazbo/",
                 ],
-                "knowsAbout": ["Google Cloud", "Generative AI", "Model Context Protocol", "Architecture", "ADK", "Agentic AI", "Gemini", "Gemini CLI"],
+                "knowsAbout": [
+                    "Google Cloud",
+                    "Generative AI",
+                    "Model Context Protocol",
+                    "Architecture",
+                    "ADK",
+                    "Agentic AI",
+                    "Gemini",
+                    "Gemini CLI",
+                ],
                 "description": "Enterprise Cloud Architect, Google Developer Expert (GDE), and Google AI Champion, specializing in Google Cloud, agentic AI, cloud architecture and cloud strategy. Note: Not to be confused with the frontend engineer or other individuals of the same name.",
             },
         },
         "/about": {
             "title": "About Darren Lester",
-            "description": "Learn more about Darren \"Dazbo\" Lester, his background, skills and achievements.",
+            "description": 'Learn more about Darren "Dazbo" Lester, his background, skills and achievements.',
         },
     }
 
