@@ -1,3 +1,12 @@
+"""
+Description: Standalone script to diagnose a schema bug in the Firestore MCP server.
+Why: The managed Firestore MCP server returns literal JSON `null` for fields that its
+     own schema defines as an enum (`"NULL_VALUE"`). This script connects directly
+     to the MCP endpoint without the ADK's validation layer to inspect the raw
+     tool schemas and confirm this mismatch.
+How: Uses the `mcp` client library directly with `streamablehttp_client` to connect,
+     list tools, and print their schemas.
+"""
 import asyncio
 import json
 from datetime import timedelta
