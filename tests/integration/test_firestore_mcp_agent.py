@@ -34,14 +34,19 @@ class MockMcpTool(BaseTool):
                 description="Get a document",
                 parameters={
                     "type": "object",
-                    "properties": {"collection_id": {"type": "string"}, "document_id": {"type": "string"}},
+                    "properties": {"name": {"type": "string"}},
+                    "required": ["name"],
                 },
             )
         else:
             return types.FunctionDeclaration(
                 name="list_documents",
                 description="List documents",
-                parameters={"type": "object", "properties": {"collection_id": {"type": "string"}}},
+                parameters={
+                    "type": "object",
+                    "properties": {"parent": {"type": "string"}, "collectionId": {"type": "string"}},
+                    "required": ["parent"],
+                },
             )
 
 
@@ -49,7 +54,7 @@ class MockMcpTool(BaseTool):
 async def test_agent_uses_mcp_for_about_me() -> None:
     """
     Verifies that the agent correctly chooses the get_document tool
-    with collection_id='content' and document_id='about' when asked about Dazbo.
+    with name='projects/<PROJECT_ID>/databases/(default)/documents/content/about' when asked about Dazbo.
     """
     session_service = InMemorySessionService()
     session = await session_service.create_session(user_id="test_user", app_name=settings.app_name)
@@ -57,7 +62,13 @@ async def test_agent_uses_mcp_for_about_me() -> None:
     mock_tool = MockMcpTool("get_document")
     mock_tool.run_async.return_value = {"status": "success", "document": {"body": "Details"}}
 
-    part = types.Part.from_function_call(name="get_document", args={"collection_id": "content", "document_id": "about"})
+    # Get project ID from settings or fallback
+    from app.agent import project_id
+
+    pid = settings.google_cloud_project or project_id
+    expected_name = f"projects/{pid}/databases/(default)/documents/content/about"
+
+    part = types.Part.from_function_call(name="get_document", args={"name": expected_name})
     from google.adk.models.llm_response import LlmResponse
 
     llm_response = LlmResponse(content=types.Content(role="model", parts=[part]), turn_complete=True)
@@ -95,8 +106,7 @@ async def test_agent_uses_mcp_for_about_me() -> None:
         mock_tool.run_async.assert_called()
         args, kwargs = mock_tool.run_async.call_args
         tool_args = kwargs.get("args") or args[0]
-        assert tool_args["collection_id"] == "content"
-        assert tool_args["document_id"] == "about"
+        assert tool_args["name"] == expected_name
 
 
 @pytest.mark.asyncio
@@ -110,7 +120,12 @@ async def test_agent_uses_mcp_for_project_search() -> None:
     mock_tool = MockMcpTool("list_documents")
     mock_tool.run_async.return_value = {"status": "success", "documents": []}
 
-    part = types.Part.from_function_call(name="list_documents", args={"collection_id": "projects"})
+    from app.agent import project_id
+
+    pid = settings.google_cloud_project or project_id
+    expected_parent = f"projects/{pid}/databases/(default)/documents"
+
+    part = types.Part.from_function_call(name="list_documents", args={"parent": expected_parent, "collectionId": "projects"})
     from google.adk.models.llm_response import LlmResponse
 
     llm_response = LlmResponse(content=types.Content(role="model", parts=[part]), turn_complete=True)
@@ -148,4 +163,5 @@ async def test_agent_uses_mcp_for_project_search() -> None:
         mock_tool.run_async.assert_called()
         args, kwargs = mock_tool.run_async.call_args
         tool_args = kwargs.get("args") or args[0]
-        assert tool_args["collection_id"] == "projects"
+        assert tool_args["parent"] == expected_parent
+        assert tool_args["collectionId"] == "projects"
