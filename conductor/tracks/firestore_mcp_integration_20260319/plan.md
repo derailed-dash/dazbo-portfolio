@@ -4,7 +4,7 @@
 - [x] Task: Update Terraform to enable Firestore API and assign roles
     - [x] Add `firestore.googleapis.com` to the enabled APIs list in `deployment/terraform/apis.tf`.
     - [x] Add `roles/mcp.toolUser` and `roles/datastore.user` to the application service account roles in `deployment/terraform/iam.tf`.
-- [x] Task: Enable Firestore MCP server via script or Terraform
+- [x] Task: Enable Firestore MCP server (Manual Step)
     - [x] Ensure the Firestore remote MCP server is enabled (using `gcloud beta services mcp enable firestore.googleapis.com`).
 - [x] Task: Verify Infrastructure Deployment
     - [x] Run `make tf-plan` to verify the changes.

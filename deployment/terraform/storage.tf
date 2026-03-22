@@ -75,11 +75,3 @@ resource "google_firestore_database" "database" {
   point_in_time_recovery_enablement = "POINT_IN_TIME_RECOVERY_ENABLED"
   depends_on                        = [resource.google_project_service.deploy_project_services]
 }
-
-resource "null_resource" "enable_firestore_mcp" {
-  provisioner "local-exec" {
-    command = "gcloud beta services mcp enable firestore.googleapis.com --project=${var.project_id}"
-  }
-
-  depends_on = [google_firestore_database.database]
-}
