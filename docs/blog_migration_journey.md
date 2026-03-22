@@ -82,6 +82,15 @@ mcp.client.session.ClientSession._validate_tool_result = _skip_validation
 
 Total success. The crashes stopped immediately. Gemini, being the powerhouse that it is, has no problem seeing a `null` in the JSON response and continuing its reasoning loop.
 
+## Security: Keeping it Read-Only
+
+As an architect, security is always top of mind. One of the first questions I asked myself was: *"Could a malicious user use my chatbot to delete or modify my Firestore data via MCP?"*
+
+The answer is a firm **No**, and here is the dual-layered protection strategy I've implemented:
+
+1.  **Application-Level Filtering**: When I initialize the `McpToolset` in `app/agent.py`, I use a strict `tool_filter`. I only expose the `get_document`, `list_collections`, and `list_documents` tools to the agent. The write-capable tools (like `create_document` or `delete_document`) that the server offers are completely hidden. To the agent, they simply do not exist.
+2.  **Infrastructure-Level IAM**: My application's Service Account is governed by Google Cloud IAM. While it currently uses `roles/datastore.user` for development convenience, the ultimate "air-gap" would be switching this to `roles/datastore.viewer`. This ensures that even if the code were compromised, the identity running the app would be mathematically incapable of performing a write operation against Firestore.
+
 ## The Hybrid Verdict: Why Bespoke Still Matters
 
 With the monkey-patch in place, technically the generic `list_documents` tool works. So, did I delete my bespoke search tool? **Absolutely not.**
