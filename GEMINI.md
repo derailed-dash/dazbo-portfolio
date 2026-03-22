@@ -84,7 +84,7 @@ Always use the `tool_filter` parameter in `McpToolset` to adhere to the principl
   - **Workaround:** We use a **Monkey-Patch** in `app/agent.py` to disable the strict validation: `mcp.client.session.ClientSession._validate_tool_result = _skip_validation` (where `_skip_validation` is an `async` function that returns `None`).
   - **Strategy:** We still maintain a **Hybrid Tooling Approach** where `search_portfolio` (bespoke) handles broad discovery and counting, while the patched MCP `get_document` handles detailed retrieval.
 
-### 5. Infrastructure Prerequisites
+### 6. Infrastructure Prerequisites
 - **IAM Roles:** The Service Account requires `roles/mcp.toolUser` and `roles/datastore.user`.
 - **API Enablement:** Both the Firestore API and the MCP server must be enabled:
   ```bash
@@ -92,6 +92,6 @@ Always use the `tool_filter` parameter in `McpToolset` to adhere to the principl
   ```
 - **Authentication:** Authentication is handled automatically via Google Application Default Credentials (ADC) when using `SseConnectionParams` in a GCP environment.
 
-### 6. Dependency & Schema Mapping
+### 7. Dependency & Schema Mapping
 - **Dynamic Discovery:** Do not manually define tool schemas for Firestore. The `McpToolset` performs dynamic discovery via the `tools/list` MCP method and maps them to ADK-compatible tool definitions on initialization.
 
