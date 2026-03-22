@@ -45,7 +45,7 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 - [Firestore list_documents](https://docs.cloud.google.com/firestore/docs/reference/mcp/tools_list/list_documents)
 - [Firestore get_document](https://docs.cloud.google.com/firestore/docs/reference/mcp/tools_list/get_document)
 - [Firestore get_collections](https://docs.cloud.google.com/firestore/docs/reference/mcp/tools_list/list_collections)
-- [Manage Firesetore via Firestore MCP Server](https://medium.com/google-cloud/how-to-manage-your-firestore-database-with-natural-language-step-by-step-examples-bbc764f93d70)
+- [Manage Firestore via Firestore MCP Server](https://medium.com/google-cloud/how-to-manage-your-firestore-database-with-natural-language-step-by-step-examples-bbc764f93d70)
 
 ## Firestore MCP + ADK Implementation Best Practices
 
