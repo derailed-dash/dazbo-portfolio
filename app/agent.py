@@ -35,8 +35,9 @@ mcp.client.session.ClientSession._validate_tool_result = _skip_validation
 
 logger = logging.getLogger(__name__)
 
-# Get initial project ID
-_, project_id = google.auth.default()
+# Get initial credentials and project ID
+# Reuse these credentials in the header provider to avoid redundant environment discovery.
+credentials, project_id = google.auth.default()
 
 # Ensure critical environment variables are set for the underlying SDKs
 if settings.google_cloud_project:
@@ -60,7 +61,10 @@ class PortfolioAgent(Agent):
 def get_auth_headers(ctx: ReadonlyContext) -> dict[str, str]:
     """Provides fresh OAuth2 headers for the MCP connection."""
     logger.info("Refreshing auth headers for MCP connection")
-    credentials, _ = google.auth.default()
+    # Reuse module-level credentials to avoid expensive file I/O and network discovery.
+    # Note: credentials.refresh() is a blocking synchronous call. Since this provider
+    # is currently called synchronously by the ADK McpToolset, it may temporarily
+    # block the asyncio event loop.
     auth_request = google.auth.transport.requests.Request()
     credentials.refresh(auth_request)
     logger.info("Fresh token obtained")
