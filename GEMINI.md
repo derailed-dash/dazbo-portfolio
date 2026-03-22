@@ -53,19 +53,36 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 For production deployments (e.g., Cloud Run), the `Agent` and `McpToolset` **must be defined synchronously** in `agent.py`. Avoid asynchronous factory patterns for the root agent to ensure the container initializes correctly.
 
 ### 2. Connection Configuration
-Use the `SseConnectionParams` class from `google.adk.tools.mcp_tool.mcp_session_manager` to connect to the remote Google-managed endpoint:
+Use the `StreamableHTTPConnectionParams` class from `google.adk.tools.mcp_tool.mcp_session_manager` to connect to the remote Google-managed endpoint.
 - **Endpoint URL:** `https://firestore.googleapis.com/mcp`
+- **Important:** The Firestore MCP server requires a `POST` request to initiate the SSE session, which `StreamableHTTPConnectionParams` handles correctly. `SseConnectionParams` may fail with a `405 Method Not Allowed` because it defaults to a `GET` request.
 
-### 3. Security & Tool Filtering
+### 3. Authentication
+The Firestore MCP server requires valid Google Cloud authentication. You must provide an `Authorization` header with a valid access token in the connection parameters.
+```python
+credentials, _ = google.auth.default()
+# Ensure token is fresh
+credentials.refresh(google.auth.transport.requests.Request())
+
+firestore_mcp = McpToolset(
+    connection_params=StreamableHTTPConnectionParams(
+        url="https://firestore.googleapis.com/mcp",
+        headers={"Authorization": f"Bearer {credentials.token}"}
+    ),
+    # ...
+)
+```
+
+### 4. Security & Tool Filtering
 Always use the `tool_filter` parameter in `McpToolset` to adhere to the principle of least privilege. For a read-only portfolio assistant, restrict the agent to:
 - `list_documents`
 - `get_document`
 - `list_collections`
 
-### 4. Agent Instructions (Instruction-based Routing)
-Because MCP tools are generic, the agent's system instruction must explicitly define the schema and "shortcuts":
-- Define available collection IDs: `projects`, `blogs`, `content`.
-- Provide explicit mapping for common queries (e.g., "Tell me about Dazbo" -> Use `get_document` with `collection_id='content'` and `document_id='about'`).
+### 5. Known Limitations & Bugs
+- **`list_documents` & `get_document` Schema Bug:** The managed Firestore MCP server returns literal JSON `null` for fields its own schema defines as an enum (e.g. `nullValue: "NULL_VALUE"`). This causes the `mcp` Python SDK to crash.
+  - **Workaround:** We use a **Monkey-Patch** in `app/agent.py` to disable the strict validation: `mcp.client.session.ClientSession._validate_tool_result = _skip_validation` (where `_skip_validation` is an `async` function that returns `None`).
+  - **Strategy:** We still maintain a **Hybrid Tooling Approach** where `search_portfolio` (bespoke) handles broad discovery and counting, while the patched MCP `get_document` handles detailed retrieval.
 
 ### 5. Infrastructure Prerequisites
 - **IAM Roles:** The Service Account requires `roles/mcp.toolUser` and `roles/datastore.user`.
@@ -76,6 +93,5 @@ Because MCP tools are generic, the agent's system instruction must explicitly de
 - **Authentication:** Authentication is handled automatically via Google Application Default Credentials (ADC) when using `SseConnectionParams` in a GCP environment.
 
 ### 6. Dependency & Schema Mapping
-- **ADK Version:** Ensure `google-adk >= 0.1.0` is used, as earlier versions do not support the Model Context Protocol.
 - **Dynamic Discovery:** Do not manually define tool schemas for Firestore. The `McpToolset` performs dynamic discovery via the `tools/list` MCP method and maps them to ADK-compatible tool definitions on initialization.
 

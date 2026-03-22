@@ -61,15 +61,21 @@ limiter = Limiter(key_func=get_remote_address, headers_enabled=True)
 
 # Cloud Logging initialization
 try:
+    if not os.getenv("K_SERVICE"):  # Not in Cloud Run
+        raise Exception("Local environment")
     _, project_id = google.auth.default()
     logging_client = google_cloud_logging.Client()
     # This automatically captures standard logging and sends to Cloud Logging
     logging_client.setup_logging()
     logger = logging.getLogger(__name__)
 except Exception:
-    # Fallback to standard logging if not in GCP
-    logging.basicConfig(level=getattr(logging, settings.log_level))
+    # Fallback to standard logging if not in GCP or local
+    logging.basicConfig(
+        level=getattr(logging, settings.log_level), format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
     logger = logging.getLogger(__name__)
+    # Ensure all app loggers follow this
+    logging.getLogger("app").setLevel(getattr(logging, settings.log_level))
     cloud_logger = None
 allow_origins = os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
 
@@ -152,24 +158,15 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                 session_id=session.id,
                 run_config=RunConfig(streaming_mode=StreamingMode.SSE),
             ):
-                # Extract text from the event (ModelResponse)
+                # logger.debug(f"Agent event: {type(event).__name__} (turn_complete={getattr(event, 'turn_complete', 'N/A')})")
+
                 text_chunk = ""
                 try:
                     parts = []
+                    # Standard ModelResponse handling
                     if hasattr(event, "content") and event.content and getattr(event.content, "parts", None):
                         parts = event.content.parts
-                    elif hasattr(event, "candidates") and event.candidates:
-                        candidates = event.candidates
-                        if isinstance(candidates, list) and candidates:
-                            candidate = candidates[0]
-                            if (
-                                hasattr(candidate, "content")
-                                and candidate.content
-                                and getattr(candidate.content, "parts", None)
-                            ):
-                                parts = candidate.content.parts
 
-                    # Only process text if parts exist
                     if parts:
                         is_partial = getattr(event, "partial", False)
 
@@ -185,15 +182,20 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
                     logger.error(f"Error parsing event: {e}")
 
                 if text_chunk:
+                    # In SSE streaming mode, ADK might send the full accumulated text in each event
+                    # or just the delta. We need to handle this based on what the frontend expects.
+                    # For now, we assume delta or handle accumulation in the frontend.
                     payload = {"content": text_chunk}
                     yield f"data: {json.dumps(payload)}\n\n"
 
                 # If it's the final event, notify the stream is closing
-                if event.turn_complete:
+                if getattr(event, "turn_complete", False):
+                    # logger.info("Agent turn complete")
                     yield "data: [DONE]\n\n"
         except Exception as e:
-            logger.error(f"Critical error in event generator: {e}")
-            raise
+            logger.error(f"Critical error in event generator: {e}", exc_info=True)
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 

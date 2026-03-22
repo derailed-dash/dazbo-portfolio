@@ -18,36 +18,6 @@ To make sure my Gemini agent really "gets" the Google Agent Development Kit (ADK
 
 I've also been quite busy in my `GEMINI.md` file. I've populated it with a whole bunch of ADK + Firestore MCP references — think of it as a specialized knowledge base that the agent can tap into whenever it needs to verify a configuration detail.
 
-> **Dazbo Pro-Tip:** I've been guiding my agent to build its context iteratively. Every time we hit a milestone — like finishing the infrastructure phase or finalizing this blog draft — I use the `/resume save` command in the Gemini CLI to create a checkpoint. If I mess something up in Phase 2, I can just rewind to a known-good state. It’s like having a "Quick Save" button for your IDE!
-
-## The Starting Point: A Tale of Two Custom Tools
-
-Let’s look at what we’re moving away from. My original setup was purely code-first. I had two main tools that I'd registered with my ADK agent:
-
-1.  **`search_portfolio`**: This was my "broad brush" tool. It would hit Firestore, pull back projects and blogs, and do some in-memory filtering (yeah, I know, I was going to optimise that later!) to find matches for the user's query.
-2.  **`get_content_details`**: This was the "surgical" tool. Give it an ID, and it would fetch the full Markdown body or metadata for a specific item.
-
-In `app/agent.py`, it looked like this:
-
-```python
-from app.tools.content_details import get_content_details
-from app.tools.portfolio_search import search_portfolio
-
-# ... later in the agent config ...
-tools=[search_portfolio, get_content_details],
-```
-
-It worked like a charm. But it meant my agent was tightly coupled to my specific Python implementation. If I wanted to use a different agent framework or a different LLM host tomorrow, I’d have to port all that tool logic. That’s not very "Enterprise," is it?
-
-## Why the Move to MCP?
-
-The **Model Context Protocol (MCP)** is a game-changer because it standardises the "handshake" between an LLM and external data. By moving to the managed Firestore MCP server at `firestore.googleapis.com/mcp`, I’m shifting the burden of tool maintenance back to Google.
-
-### The Architectural Rationale:
-- **Reduced Code Surface**: I can delete two entire Python files and a bunch of service-layer logic. Less code means fewer bugs and less technical debt.
-- **Protocol-First Integration**: My agent now speaks a standard language (MCP) to talk to Firestore. This makes the architecture far more portable.
-- **Managed Intelligence**: The managed MCP server provides tools like `list_documents` and `get_document` that are already optimised for Firestore’s native capabilities.
-
 ## Phase 1: Infrastructure and Permissions (The Boring but Critical Bit)
 
 Before I could even think about touching the Python code, I had to ensure the GCP plumbing was right. This is where most developers trip up — don't neglect your IAM!
@@ -61,48 +31,91 @@ I also had to explicitly enable the MCP server for my project using the `gcloud`
 gcloud beta services mcp enable firestore.googleapis.com
 ```
 
-> **Dazbo Pro-Tip:** If you're running this in a CI/CD pipeline (like my Google Cloud Build setup), make sure these permissions are baked into your service account *before* you try to deploy the new agent code. There's nothing worse than a "Permission Denied" error in the middle of a deployment!
+## Phase 2: First Contact and the "405 Trap"
 
-## Phase 2: Agent Integration (The Fun Part)
+This is where the theory met the cold, hard reality of HTTP status codes. My initial implementation used the ADK’s `SseConnectionParams`. It seemed logical — MCP often uses Server-Sent Events (SSE) for its transport. 
 
-This is where the magic happens. Instead of manual imports, I’m using the ADK’s `McpToolset`. This class is brilliant — it handles the connection to the remote MCP server and automatically "discovers" the tools it offers.
+However, the moment I sent my first "Hello" to the chatbot, the backend exploded with a `405 Method Not Allowed`. 
 
-Here’s the plan for the new `app/agent.py` logic:
+### The Discovery:
+The managed Firestore MCP endpoint (`https://firestore.googleapis.com/mcp`) requires a **POST** request to initiate the SSE session. The standard `SseConnectionParams` in the SDK defaults to a **GET** request.
+
+### The Fix:
+I switched to `StreamableHTTPConnectionParams`. This specific parameter class is designed for endpoints that require a bit more "handshaking" — like a POST request — to get the stream flowing.
+
+## Phase 3: The Freshness Factor (Authentication)
+
+Authentication was the next hurdle. Initially, I was grabbing a token at startup and passing it into the headers. Great for the first 60 minutes; disastrous for the 61st. 
+
+### The Fix:
+I implemented a `header_provider` callback. This is a brilliant feature of the `McpToolset` that allows the agent to call a function every time it needs to talk to the MCP server. I wired this up to `google.auth` to ensure that every request carries a fresh, valid OAuth2 token. This is the "proper" way to handle long-running agent sessions in a secure environment.
+
+## Phase 4: The Schema Showstopper
+
+We were so close. The connection was alive, the tokens were fresh, and then... I asked the chatbot: *"How many blogs do you have?"*
+
+**Crash.** `RuntimeError: Invalid structured content returned by tool list_documents`.
+
+### The Critical Discovery:
+The managed Firestore MCP server has a strict schema bug. When a field in Firestore is empty (like an optional `author_url`), the server returns a literal JSON `null`. However, the tool's official schema defines that field as an enum that *must* be the string `"NULL_VALUE"`. 
+
+I managed to isolate this behavior using a bespoke diagnostic script, `scripts/test_mcp_bug.py`, which allowed me to inspect the raw tool definitions and responses coming back from the MCP server without the ADK's validation layer getting in the way. It confirmed that the server was sending back JSON that violated its own contract.
+
+Because the ADK uses strict Pydantic/jsonschema validation, it sees the `null` and essentially says, "I wasn't expecting that," and shuts down the session. It’s a classic case of a server not following its own rules.
+
+## Phase 5: The Monkey-Patching Maneuver (Survival of the Pragmatic)
+
+I was stuck. The server-side bug was out of my control, and the client-side library was too pedantic to ignore it. As an architect, I had two choices: give up on MCP entirely, or find a way to make the library "look the other way."
+
+I chose the latter. I implemented a **Monkey-Patch** at the very top of my `app/agent.py`. By overwriting the internal validation method of the MCP `ClientSession`, I effectively told the agent: *"Trust me, just give me the raw data."*
 
 ```python
-from google.adk.tools.mcp_tool import McpToolset
-from google.adk.tools.mcp_tool.mcp_session_manager import SseConnectionParams
+import mcp.client.session
 
-# ...
+# Disabling strict validation to handle the server-side schema bug.
+# Note: This must be an async function to satisfy the SDK's expectations.
+async def _skip_validation(self, name, result):
+    return None
 
-firestore_mcp = McpToolset(
-    connection_params=SseConnectionParams(
-        url="https://firestore.googleapis.com/mcp"
-    ),
-    tool_filter=['list_documents', 'get_document', 'list_collections']
-)
-
-root_agent = PortfolioAgent(
-    # ...
-    tools=[firestore_mcp],
-)
+mcp.client.session.ClientSession._validate_tool_result = _skip_validation
 ```
 
-### The "About Me" Gotcha
-One thing my custom tools handled nicely was a shortcut for the "About Me" page. With the new generic MCP tools, I need to be more explicit in my agent's instructions. I’ve updated the system prompt to tell the agent: *"If they want to know about Dazbo, use `get_document` to fetch the 'about' document from the 'content' collection."*
+Total success. The crashes stopped immediately. Gemini, being the powerhouse that it is, has no problem seeing a `null` in the JSON response and continuing its reasoning loop.
 
-## What’s Next?
+## The Hybrid Verdict: Why Bespoke Still Matters
 
-I’m currently in the middle of Phase 2 — wiring this all up and writing the integration tests to prove it works. Once that's done, I'll be deleting those old custom tools with a very satisfied click of the 'Delete' key.
+With the monkey-patch in place, technically the generic `list_documents` tool works. So, did I delete my bespoke search tool? **Absolutely not.**
 
-### Why this way and not another?
-I *could* have stuck with my custom tools and just refactored them to be cleaner. But that’s a local optimisation. By adopting MCP, I’m future-proofing the portfolio. If Google releases a new Firestore tool tomorrow, my agent gets it automatically without me writing a single line of Python. That’s the kind of architectural ROI I live for.
+I’ve adopted a **Hybrid Architecture**, and here is the architectural reasoning:
 
-## Wrapping Up (For Now)
+1.  **Context Efficiency**: If I use the generic `list_documents` tool for a broad search, the server returns the **full document content** for every single item. Dumping 100+ full blog posts into the LLM's context window just to answer "Do you have any Python blogs?" is a massive waste of tokens and a sure way to hit context limits. My bespoke `search_portfolio` tool returns only concise summaries and IDs.
+2.  **Search Intelligence**: My bespoke tool knows how to properly scan array-based tags and AI-generated summaries. Generic MCP tools are "dumb" lists — they don't have the application-specific matching logic that makes an agent feel "smart."
+3.  **The "Counting" Problem**: Accurate counting (e.g., "How many blogs?") is instantaneous with a tiny bit of Python logic but slow and error-prone if an LLM has to count a raw JSON list manually.
 
-This migration isn't just about changing a few lines of code; it's a shift in how we think about agentic capabilities. We're moving from "I'll build a tool for that" to "I'll connect to a service for that."
+## So, Why Keep MCP at All?
 
-I'll be back with another update once Phase 3 (Cleanup) and Phase 4 (Final Verification) are complete. Until then, keep it pragmatic!
+You might be thinking: *"Dazbo, if you're keeping your old search tool, why bother with MCP?"*
+
+It’s about **Surgical Retrieval** and **Standardisation**.
+
+- **ROI on Precision**: For fetching the full Markdown body of a specific project (via `get_document`), MCP is perfect. I don't have to maintain any retrieval logic; Google does it for me.
+- **Portability**: My agent now speaks a standard protocol for its core data access. If I want to add more managed Google tools later (like BigQuery or Sheets), the pattern is already established.
+- **Future-Proofing**: If Google releases a new Firestore-native tool tomorrow — say, a specialized vector search — my agent gets it for "free" via discovery, without me writing another bespoke Python tool.
+
+## Final Summary of Discoveries
+
+| Problem | Discovery | Fix |
+| :--- | :--- | :--- |
+| **405 Method Not Allowed** | Endpoint requires POST, not GET. | Used `StreamableHTTPConnectionParams`. |
+| **Token Expiry** | Static tokens die after 1 hour. | Implemented `header_provider` callback. |
+| **Client Crashes on Search** | Server-side `null` vs `"NULL_VALUE"` bug. | **Monkey-Patched** the MCP validation logic. |
+| **Context Bloat** | Generic list tools are too verbose. | Pivoted to **Hybrid Tooling** (Bespoke Search + MCP Retrieval). |
+
+## Wrapping Up
+
+This journey was a lot more "scenic" than I expected, but the resulting architecture is rock-solid. We’ve combined the strengths of a managed, standard protocol with the precision of bespoke code. It’s pragmatic, it’s efficient, and it’s very "Dazbo."
+
+Until next time, keep your tokens fresh and your dashes spaced!
 
 ---
-*Darren "Dazbo" Lester is an Enterprise Cloud Architect and a self-confessed Google AI enthusiast. He's probably drinking tea and looking at car parts right now.*
+*Darren "Dazbo" Lester is an Enterprise Cloud Architect who probably spends way too much time obsessing over the spacing of em-dashes.*

@@ -51,6 +51,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Enable Startup CPU Boost** | Provides additional CPU during instance startup to mitigate cold start latency for the Python application. |
 | **FastAPI SEO Injection** | Dynamically injects SEO tags into `index.html` on the first request, ensuring optimal crawling and social previews for the SPA. |
 | **Server-Side Path Validation** | Robust path traversal protection using high-probability absolute path resolution within `serve_spa`. |
+| **Hybrid Agent Tooling** | Combines managed Firestore MCP for surgical retrieval with bespoke Python tools for discovery and counting to bypass managed service limitations. |
 
 ## Application Design
 
@@ -282,11 +283,14 @@ graph TD
             FS[("Firestore")]
             GCS[("Cloud Storage")]
             LOG[("Cloud Logging")]
+            MCP["Firestore MCP Server<br/>(Managed)"]
         end
 
         Logic --> FS
         Logic --> GCS
         FastAPI -.-> LOG
+        Agent -- "MCP/SSE" --> MCP
+        MCP -- "gRPC" --> FS
     end
 
     subgraph "Deployment Pipeline"
@@ -484,3 +488,23 @@ To improve the chatbot's ability to answer specific questions about the portfoli
     2.  The tool will generate an embedding for the user's query.
     3.  Perform a vector similarity search (cosine distance) in Firestore to find the most relevant documents.
     4.  Pass the retrieved context to the Gemini model for answer generation.
+
+## Agent Integration Architecture
+
+The application features an interactive AI assistant powered by the **Google Agent Development Kit (ADK)** and the **Gemini 3** model.
+
+### Hybrid Tooling Approach
+
+Due to a known schema limitation in the managed Firestore MCP server (the `list_documents` tool fails when handling null fields), the agent employs a **Hybrid Tooling Architecture**:
+
+1.  **Managed Firestore MCP Tools**:
+    - **`get_document`**: Used for surgical retrieval of full content by ID.
+    - **`list_collections`**: Used for metadata discovery.
+    - **Authentication**: Managed via a dynamic `header_provider` that refreshes OAuth2 tokens.
+2.  **Bespoke Search Tool (`search_portfolio`)**:
+    - **Purpose**: Handles broad discovery, keyword searching, and document counting.
+    - **Rationale**: Bypasses the buggy `list_documents` endpoint while providing richer, application-specific search logic (e.g., fuzzy matching, counting).
+
+### Workflow Handover
+
+When a user asks a general question (e.g., "What Python blogs do you have?"), the agent uses `search_portfolio` to find relevant matches and their unique IDs. If the user then requests details on a specific item, the agent hands over the ID to the MCP `get_document` tool to fetch the full Markdown body directly from Firestore.
