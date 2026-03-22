@@ -47,7 +47,7 @@ deploy-cloud-run:
 		--min-instances=$(MIN_INSTANCES) \
 		--cpu-boost \
 		--allow-unauthenticated \
-		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(APP_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION),LOG_LEVEL=DEBUG,BASE_URL=$(BASE_URL)" \
+		--set-env-vars="COMMIT_SHA=$(shell git rev-parse HEAD),APP_NAME=$(APP_NAME),AGENT_NAME=$(AGENT_NAME),MODEL=$(MODEL),GOOGLE_GENAI_USE_VERTEXAI=$(GOOGLE_GENAI_USE_VERTEXAI),GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION),LOG_LEVEL=INFO,BASE_URL=$(BASE_URL)" \
 		--labels=dev-tutorial=devnewyear2026 \
 		$(if $(IAP),--iap)
 
@@ -67,7 +67,7 @@ docker-run:
 		-e APP_NAME=$(APP_NAME) \
 		-e AGENT_NAME=$(AGENT_NAME) \
 		-e GOOGLE_CLOUD_LOCATION=$(GOOGLE_CLOUD_LOCATION) \
-		-e LOG_LEVEL=DEBUG \
+		-e LOG_LEVEL=INFO \
 		-e BASE_URL=$(BASE_URL) \
 		-e GOOGLE_APPLICATION_CREDENTIALS="/code/application_default_credentials.json" \
 		--mount type=bind,source=$${HOME}/.config/gcloud/application_default_credentials.json,target=/code/application_default_credentials.json,readonly \

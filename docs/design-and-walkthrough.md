@@ -51,6 +51,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Enable Startup CPU Boost** | Provides additional CPU during instance startup to mitigate cold start latency for the Python application. |
 | **FastAPI SEO Injection** | Dynamically injects SEO tags into `index.html` on the first request, ensuring optimal crawling and social previews for the SPA. |
 | **Server-Side Path Validation** | Robust path traversal protection using high-probability absolute path resolution within `serve_spa`. |
+| **Hybrid Agent Tooling** | Combines managed Firestore MCP for surgical retrieval with bespoke Python tools for discovery and counting to bypass managed service limitations. |
 
 ## Application Design
 
@@ -282,11 +283,14 @@ graph TD
             FS[("Firestore")]
             GCS[("Cloud Storage")]
             LOG[("Cloud Logging")]
+            MCP["Firestore MCP Server<br/>(Managed)"]
         end
 
         Logic --> FS
         Logic --> GCS
         FastAPI -.-> LOG
+        Agent -- "MCP/SSE" --> MCP
+        MCP -- "gRPC" --> FS
     end
 
     subgraph "Deployment Pipeline"
@@ -484,3 +488,32 @@ To improve the chatbot's ability to answer specific questions about the portfoli
     2.  The tool will generate an embedding for the user's query.
     3.  Perform a vector similarity search (cosine distance) in Firestore to find the most relevant documents.
     4.  Pass the retrieved context to the Gemini model for answer generation.
+
+## Agent Integration Architecture
+
+The application features an interactive AI assistant powered by the **Google Agent Development Kit (ADK)** and the **Gemini 3** model.
+
+### Hybrid Tooling Rationale
+
+The agent employs a **Hybrid Tooling Architecture**, combining managed Google services with application-specific Python logic. This design was chosen for several critical architectural reasons:
+
+1.  **Context Efficiency (The "Discovery" Problem)**:
+    -   The managed Firestore MCP `list_documents` tool returns the **full content** of every document in a collection.
+    -   For broad searches (e.g., "Do you have any Python blogs?"), this would dump tens of thousands of tokens into the LLM's context window, leading to high costs and potential context limit exhaustion.
+    -   The bespoke `search_portfolio` tool is optimized for discovery, returning only concise summaries and unique IDs.
+
+2.  **Schema Robustness (The "Null" Workaround)**:
+    -   The managed Firestore MCP server currently has a schema bug where optional fields are returned as literal JSON `null` instead of the expected `"NULL_VALUE"` enum string.
+    -   While a monkey-patch was implemented to bypass client-side validation, relying solely on MCP for discovery remains risky. The hybrid approach provides a reliable fallback.
+
+3.  **Accuracy and Performance (Counting)**:
+    -   Accurate document counting (e.g., "How many blogs are there?") is instantaneous and deterministic in Python.
+    -   Expecting an LLM to count raw JSON results from a generic list tool is slow, expensive, and prone to "off-by-one" hallucinations.
+
+4.  **Surgical Retrieval (ROI on Precision)**:
+    -   For fetching the full Markdown body of a *specific* item (via `get_document`), the managed MCP server is superior.
+    -   It eliminates the need to maintain bespoke retrieval logic and ensures the agent always uses the official Google-managed protocol for detailed data access.
+
+### Workflow Handover
+
+When a user asks a general question (e.g., "What Python blogs do you have?"), the agent uses `search_portfolio` to find relevant matches and their unique IDs. If the user then requests details on a specific item, the agent hands over the ID to the MCP `get_document` tool to fetch the full Markdown body directly from Firestore.

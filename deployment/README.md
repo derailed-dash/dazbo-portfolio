@@ -147,6 +147,25 @@ terraform apply -var-file="vars/env.tfvars"
 
 The infrastructure has been migrated from PostgreSQL to Firestore. Legacy SQL resources have been removed from the Terraform configuration. If you are cleaning up a pre-migration environment, `terraform apply` will automatically identify and propose the destruction of these resources.
 
+### Firestore MCP Integration
+
+The application utilizes a Google-managed Model Context Protocol (MCP) server to allow the Gemini agent to interact directly with Firestore.
+
+#### Enablement (Manual Step)
+While basic APIs are enabled via Terraform, the Firestore MCP service currently requires a one-time manual enablement using the `gcloud` CLI:
+
+```bash
+# Enable the managed Firestore MCP server
+gcloud beta services mcp enable firestore.googleapis.com
+```
+
+#### Verification
+To verify that the MCP server is accessible to the application:
+1. Ensure the application service account has the following roles assigned (managed in `iam.tf`):
+   - `roles/mcp.toolUser`
+   - `roles/datastore.user`
+2. Check the application logs for successful tool discovery during startup.
+
 ### Telemetry & Observability
 
 Telemetry data (prompts, responses, and traces) is captured and routed to dedicated Cloud Logging buckets with 10-year retention. This data can be queried directly via Cloud Logging or exported for further analysis.
