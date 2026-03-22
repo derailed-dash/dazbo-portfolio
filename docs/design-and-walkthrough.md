@@ -493,17 +493,26 @@ To improve the chatbot's ability to answer specific questions about the portfoli
 
 The application features an interactive AI assistant powered by the **Google Agent Development Kit (ADK)** and the **Gemini 3** model.
 
-### Hybrid Tooling Approach
+### Hybrid Tooling Rationale
 
-Due to a known schema limitation in the managed Firestore MCP server (the `list_documents` tool fails when handling null fields), the agent employs a **Hybrid Tooling Architecture**:
+The agent employs a **Hybrid Tooling Architecture**, combining managed Google services with application-specific Python logic. This design was chosen for several critical architectural reasons:
 
-1.  **Managed Firestore MCP Tools**:
-    - **`get_document`**: Used for surgical retrieval of full content by ID.
-    - **`list_collections`**: Used for metadata discovery.
-    - **Authentication**: Managed via a dynamic `header_provider` that refreshes OAuth2 tokens.
-2.  **Bespoke Search Tool (`search_portfolio`)**:
-    - **Purpose**: Handles broad discovery, keyword searching, and document counting.
-    - **Rationale**: Bypasses the buggy `list_documents` endpoint while providing richer, application-specific search logic (e.g., fuzzy matching, counting).
+1.  **Context Efficiency (The "Discovery" Problem)**:
+    -   The managed Firestore MCP `list_documents` tool returns the **full content** of every document in a collection.
+    -   For broad searches (e.g., "Do you have any Python blogs?"), this would dump tens of thousands of tokens into the LLM's context window, leading to high costs and potential context limit exhaustion.
+    -   The bespoke `search_portfolio` tool is optimized for discovery, returning only concise summaries and unique IDs.
+
+2.  **Schema Robustness (The "Null" Workaround)**:
+    -   The managed Firestore MCP server currently has a schema bug where optional fields are returned as literal JSON `null` instead of the expected `"NULL_VALUE"` enum string.
+    -   While a monkey-patch was implemented to bypass client-side validation, relying solely on MCP for discovery remains risky. The hybrid approach provides a reliable fallback.
+
+3.  **Accuracy and Performance (Counting)**:
+    -   Accurate document counting (e.g., "How many blogs are there?") is instantaneous and deterministic in Python.
+    -   Expecting an LLM to count raw JSON results from a generic list tool is slow, expensive, and prone to "off-by-one" hallucinations.
+
+4.  **Surgical Retrieval (ROI on Precision)**:
+    -   For fetching the full Markdown body of a *specific* item (via `get_document`), the managed MCP server is superior.
+    -   It eliminates the need to maintain bespoke retrieval logic and ensures the agent always uses the official Google-managed protocol for detailed data access.
 
 ### Workflow Handover
 

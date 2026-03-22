@@ -34,27 +34,34 @@
 - [x] Task: Conductor - User Manual Verification 'Agent Integration and Testing' (Protocol in workflow.md)
 
 ## Phase 3: Code Cleanup and Documentation (Hybrid Approach)
-- [ ] Task: Delete Obsolete Custom Tools
-    - [ ] Remove `app/tools/content_details.py`.
-    - [ ] **NOTE**: `app/tools/portfolio_search.py` is RETAINED as part of the Hybrid Architecture for context-efficient discovery.
-- [ ] Task: Update Design and Walkthrough Documentation
-    - [ ] Update `docs/design-and-walkthrough.md` to reflect the move to a managed MCP server.
-    - [ ] **NEW**: Add a dedicated section explaining the **Hybrid Tooling Rationale** (Bespoke Search + MCP Retrieval).
-- [ ] Task: Update Deployment Documentation
-    - [ ] Update `deployment/README.md` with instructions for enabling and verifying the Firestore MCP server.
-- [ ] Task: Final Verification and Checkpoint
-    - [ ] Run `make lint` and `make test` to ensure the project is in a clean state.
-- [ ] Task: Conductor - User Manual Verification 'Code Cleanup and Documentation' (Protocol in workflow.md)
+- [x] Task: Delete Obsolete Custom Tools
+    - [x] Remove `app/tools/content_details.py`.
+    - [x] **NOTE**: `app/tools/portfolio_search.py` is RETAINED as part of the Hybrid Architecture for context-efficient discovery.
+- [x] Task: Update Design and Walkthrough Documentation
+    - [x] Update `docs/design-and-walkthrough.md` to reflect the move to a managed MCP server.
+    - [x] **NEW**: Add a dedicated section explaining the **Hybrid Tooling Rationale** (Bespoke Search + MCP Retrieval).
+- [x] Task: Update Deployment Documentation
+    - [x] Update `deployment/README.md` with instructions for enabling and verifying the Firestore MCP server.
+- [x] Task: Final Verification and Checkpoint
+    - [x] Run `make lint` and `make test` to ensure the project is in a clean state.
+- [x] Task: Conductor - User Manual Verification 'Code Cleanup and Documentation' (Protocol in workflow.md)
 
 ## Phase 4: Migration Blog Post
-- [ ] Task: Create and Update Migration Journey Blog Post
-    - [ ] Create `docs/blog_migration_journey.md` as a basis for the Dazbo style blog.
-    - [ ] Document the initial state (custom Firestore tools).
-    - [ ] Document the transition to Firestore MCP (Phase 1 & 2).
-    - [ ] Document the benefits observed (e.g., reduced code maintenance, standard protocol).
-    - [ ] **NEW**: Document the discovery of the schema bug and the implementation of the Monkey-Patch.
-    - [ ] **NEW**: Document the pivot to a **Hybrid Architecture** and why it's better than pure MCP.
-    - [ ] Update the blog post as implementation progresses.
-- [ ] Task: Final Quality Check for Blog Completeness
-    - [ ] **NEW**: Review the final blog post for technical accuracy, persona consistency (Dazbo style), and coverage of all key implementation hurdles.
-- [ ] Task: Conductor - User Manual Verification 'Migration Blog Post' (Protocol in workflow.md)
+- [x] Task: Create and Update Migration Journey Blog Post
+    - [x] Create `docs/blog_migration_journey.md` as a basis for the Dazbo style blog.
+    - [x] Document the initial state (custom Firestore tools).
+    - [x] Document the transition to Firestore MCP (Phase 1 & 2).
+    - [x] Document the benefits observed (e.g., reduced code maintenance, standard protocol).
+    - [x] **NEW**: Document the discovery of the schema bug and the implementation of the Monkey-Patch.
+    - [x] **NEW**: Document the pivot to a **Hybrid Architecture** and why it's better than pure MCP.
+    - [x] Update the blog post as implementation progresses.
+- [x] Task: Final Quality Check for Blog Completeness
+    - [x] Review the final blog post for technical accuracy, persona consistency (Dazbo style), and coverage of all key implementation hurdles.
+- [x] Task: Conductor - User Manual Verification 'Migration Blog Post' (Protocol in workflow.md)
+
+## Phase 5: Create Issue for Firestore MCP
+- [x] Task: Research Issue Reporting Channels
+    - [x] Identify the best way to raise the schema bug issue (e.g., GDE internal channels, Issue Tracker, GitHub).
+- [x] Task: Create Detailed Issue Documentation
+    - [x] Create a dedicated document detailing the issue, reproduction steps (using `scripts/test_mcp_bug.py`), the monkey-patch workaround, and the impact on strict SDKs.
+- [x] Task: Conductor - User Manual Verification 'Create Issue for Firestore MCP' (Protocol in workflow.md)
