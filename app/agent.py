@@ -23,10 +23,9 @@ from app.config import settings
 from app.tools.portfolio_search import search_portfolio
 
 
-# MONKEY-PATCH: The managed Firestore MCP server has a schema bug where it returns
-# literal nulls instead of the expected "NULL_VALUE" enum string. This causes
-# the strict MCP Python SDK to crash during validation. We bypass this validation
-# to allow the agent to receive the raw data, which Gemini handles gracefully.
+# MONKEY-PATCH to disable strict validation in the MCP Python SDK.
+# This is to circumvent the server-side schema bug, where the 
+# managed Firestore MCP server returns literal nulls instead of the expected "NULL_VALUE" enum string.
 async def _skip_validation(self, name, result):
     return None
 
@@ -54,20 +53,13 @@ if settings.gemini_api_key:
 
 class PortfolioAgent(Agent):
     """Custom Agent subclass to fix ADK app name inference."""
-
     pass
 
 
 def get_auth_headers(ctx: ReadonlyContext) -> dict[str, str]:
     """Provides fresh OAuth2 headers for the MCP connection."""
-    logger.info("Refreshing auth headers for MCP connection")
-    # Reuse module-level credentials to avoid expensive file I/O and network discovery.
-    # Note: credentials.refresh() is a blocking synchronous call. Since this provider
-    # is currently called synchronously by the ADK McpToolset, it may temporarily
-    # block the asyncio event loop.
     auth_request = google.auth.transport.requests.Request()
     credentials.refresh(auth_request)
-    logger.info("Fresh token obtained")
     return {
         "Authorization": f"Bearer {credentials.token}",
         "Content-Type": "application/json",
@@ -75,7 +67,7 @@ def get_auth_headers(ctx: ReadonlyContext) -> dict[str, str]:
 
 
 # Initialize Firestore MCP Toolset
-# Note: Using StreamableHTTPConnectionParams because the Firestore MCP endpoint
+# Using StreamableHTTPConnectionParams because the Firestore MCP endpoint
 # requires a POST request to initiate the SSE session.
 firestore_mcp = McpToolset(
     connection_params=StreamableHTTPConnectionParams(url="https://firestore.googleapis.com/mcp"),
