@@ -21,11 +21,11 @@
     - [x] Implement `getVideos` to fetch from `/api/videos`.
 - [x] Task: Add Backend API Route for Videos [662439f]
     - [x] Update `app/fast_api_app.py` to include a GET `/api/videos` endpoint using `VideoService`.
-- [~] Task: Update `frontend/src/pages/HomePage.tsx`
-    - [ ] Fetch videos on component mount.
-    - [ ] Implement a new `ShowcaseCarousel` for "Videos".
-    - [ ] Ensure the carousel is responsive and matches the existing design.
-- [ ] Task: Write Tests for Videos Carousel
+- [x] Task: Update `frontend/src/pages/HomePage.tsx` [cf559cf]
+    - [x] Fetch videos on component mount.
+    - [x] Implement a new `ShowcaseCarousel` for "Videos".
+    - [x] Ensure the carousel is responsive and matches the existing design.
+- [~] Task: Write Tests for Videos Carousel
     - [ ] Create tests to verify the new carousel renders correctly with video data.
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
 
