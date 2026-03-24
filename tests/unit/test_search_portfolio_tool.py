@@ -1,7 +1,7 @@
 """
 Description: Unit tests for the search_portfolio tool.
-Why: Verifies that the search tool correctly filters projects and blogs based on query strings.
-How: Uses unittest.mock to simulate ProjectService and BlogService responses.
+Why: Verifies that the search tool correctly filters projects, blogs, and videos based on query strings.
+How: Uses unittest.mock to simulate ProjectService, BlogService, and VideoService responses.
 """
 
 from unittest.mock import AsyncMock, patch
@@ -10,6 +10,7 @@ import pytest
 
 from app.models.blog import Blog
 from app.models.project import Project
+from app.models.video import Video
 from app.tools.portfolio_search import search_portfolio
 
 
@@ -63,11 +64,27 @@ def mock_blogs():
     ]
 
 
+@pytest.fixture
+def mock_videos():
+    return [
+        Video(
+            id="youtube:123",
+            title="Introduction to ADK",
+            description="A video overview of the Agent Development Kit.",
+            video_url="https://youtube.com/watch?v=123",
+            publish_date="2024-03-24",
+            is_manual=True,
+            source_platform="youtube",
+        )
+    ]
+
+
 @pytest.mark.asyncio
-async def test_search_portfolio_by_tag(mock_projects, mock_blogs):
+async def test_search_portfolio_by_tag(mock_projects, mock_blogs, mock_videos):
     with (
         patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
         patch("app.tools.portfolio_search.BlogService") as MockBlogService,
+        patch("app.tools.portfolio_search.VideoService") as MockVideoService,
         patch("app.tools.portfolio_search.get_client"),
     ):
         # Setup mocks
@@ -79,6 +96,10 @@ async def test_search_portfolio_by_tag(mock_projects, mock_blogs):
         blog_service.list.return_value = mock_blogs
         MockBlogService.return_value = blog_service
 
+        video_service = AsyncMock()
+        video_service.list.return_value = mock_videos
+        MockVideoService.return_value = video_service
+
         # Test searching for "python"
         result = await search_portfolio("python")
 
@@ -88,10 +109,11 @@ async def test_search_portfolio_by_tag(mock_projects, mock_blogs):
 
 
 @pytest.mark.asyncio
-async def test_search_portfolio_by_text(mock_projects, mock_blogs):
+async def test_search_portfolio_by_text(mock_projects, mock_blogs, mock_videos):
     with (
         patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
         patch("app.tools.portfolio_search.BlogService") as MockBlogService,
+        patch("app.tools.portfolio_search.VideoService") as MockVideoService,
         patch("app.tools.portfolio_search.get_client"),
     ):
         proj_service = AsyncMock()
@@ -101,6 +123,10 @@ async def test_search_portfolio_by_text(mock_projects, mock_blogs):
         blog_service = AsyncMock()
         blog_service.list.return_value = mock_blogs
         MockBlogService.return_value = blog_service
+
+        video_service = AsyncMock()
+        video_service.list.return_value = mock_videos
+        MockVideoService.return_value = video_service
 
         # Test searching for "dashboard" (in title of project)
         result = await search_portfolio("Dashboard")
@@ -110,10 +136,38 @@ async def test_search_portfolio_by_text(mock_projects, mock_blogs):
 
 
 @pytest.mark.asyncio
-async def test_search_portfolio_no_results(mock_projects, mock_blogs):
+async def test_search_portfolio_video_match(mock_projects, mock_blogs, mock_videos):
     with (
         patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
         patch("app.tools.portfolio_search.BlogService") as MockBlogService,
+        patch("app.tools.portfolio_search.VideoService") as MockVideoService,
+        patch("app.tools.portfolio_search.get_client"),
+    ):
+        proj_service = AsyncMock()
+        proj_service.list.return_value = []
+        MockProjectService.return_value = proj_service
+
+        blog_service = AsyncMock()
+        blog_service.list.return_value = []
+        MockBlogService.return_value = blog_service
+
+        video_service = AsyncMock()
+        video_service.list.return_value = mock_videos
+        MockVideoService.return_value = video_service
+
+        # Test searching for "ADK" (in video title)
+        result = await search_portfolio("ADK")
+
+        assert "Introduction to ADK" in result
+        assert "[Video]" in result
+
+
+@pytest.mark.asyncio
+async def test_search_portfolio_no_results(mock_projects, mock_blogs, mock_videos):
+    with (
+        patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
+        patch("app.tools.portfolio_search.BlogService") as MockBlogService,
+        patch("app.tools.portfolio_search.VideoService") as MockVideoService,
         patch("app.tools.portfolio_search.get_client"),
     ):
         proj_service = AsyncMock()
@@ -124,9 +178,13 @@ async def test_search_portfolio_no_results(mock_projects, mock_blogs):
         blog_service.list.return_value = mock_blogs
         MockBlogService.return_value = blog_service
 
+        video_service = AsyncMock()
+        video_service.list.return_value = mock_videos
+        MockVideoService.return_value = video_service
+
         result = await search_portfolio("java")
 
-        assert "No projects or blogs found" in result
+        assert "No projects, blogs or videos found" in result
 
 
 @pytest.mark.asyncio
@@ -152,6 +210,7 @@ async def test_search_priority_and_deduplication(mock_projects):
     with (
         patch("app.tools.portfolio_search.ProjectService") as MockProjectService,
         patch("app.tools.portfolio_search.BlogService") as MockBlogService,
+        patch("app.tools.portfolio_search.VideoService") as MockVideoService,
         patch("app.tools.portfolio_search.get_client"),
     ):
         proj_service = AsyncMock()
@@ -162,6 +221,10 @@ async def test_search_priority_and_deduplication(mock_projects):
         blog_service.list.return_value = blogs
         MockBlogService.return_value = blog_service
 
+        video_service = AsyncMock()
+        video_service.list.return_value = []
+        MockVideoService.return_value = video_service
+
         result = await search_portfolio("Match")
 
         # Verify all unique blogs are found
@@ -171,12 +234,8 @@ async def test_search_priority_and_deduplication(mock_projects):
         assert "AI Summary Match" in result
 
         # Verify deduplication: "Double Match" should appear exactly once
-        # We can check this by counting occurrences of the title string
-        assert result.count("Double Match") == 1 + 1 + 1  # Title + Description + URL/Tags?
-        # Wait, the search result format is: "[Blog] {title}: {summary}..."
-        # So "Double Match" (title) + "Double Match" (summary) + "Double Match" (tags) might appear in the *string* representation of the single item.
-        # But we want to ensure the *Item* is not listed twice (e.g. "[Blog] Double Match..." appears only once).
+        assert result.count("Double Match") == 1 + 1 + 1
 
-        # A better check for deduplication is counting the number of lines starting with "[Blog]"
+        # Check total matched lines
         lines = result.strip().split("\n")
         assert len(lines) == 6  # Header + 5 unique blogs matched
