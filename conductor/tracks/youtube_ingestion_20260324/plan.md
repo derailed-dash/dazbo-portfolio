@@ -17,9 +17,9 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [checkpoint: 1ca7305]
 
 ## Phase 2: Frontend Implementation (Service & UI)
-...
-    - [ ] Implement `getVideos` to fetch from `/api/videos`.
-- [ ] Task: Add Backend API Route for Videos
+- [x] Task: Create `frontend/src/services/videoService.ts` [7a9e61d]
+    - [x] Implement `getVideos` to fetch from `/api/videos`.
+- [~] Task: Add Backend API Route for Videos
     - [ ] Update `app/fast_api_app.py` to include a GET `/api/videos` endpoint using `VideoService`.
 - [ ] Task: Update `frontend/src/pages/HomePage.tsx`
     - [ ] Fetch videos on component mount.
