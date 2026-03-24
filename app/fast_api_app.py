@@ -38,18 +38,21 @@ from app.dependencies import (
     get_content_service,
     get_experience_service,
     get_project_service,
+    get_video_service,
 )
 from app.models.application import Application
 from app.models.blog import Blog
 from app.models.content import Content
 from app.models.experience import Experience
 from app.models.project import Project
+from app.models.video import Video
 from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
 from app.services.content_service import ContentService
 from app.services.experience_service import ExperienceService
 from app.services.firestore import close_client, get_client
 from app.services.project_service import ProjectService
+from app.services.video_service import VideoService
 
 # Suppress noisy OpenTelemetry attribute warnings
 os.environ["OTEL_PYTHON_LOG_LEVEL"] = "ERROR"
@@ -96,6 +99,7 @@ async def lifespan(app: FastAPI):
     app.state.blog_service = BlogService(db)
     app.state.content_service = ContentService(db)
     app.state.experience_service = ExperienceService(db)
+    app.state.video_service = VideoService(db)
     app.state.session_service = InMemorySessionService()
 
     yield
@@ -227,6 +231,14 @@ async def list_applications(request: Request, service: ApplicationService = Depe
 @limiter.limit("60/minute")
 async def list_blogs(request: Request, service: BlogService = Depends(get_blog_service)):
     """List all blog posts."""
+    data = await service.list()
+    return JSONResponse(content=jsonable_encoder(data))
+
+
+@app.get("/api/videos", response_model=list[Video])
+@limiter.limit("60/minute")
+async def list_videos(request: Request, service: VideoService = Depends(get_video_service)):
+    """List all YouTube videos."""
     data = await service.list()
     return JSONResponse(content=jsonable_encoder(data))
 

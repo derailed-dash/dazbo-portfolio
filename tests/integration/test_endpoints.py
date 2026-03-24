@@ -13,6 +13,7 @@ from app.dependencies import (
     get_content_service,
     get_experience_service,
     get_project_service,
+    get_video_service,
 )
 
 
@@ -41,6 +42,21 @@ def test_get_blogs():
     try:
         with TestClient(app) as client:
             response = client.get("/api/blogs")
+            assert response.status_code == 200
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_get_videos():
+    from app.fast_api_app import app
+
+    mock_service = MagicMock()
+    mock_service.list = AsyncMock(return_value=[])
+    app.dependency_overrides[get_video_service] = lambda: mock_service
+
+    try:
+        with TestClient(app) as client:
+            response = client.get("/api/videos")
             assert response.status_code == 200
     finally:
         app.dependency_overrides.clear()
