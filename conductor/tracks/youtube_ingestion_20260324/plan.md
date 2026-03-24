@@ -5,11 +5,12 @@
     - [x] Define `Video` Pydantic model with fields: `id`, `title`, `description`, `thumbnail_url`, `publish_date`, `video_url`, `is_manual`, `source_platform`.
 - [x] Task: Create `app/services/video_service.py` [8482659]
     - [x] Implement `VideoService` inheriting from `FirestoreService[Video]`.
-- [x] Task: Update `app/tools/ingest.py` [c57daf6]
+- [x] Task: Update `app/tools/ingest.py` [c57daf6, f706a89]
     - [x] Import `Video` and `VideoService`.
     - [x] Update `ingest_resources` to initialize `VideoService`.
     - [x] Update the YAML processing logic to handle a new `videos` key.
     - [x] Add helper logic to process manual video entries.
+    - [x] Refactor helpers to correctly track and display ingestion summary stats.
 - [x] Task: Write Tests for Video Ingestion [c57daf6]
     - [x] Create `tests/unit/test_ingest_videos.py` to verify YAML parsing and Firestore saving.
     - [x] Create `tests/unit/test_video_model.py` for schema validation.
