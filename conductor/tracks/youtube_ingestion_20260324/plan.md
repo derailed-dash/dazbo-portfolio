@@ -19,9 +19,9 @@
 ## Phase 2: Frontend Implementation (Service & UI)
 - [x] Task: Create `frontend/src/services/videoService.ts` [7a9e61d]
     - [x] Implement `getVideos` to fetch from `/api/videos`.
-- [~] Task: Add Backend API Route for Videos
-    - [ ] Update `app/fast_api_app.py` to include a GET `/api/videos` endpoint using `VideoService`.
-- [ ] Task: Update `frontend/src/pages/HomePage.tsx`
+- [x] Task: Add Backend API Route for Videos [662439f]
+    - [x] Update `app/fast_api_app.py` to include a GET `/api/videos` endpoint using `VideoService`.
+- [~] Task: Update `frontend/src/pages/HomePage.tsx`
     - [ ] Fetch videos on component mount.
     - [ ] Implement a new `ShowcaseCarousel` for "Videos".
     - [ ] Ensure the carousel is responsive and matches the existing design.
@@ -35,3 +35,4 @@
 - [ ] Task: Final Check and Checkpoint
     - [ ] Run `make lint` and `make test`.
 - [ ] Task: Conductor - User Manual Verification 'Documentation & Finalization' (Protocol in workflow.md)
+
