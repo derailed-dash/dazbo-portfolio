@@ -29,7 +29,7 @@ The portfolio is designed for a broad technical audience:
     - **Dev.to:** Ingested via API with AI-enriched summaries and tagging.
 - **Open Source:** GitHub repositories and public code.
 - **Credentials:** Certifications and educational milestones.
-- **Multimedia:** Video tutorials and presentation decks.
+- **Multimedia:** YouTube videos, tutorials and presentation decks.
 - **Live Demos:** Links and integrations for specific web sites and applications.
 
 ## Tone and Personality
