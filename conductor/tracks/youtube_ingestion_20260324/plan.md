@@ -11,7 +11,10 @@
     - [x] Update the YAML processing logic to handle a new `videos` key.
     - [x] Add helper logic to process manual video entries.
     - [x] Refactor helpers to correctly track and display ingestion summary stats.
-- [x] Task: Write Tests for Video Ingestion [c57daf6]
+- [x] Task: Update `app/tools/portfolio_search.py` [c308d64]
+    - [x] Import `VideoService`.
+    - [x] Update `search_portfolio` to fetch and search the `videos` collection.
+- [x] Task: Write Tests for Video Ingestion [c64b959]
     - [x] Create `tests/unit/test_ingest_videos.py` to verify YAML parsing and Firestore saving.
     - [x] Create `tests/unit/test_video_model.py` for schema validation.
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [checkpoint: 1ca7305]
@@ -29,11 +32,9 @@
     - [x] Create tests to verify the new carousel renders correctly with video data.
 - [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
 
-## Phase 3: Documentation & Finalization
+## Phase 3: Documentation & Finalization [checkpoint: 76154c5]
 - [x] Task: Update `docs/design-and-walkthrough.md` [975fcbb]
     - [x] Add example YAML entries for the `videos` section.
-- [~] Task: Final Check and Checkpoint
-    - [ ] Run `make lint` and `make test`.
-- [ ] Task: Conductor - User Manual Verification 'Documentation & Finalization' (Protocol in workflow.md)
-
-
+- [x] Task: Final Check and Checkpoint [76154c5]
+    - [x] Run `make lint` and `make test`.
+- [x] Task: Conductor - User Manual Verification 'Documentation & Finalization' (Protocol in workflow.md)
