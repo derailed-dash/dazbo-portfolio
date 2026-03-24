@@ -30,9 +30,9 @@
 - [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Documentation & Finalization
-- [~] Task: Update `docs/design-and-walkthrough.md`
-    - [ ] Add example YAML entries for the `videos` section.
-- [ ] Task: Final Check and Checkpoint
+- [x] Task: Update `docs/design-and-walkthrough.md` [975fcbb]
+    - [x] Add example YAML entries for the `videos` section.
+- [~] Task: Final Check and Checkpoint
     - [ ] Run `make lint` and `make test`.
 - [ ] Task: Conductor - User Manual Verification 'Documentation & Finalization' (Protocol in workflow.md)
 
