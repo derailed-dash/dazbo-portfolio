@@ -3,8 +3,8 @@
 ## Phase 1: Backend Implementation (Models, Services, Ingestion)
 - [x] Task: Create `app/models/video.py` [1920c2b]
     - [x] Define `Video` Pydantic model with fields: `id`, `title`, `description`, `thumbnail_url`, `publish_date`, `video_url`, `is_manual`, `source_platform`.
-- [ ] Task: Create `app/services/video_service.py`
-    - [ ] Implement `VideoService` inheriting from `FirestoreService[Video]`.
+- [x] Task: Create `app/services/video_service.py` [8482659]
+    - [x] Implement `VideoService` inheriting from `FirestoreService[Video]`.
 - [ ] Task: Update `app/tools/ingest.py`
     - [ ] Import `Video` and `VideoService`.
 ...
