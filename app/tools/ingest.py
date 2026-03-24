@@ -58,9 +58,12 @@ def slugify(text: str) -> str:
 def normalize_url(url: str | None) -> str:
     """
     Normalize a URL by stripping query parameters and trailing slashes.
+    YouTube URLs are handled specially to preserve video IDs.
     """
     if not url:
         return ""
+    if "youtube.com" in url or "youtu.be" in url:
+        return url.strip().rstrip("/")
     return url.split("?")[0].rstrip("/")
 
 
@@ -177,7 +180,7 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
     """
     console.print("[bold blue]Checking for ID migration and deduplication...[/bold blue]")
 
-    async def process_collection(service, prefix_extractor):
+    async def process_collection(service, prefix_extractor, id_generator=None):
         items = await service.list()
         url_map = {}
         for item in items:
@@ -202,11 +205,14 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
         for url, group in url_map.items():
             first_item = group[0]
             prefix = prefix_extractor(first_item)
-            title_slug = slugify(first_item.title)
-            if not title_slug:
-                title_slug = slugify(url.split("/")[-1]) or "untitled"
 
-            expected_id = f"{prefix}:{title_slug}"
+            if id_generator:
+                expected_id = id_generator(first_item)
+            else:
+                title_slug = slugify(first_item.title)
+                if not title_slug:
+                    title_slug = slugify(url.split("/")[-1]) or "untitled"
+                expected_id = f"{prefix}:{title_slug}"
 
             # Basic collision avoidance for different URLs with same title
             if expected_id in seen_expected_ids:
@@ -241,11 +247,16 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
                 if best_item.id != expected_id:
                     console.print(f"Migrated: {best_item.id} -> {expected_id}")
 
+    def video_id_gen(v):
+        video_id_match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", v.video_url)
+        video_id = video_id_match.group(1) if video_id_match else slugify(v.title)
+        return f"youtube:{video_id.lower()}"
+
     try:
         await process_collection(blog_service, lambda b: (b.platform or "medium").lower().replace(".", ""))
         await process_collection(project_service, lambda p: (p.source_platform or "github").lower())
         await process_collection(application_service, lambda a: "application")
-        await process_collection(video_service, lambda v: "youtube")
+        await process_collection(video_service, lambda v: "youtube", id_generator=video_id_gen)
     except Exception as e:
         console.print(f"[bold red]Warning: ID migration pass failed:[/bold red] {e}")
 

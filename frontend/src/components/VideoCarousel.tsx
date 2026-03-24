@@ -23,7 +23,6 @@ const VideoCarousel: React.FC = () => {
           imageUrl: v.thumbnail_url,
           tags: [v.source_platform],
           linkUrl: v.video_url,
-          sourceIcon: '/images/youtube-icon.png', // Assuming this exists or will be added
           type: 'video'
         }));
         setVideos(mapped);

@@ -12,7 +12,7 @@ interface ShowcaseCardProps {
   isPrivate?: boolean;
   sourceIcon?: string;
   sourceUrl?: string;
-  type: 'blog' | 'project' | 'app';
+  type: 'blog' | 'project' | 'app' | 'video';
 }
 
 const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
