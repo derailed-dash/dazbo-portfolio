@@ -14,10 +14,10 @@
 - [x] Task: Write Tests for Video Ingestion [c57daf6]
     - [x] Create `tests/unit/test_ingest_videos.py` to verify YAML parsing and Firestore saving.
     - [x] Create `tests/unit/test_video_model.py` for schema validation.
-- [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [checkpoint: 1ca7305]
 
 ## Phase 2: Frontend Implementation (Service & UI)
-- [ ] Task: Create `frontend/src/services/videoService.ts`
+...
     - [ ] Implement `getVideos` to fetch from `/api/videos`.
 - [ ] Task: Add Backend API Route for Videos
     - [ ] Update `app/fast_api_app.py` to include a GET `/api/videos` endpoint using `VideoService`.
