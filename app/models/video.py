@@ -4,7 +4,6 @@ Why: Defines the schema for YouTube videos in the portfolio.
 How: Uses Pydantic for validation and serialization.
 """
 
-
 from pydantic import BaseModel, Field
 
 
@@ -12,6 +11,7 @@ class Video(BaseModel):
     """
     Represents a YouTube video entry.
     """
+
     id: str | None = Field(None, description="Firestore document ID")
     title: str = Field(..., description="The title of the video")
     description: str = Field(..., description="A description of the video content")

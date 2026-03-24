@@ -7,6 +7,7 @@ Why: The managed Firestore MCP server returns literal JSON `null` for fields tha
 How: Uses the `mcp` client library directly with `streamablehttp_client` to connect,
      list tools, and print their schemas.
 """
+
 import asyncio
 import json
 from datetime import timedelta

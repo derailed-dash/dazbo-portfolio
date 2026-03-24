@@ -1,0 +1,6 @@
+videos:
+  - title: "Google AI Community: Automating the UI with Gemini CLI, MCP and Skills"
+    description: "In this workshop we were hands-on with Gemini CLI, MCP and agent skills."
+    video_url: "https://www.youtube.com/watch?v=_atpn_YA8_E"
+    thumbnail_url: "https://storage.googleapis.com/dazbo-portfolio-assets/gemini-cli-browser-automation.png"
+    publish_date: "2026-03-20"

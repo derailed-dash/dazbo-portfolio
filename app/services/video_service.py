@@ -14,5 +14,6 @@ class VideoService(FirestoreService[Video]):
     """
     Service for managing video records in Firestore.
     """
+
     def __init__(self, db: firestore.AsyncClient):
         super().__init__(db, "videos", Video)

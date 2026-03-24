@@ -15,9 +15,11 @@ from app.services.video_service import VideoService
 def mock_db():
     return MagicMock()
 
+
 @pytest.fixture
 def video_service(mock_db):
     return VideoService(mock_db)
+
 
 @pytest.mark.asyncio
 async def test_video_service_list(video_service, mock_db):
@@ -27,7 +29,7 @@ async def test_video_service_list(video_service, mock_db):
     mock_doc.to_dict.return_value = {
         "title": "Test Video",
         "description": "Desc",
-        "video_url": "https://youtube.com/watch?v=123"
+        "video_url": "https://youtube.com/watch?v=123",
     }
 
     mock_stream = AsyncMock()

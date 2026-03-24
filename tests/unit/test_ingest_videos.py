@@ -19,6 +19,7 @@ videos:
     publish_date: "2024-01-01"
 """
 
+
 @patch("app.tools.ingest.VideoService")
 @patch("app.tools.ingest.ApplicationService")
 @patch("app.tools.ingest.BlogService")

@@ -24,7 +24,7 @@ from app.tools.portfolio_search import search_portfolio
 
 
 # MONKEY-PATCH to disable strict validation in the MCP Python SDK.
-# This is to circumvent the server-side schema bug, where the 
+# This is to circumvent the server-side schema bug, where the
 # managed Firestore MCP server returns literal nulls instead of the expected "NULL_VALUE" enum string.
 async def _skip_validation(self, name, result):
     return None
@@ -53,6 +53,7 @@ if settings.gemini_api_key:
 
 class PortfolioAgent(Agent):
     """Custom Agent subclass to fix ADK app name inference."""
+
     pass
 
 
