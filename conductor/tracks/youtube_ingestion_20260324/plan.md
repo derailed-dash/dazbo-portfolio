@@ -25,7 +25,7 @@
     - [x] Fetch videos on component mount.
     - [x] Implement a new `ShowcaseCarousel` for "Videos".
     - [x] Ensure the carousel is responsive and matches the existing design.
-- [~] Task: Write Tests for Videos Carousel
+- [x] Task: Write Tests for Videos Carousel [cf559cf]
     - [ ] Create tests to verify the new carousel renders correctly with video data.
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
 
