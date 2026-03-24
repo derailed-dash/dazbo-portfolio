@@ -16,7 +16,7 @@
     - [x] Create `tests/unit/test_video_model.py` for schema validation.
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [checkpoint: 1ca7305]
 
-## Phase 2: Frontend Implementation (Service & UI)
+## Phase 2: Frontend Implementation (Service & UI) [checkpoint: 3264c88]
 - [x] Task: Create `frontend/src/services/videoService.ts` [7a9e61d]
     - [x] Implement `getVideos` to fetch from `/api/videos`.
 - [x] Task: Add Backend API Route for Videos [662439f]
@@ -25,14 +25,15 @@
     - [x] Fetch videos on component mount.
     - [x] Implement a new `ShowcaseCarousel` for "Videos".
     - [x] Ensure the carousel is responsive and matches the existing design.
-- [x] Task: Write Tests for Videos Carousel [cf559cf]
-    - [ ] Create tests to verify the new carousel renders correctly with video data.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Write Tests for Videos Carousel [383f1f7]
+    - [x] Create tests to verify the new carousel renders correctly with video data.
+- [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Documentation & Finalization
-- [ ] Task: Update `docs/design-and-walkthrough.md`
+- [~] Task: Update `docs/design-and-walkthrough.md`
     - [ ] Add example YAML entries for the `videos` section.
 - [ ] Task: Final Check and Checkpoint
     - [ ] Run `make lint` and `make test`.
 - [ ] Task: Conductor - User Manual Verification 'Documentation & Finalization' (Protocol in workflow.md)
+
 
