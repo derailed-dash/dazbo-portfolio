@@ -10,10 +10,9 @@
     - [x] Update `ingest_resources` to initialize `VideoService`.
     - [x] Update the YAML processing logic to handle a new `videos` key.
     - [x] Add helper logic to process manual video entries.
-- [ ] Task: Write Tests for Video Ingestion
-    - [ ] Create `tests/unit/test_ingest_videos.py` to verify YAML parsing and Firestore saving.
-...
-
+- [x] Task: Write Tests for Video Ingestion [c57daf6]
+    - [x] Create `tests/unit/test_ingest_videos.py` to verify YAML parsing and Firestore saving.
+    - [x] Create `tests/unit/test_video_model.py` for schema validation.
 - [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Implementation (Service & UI)
