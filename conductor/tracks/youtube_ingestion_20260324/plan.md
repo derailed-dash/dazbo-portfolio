@@ -1,13 +1,13 @@
 # Implementation Plan: YouTube Content Ingestion (Manual)
 
 ## Phase 1: Backend Implementation (Models, Services, Ingestion)
-- [ ] Task: Create `app/models/video.py`
-    - [ ] Define `Video` Pydantic model with fields: `id`, `title`, `description`, `thumbnail_url`, `publish_date`, `video_url`, `is_manual`, `source_platform`.
+- [x] Task: Create `app/models/video.py` [1920c2b]
+    - [x] Define `Video` Pydantic model with fields: `id`, `title`, `description`, `thumbnail_url`, `publish_date`, `video_url`, `is_manual`, `source_platform`.
 - [ ] Task: Create `app/services/video_service.py`
     - [ ] Implement `VideoService` inheriting from `FirestoreService[Video]`.
 - [ ] Task: Update `app/tools/ingest.py`
     - [ ] Import `Video` and `VideoService`.
-    - [ ] Update `ingest_resources` to initialize `VideoService`.
+...
     - [ ] Update the YAML processing logic to handle a new `videos` key.
     - [ ] Add helper logic to process manual video entries.
 - [ ] Task: Write Tests for Video Ingestion
