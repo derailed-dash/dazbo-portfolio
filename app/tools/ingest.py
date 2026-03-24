@@ -65,7 +65,11 @@ def normalize_url(url: str | None) -> str:
 
 
 async def _process_manual_projects(
-    project_list: list[dict], service: ProjectService | ApplicationService, default_source: str, model_class=Project
+    project_list: list[dict],
+    service: ProjectService | ApplicationService,
+    default_source: str,
+    stats: dict,
+    model_class=Project,
 ):
     """
     Helper to process manual project/application entries.
@@ -123,12 +127,14 @@ async def _process_manual_projects(
             p.id = match_id
             await service.update(p.id, p.model_dump(exclude={"id"}))
             console.print(f"Updated {default_source.capitalize()}: {p.title}")
+            stats["updated"] += 1
         else:
             await service.create(p, item_id=desired_id)
             console.print(f"Created {default_source.capitalize()}: {p.title} (ID: {desired_id})")
+            stats["new"] += 1
 
 
-async def _process_manual_videos(video_list: list[dict], service: VideoService):
+async def _process_manual_videos(video_list: list[dict], service: VideoService, stats: dict):
     """
     Helper to process manual video entries.
     """
@@ -157,9 +163,11 @@ async def _process_manual_videos(video_list: list[dict], service: VideoService):
             v.id = match_id
             await service.update(v.id, v.model_dump(exclude={"id"}))
             console.print(f"Updated Video: {v.title}")
+            stats["updated"] += 1
         else:
             await service.create(v, item_id=desired_id)
             console.print(f"Created Video: {v.title} (ID: {desired_id})")
+            stats["new"] += 1
 
 
 async def _migrate_existing_items(blog_service, project_service, application_service, video_service):
@@ -583,7 +591,7 @@ async def ingest_resources(
             manual_projects = data.get("projects", [])
             if manual_projects:
                 console.print(f"Found {len(manual_projects)} manual projects.")
-                await _process_manual_projects(manual_projects, project_service, "manual")
+                await _process_manual_projects(manual_projects, project_service, "manual", stats["manual"])
 
             # Process Applications
             manual_apps = data.get("applications", [])
@@ -602,13 +610,15 @@ async def ingest_resources(
                     valid_apps.append(app_data)
 
                 if valid_apps:
-                    await _process_manual_projects(valid_apps, application_service, "application", model_class=Application)
+                    await _process_manual_projects(
+                        valid_apps, application_service, "application", stats["manual"], model_class=Application
+                    )
 
             # Process Videos
             manual_videos = data.get("videos", [])
             if manual_videos:
                 console.print(f"Found {len(manual_videos)} manual videos.")
-                await _process_manual_videos(manual_videos, video_service)
+                await _process_manual_videos(manual_videos, video_service, stats["videos"])
 
             # Process Blogs
             manual_blogs = data.get("blogs", [])
