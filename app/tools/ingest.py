@@ -160,7 +160,7 @@ async def _process_manual_videos(video_list: list[dict], service: VideoService, 
         # https://www.youtube.com/watch?v=dQw4w9WgXcQ -> dQw4w9WgXcQ
         video_id_match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", v.video_url)
         video_id = video_id_match.group(1) if video_id_match else slugify(v.title)
-        desired_id = f"youtube:{video_id.lower()}"
+        desired_id = f"youtube:{video_id}"
 
         if match_id:
             v.id = match_id
@@ -250,7 +250,7 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
     def video_id_gen(v):
         video_id_match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", v.video_url)
         video_id = video_id_match.group(1) if video_id_match else slugify(v.title)
-        return f"youtube:{video_id.lower()}"
+        return f"youtube:{video_id}"
 
     try:
         await process_collection(blog_service, lambda b: (b.platform or "medium").lower().replace(".", ""))

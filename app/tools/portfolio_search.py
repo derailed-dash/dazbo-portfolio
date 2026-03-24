@@ -89,18 +89,10 @@ async def search_portfolio(query: str) -> str:
             continue
 
     for v in videos:
-        # Check title
-        if query_lower in v.title.lower():
+        if query_lower in v.title.lower() or (v.description and query_lower in v.description.lower()):
             results.append(
                 f"[Video] ID: {v.id} | Title: {v.title} | Desc: {v.description} (URL: {v.video_url}, Date: {v.publish_date})"
             )
-            continue
-        # Check description
-        if v.description and query_lower in v.description.lower():
-            results.append(
-                f"[Video] ID: {v.id} | Title: {v.title} | Desc: {v.description} (URL: {v.video_url}, Date: {v.publish_date})"
-            )
-            continue
 
     total_count = len(projects) + len(blogs) + len(videos)
     if not results:

@@ -51,4 +51,4 @@ def test_ingest_videos_yaml(mock_firestore, mock_project_service, mock_blog_serv
 
     assert video_obj.title == "Cool YouTube Tutorial"
     assert video_obj.source_platform == "youtube"
-    assert item_id == "youtube:dqw4w9wgxcq"
+    assert item_id == "youtube:dQw4w9WgXcQ"
