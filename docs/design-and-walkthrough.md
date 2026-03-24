@@ -454,6 +454,13 @@ applications:
     image_url: "https://storage.googleapis.com/<project-id>-assets/aoc-walkthroughs.png"
     tags: ["python", "algorithms", "education"]
 
+videos:
+  - title: "YouTube Tutorial"
+    description: "A technical presentation about agentic AI."
+    video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    thumbnail_url: "https://storage.googleapis.com/<project-id>-assets/video-thumb.png"
+    publish_date: "2024-03-24"
+
 blogs:
   - title: "Understanding Python Decorators"
     summary: "A deep dive into how decorators work under the hood."
@@ -468,6 +475,8 @@ blogs:
 *   **Projects:** `title` (required), `description`, `repo_url`, `demo_url`, `image_url`, `tags` (list), `featured` (bool), `metadata_only` (bool).
 
 *   **Applications:** `title` (required), `description` (required), `demo_url` (required), `repo_url` (optional), `image_url`, `tags` (list). These are automatically marked as `featured: true` and `source_platform: "application"`.
+
+*   **Videos:** `title` (required), `description` (required), `video_url` (required), `thumbnail_url` (optional), `publish_date` (ISO 8601).
 
 *   **Blogs:** `title` (required), `summary`, `date` (ISO 8601), `platform` (e.g., "External", "Substack"), `url` (required), `metadata_only` (bool).
 

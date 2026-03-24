@@ -10,7 +10,18 @@ export interface ShowcaseItem {
   isPrivate?: boolean;
   sourceIcon?: string;
   sourceUrl?: string;
-  type: 'blog' | 'project' | 'app';
+  type: 'blog' | 'project' | 'app' | 'video';
+}
+
+export interface Video {
+  id?: string;
+  title: string;
+  description: string;
+  thumbnail_url?: string;
+  publish_date?: string;
+  video_url: string;
+  is_manual: boolean;
+  source_platform: string;
 }
 
 export interface Project {

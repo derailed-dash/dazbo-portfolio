@@ -1,6 +1,6 @@
 """
 Description: Tool for searching the portfolio.
-Why: Allows the agent to find projects and blogs based on user queries.
+Why: Allows the agent to find projects, blogs, and videos based on user queries.
 How: Fetches all items from Firestore and filters them in-memory (for now).
 """
 
@@ -9,13 +9,14 @@ import logging
 from app.services.blog_service import BlogService
 from app.services.firestore import get_client
 from app.services.project_service import ProjectService
+from app.services.video_service import VideoService
 
 logger = logging.getLogger(__name__)
 
 
 async def search_portfolio(query: str) -> str:
     """
-    Searches for projects and blogs matching the query (title, description, tags).
+    Searches for projects, blogs, and videos matching the query (title, description, tags).
 
     Args:
         query: The search term (e.g., "python", "react").
@@ -27,11 +28,13 @@ async def search_portfolio(query: str) -> str:
     db = get_client()
     project_service = ProjectService(db)
     blog_service = BlogService(db)
+    video_service = VideoService(db)
 
     # Fetch all items (optimization: use firestore queries later)
     projects = await project_service.list()
     blogs = await blog_service.list()
-    logger.debug(f"Fetched {len(projects)} projects and {len(blogs)} blogs")
+    videos = await video_service.list()
+    logger.debug(f"Fetched {len(projects)} projects, {len(blogs)} blogs and {len(videos)} videos")
 
     results = []
     query_lower = query.lower()
@@ -85,10 +88,15 @@ async def search_portfolio(query: str) -> str:
             )
             continue
 
-    if not results:
-        return f"No projects or blogs found matching '{query}'. (Database contains {len(projects)} projects and {len(blogs)} blogs total)"
+    for v in videos:
+        if query_lower in v.title.lower() or (v.description and query_lower in v.description.lower()):
+            results.append(
+                f"[Video] ID: {v.id} | Title: {v.title} | Desc: {v.description} (URL: {v.video_url}, Date: {v.publish_date})"
+            )
 
-    header = (
-        f"Found {len(results)} matching items (Database contains {len(projects)} projects and {len(blogs)} blogs total):"
-    )
+    total_count = len(projects) + len(blogs) + len(videos)
+    if not results:
+        return f"No projects, blogs or videos found matching '{query}'. (Database contains {total_count} items total)"
+
+    header = f"Found {len(results)} matching items (Database contains {total_count} items total):"
     return header + "\n" + "\n".join(results)

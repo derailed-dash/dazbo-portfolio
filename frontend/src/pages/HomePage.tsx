@@ -4,6 +4,7 @@ import { useSeo } from '../hooks/useSeo';
 import HeroSection from '../components/HeroSection';
 import BlogCarousel from '../components/BlogCarousel';
 import ProjectCarousel from '../components/ProjectCarousel';
+import VideoCarousel from '../components/VideoCarousel';
 import AppsCarousel from '../components/AppsCarousel';
 
 const HomePage: React.FC = () => {
@@ -14,6 +15,7 @@ const HomePage: React.FC = () => {
 
       <BlogCarousel />
       <ProjectCarousel />
+      <VideoCarousel />
       <AppsCarousel />
     </>
   );

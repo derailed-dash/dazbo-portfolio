@@ -28,6 +28,7 @@ from app.models.application import Application
 from app.models.blog import Blog
 from app.models.content import Content
 from app.models.project import Project
+from app.models.video import Video
 from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
 from app.services.connectors.devto_connector import DevToConnector
@@ -38,6 +39,7 @@ from app.services.content_enrichment_service import ContentEnrichmentService
 from app.services.content_service import ContentService
 from app.services.project_service import ProjectService
 from app.services.simulated_service import SimulatedContentEnrichmentService, SimulatedFirestoreService
+from app.services.video_service import VideoService
 
 app = typer.Typer(help="Ingest portfolio resources from external platforms.")
 console = Console()
@@ -56,14 +58,21 @@ def slugify(text: str) -> str:
 def normalize_url(url: str | None) -> str:
     """
     Normalize a URL by stripping query parameters and trailing slashes.
+    YouTube URLs are handled specially to preserve video IDs.
     """
     if not url:
         return ""
+    if "youtube.com" in url or "youtu.be" in url:
+        return url.strip().rstrip("/")
     return url.split("?")[0].rstrip("/")
 
 
 async def _process_manual_projects(
-    project_list: list[dict], service: ProjectService | ApplicationService, default_source: str, model_class=Project
+    project_list: list[dict],
+    service: ProjectService | ApplicationService,
+    default_source: str,
+    stats: dict,
+    model_class=Project,
 ):
     """
     Helper to process manual project/application entries.
@@ -121,19 +130,57 @@ async def _process_manual_projects(
             p.id = match_id
             await service.update(p.id, p.model_dump(exclude={"id"}))
             console.print(f"Updated {default_source.capitalize()}: {p.title}")
+            stats["updated"] += 1
         else:
             await service.create(p, item_id=desired_id)
             console.print(f"Created {default_source.capitalize()}: {p.title} (ID: {desired_id})")
+            stats["new"] += 1
 
 
-async def _migrate_existing_items(blog_service, project_service, application_service):
+async def _process_manual_videos(video_list: list[dict], service: VideoService, stats: dict):
+    """
+    Helper to process manual video entries.
+    """
+    existing_items = await service.list()
+    existing_urls = {normalize_url(v.video_url): v.id for v in existing_items if v.video_url}
+
+    for video_data in video_list:
+        video_data.setdefault("is_manual", True)
+        video_data.setdefault("source_platform", "youtube")
+
+        try:
+            v = Video(**video_data)
+        except Exception as validation_err:
+            console.print(f"[red]Validation Error for video {video_data.get('title')}: {validation_err}[/red]")
+            continue
+
+        match_id = existing_urls.get(normalize_url(v.video_url))
+
+        # Try to extract video ID from URL for a stable slug
+        # https://www.youtube.com/watch?v=dQw4w9WgXcQ -> dQw4w9WgXcQ
+        video_id_match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", v.video_url)
+        video_id = video_id_match.group(1) if video_id_match else slugify(v.title)
+        desired_id = f"youtube:{video_id}"
+
+        if match_id:
+            v.id = match_id
+            await service.update(v.id, v.model_dump(exclude={"id"}))
+            console.print(f"Updated Video: {v.title}")
+            stats["updated"] += 1
+        else:
+            await service.create(v, item_id=desired_id)
+            console.print(f"Created Video: {v.title} (ID: {desired_id})")
+            stats["new"] += 1
+
+
+async def _migrate_existing_items(blog_service, project_service, application_service, video_service):
     """
     Renames existing documents to use the platform-prefixed slug ID format.
     Also handles basic deduplication by URL.
     """
     console.print("[bold blue]Checking for ID migration and deduplication...[/bold blue]")
 
-    async def process_collection(service, prefix_extractor):
+    async def process_collection(service, prefix_extractor, id_generator=None):
         items = await service.list()
         url_map = {}
         for item in items:
@@ -144,6 +191,8 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
                 url = normalize_url(item.repo_url)
             elif hasattr(item, "demo_url") and item.demo_url:
                 url = normalize_url(item.demo_url)
+            elif hasattr(item, "video_url") and item.video_url:
+                url = normalize_url(item.video_url)
 
             if not url:
                 continue
@@ -156,11 +205,14 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
         for url, group in url_map.items():
             first_item = group[0]
             prefix = prefix_extractor(first_item)
-            title_slug = slugify(first_item.title)
-            if not title_slug:
-                title_slug = slugify(url.split("/")[-1]) or "untitled"
 
-            expected_id = f"{prefix}:{title_slug}"
+            if id_generator:
+                expected_id = id_generator(first_item)
+            else:
+                title_slug = slugify(first_item.title)
+                if not title_slug:
+                    title_slug = slugify(url.split("/")[-1]) or "untitled"
+                expected_id = f"{prefix}:{title_slug}"
 
             # Basic collision avoidance for different URLs with same title
             if expected_id in seen_expected_ids:
@@ -195,10 +247,16 @@ async def _migrate_existing_items(blog_service, project_service, application_ser
                 if best_item.id != expected_id:
                     console.print(f"Migrated: {best_item.id} -> {expected_id}")
 
+    def video_id_gen(v):
+        video_id_match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", v.video_url)
+        video_id = video_id_match.group(1) if video_id_match else slugify(v.title)
+        return f"youtube:{video_id}"
+
     try:
         await process_collection(blog_service, lambda b: (b.platform or "medium").lower().replace(".", ""))
         await process_collection(project_service, lambda p: (p.source_platform or "github").lower())
         await process_collection(application_service, lambda a: "application")
+        await process_collection(video_service, lambda v: "youtube", id_generator=video_id_gen)
     except Exception as e:
         console.print(f"[bold red]Warning: ID migration pass failed:[/bold red] {e}")
 
@@ -220,6 +278,7 @@ async def ingest_resources(
     application_service = ApplicationService(db)
     blog_service = BlogService(db)
     content_service = ContentService(db)
+    video_service = VideoService(db)
     enrichment_service = None
 
     if simulate:
@@ -228,6 +287,7 @@ async def ingest_resources(
         application_service = SimulatedFirestoreService(application_service)
         blog_service = SimulatedFirestoreService(blog_service)
         content_service = SimulatedFirestoreService(content_service)
+        video_service = SimulatedFirestoreService(video_service)
         enrichment_service = SimulatedContentEnrichmentService()
 
         console.print("\n[bold magenta]--- BEFORE SNAPSHOT ---[/bold magenta]")
@@ -236,12 +296,13 @@ async def ingest_resources(
             ("Applications", application_service),
             ("Blogs", blog_service),
             ("Content", content_service),
+            ("Videos", video_service),
         ]:
             items = await svc.list()
             console.print(f"{name}: {len(items)} items")
 
     # 0. Migrate existing data to new ID format
-    await _migrate_existing_items(blog_service, project_service, application_service)
+    await _migrate_existing_items(blog_service, project_service, application_service, video_service)
 
     # Statistics tracking
     stats = {
@@ -250,6 +311,7 @@ async def ingest_resources(
         "devto": {"new": 0, "updated": 0, "skipped": 0, "filtered": 0, "enriched": 0},
         "manual": {"new": 0, "updated": 0, "skipped": 0},
         "about": {"updated": 0},
+        "videos": {"new": 0, "updated": 0, "skipped": 0},
     }
 
     # --- About Page ---
@@ -540,7 +602,7 @@ async def ingest_resources(
             manual_projects = data.get("projects", [])
             if manual_projects:
                 console.print(f"Found {len(manual_projects)} manual projects.")
-                await _process_manual_projects(manual_projects, project_service, "manual")
+                await _process_manual_projects(manual_projects, project_service, "manual", stats["manual"])
 
             # Process Applications
             manual_apps = data.get("applications", [])
@@ -559,7 +621,15 @@ async def ingest_resources(
                     valid_apps.append(app_data)
 
                 if valid_apps:
-                    await _process_manual_projects(valid_apps, application_service, "application", model_class=Application)
+                    await _process_manual_projects(
+                        valid_apps, application_service, "application", stats["manual"], model_class=Application
+                    )
+
+            # Process Videos
+            manual_videos = data.get("videos", [])
+            if manual_videos:
+                console.print(f"Found {len(manual_videos)} manual videos.")
+                await _process_manual_videos(manual_videos, video_service, stats["videos"])
 
             # Process Blogs
             manual_blogs = data.get("blogs", [])
@@ -614,6 +684,7 @@ async def ingest_resources(
             ("Applications", application_service),
             ("Blogs", blog_service),
             ("Content", content_service),
+            ("Videos", video_service),
         ]:
             items = await svc.list()
             console.print(f"{name}: {len(items)} items")

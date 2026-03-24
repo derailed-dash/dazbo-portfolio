@@ -12,6 +12,7 @@ from app.services.blog_service import BlogService
 from app.services.content_service import ContentService
 from app.services.experience_service import ExperienceService
 from app.services.project_service import ProjectService
+from app.services.video_service import VideoService
 
 
 def get_project_service(request: Request) -> ProjectService:
@@ -32,6 +33,10 @@ def get_content_service(request: Request) -> ContentService:
 
 def get_experience_service(request: Request) -> ExperienceService:
     return request.app.state.experience_service
+
+
+def get_video_service(request: Request) -> VideoService:
+    return request.app.state.video_service
 
 
 def get_session_service(request: Request) -> InMemorySessionService:
