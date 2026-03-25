@@ -35,6 +35,7 @@
 - [x] Why can't the chatbot count how many articles I've got?
 - [x] Add MCP for Firestore. Don't forget to enable MCP server and APIs.
 - [x] Add YouTube content.
+- [x] Add GitHub stars and custom sorting to the Project carousel.
 - [ ] Avoid unnecessary updates when running Medium RSS after zip ingestion, or vice versa.  
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
 - [ ] Implement RAG:

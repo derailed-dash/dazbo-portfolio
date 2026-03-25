@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
-import { ExternalLink, Github, Lock } from 'lucide-react';
+import { ExternalLink, Github, Lock, Star } from 'lucide-react';
 
 interface ShowcaseCardProps {
   title: string;
@@ -10,6 +10,7 @@ interface ShowcaseCardProps {
   linkUrl?: string;
   repoUrl?: string;
   isPrivate?: boolean;
+  stargazers_count?: number;
   sourceIcon?: string;
   sourceUrl?: string;
   type: 'blog' | 'project' | 'app' | 'video';
@@ -23,6 +24,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   linkUrl,
   repoUrl,
   isPrivate,
+  stargazers_count,
   sourceIcon,
   sourceUrl,
   type
@@ -108,8 +110,15 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
             )}
           </div>
 
-          {sourceIcon && (
-            <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center gap-2">
+            {stargazers_count !== undefined && stargazers_count > 0 && type === 'project' && (
+              <div className="d-flex align-items-center text-warning me-1 fw-bold" style={{ fontSize: '0.8rem' }}>
+                <Star size={14} className="me-1" fill="currentColor" />
+                <span>{stargazers_count}</span>
+              </div>
+            )}
+            {sourceIcon && (
+              <div className="d-flex align-items-center">
               {safeSourceUrl ? (
                 <a 
                   href={safeSourceUrl} 
@@ -136,6 +145,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
               )}
             </div>
           )}
+          </div>
         </div>
       </Card.Body>
     </Card>
