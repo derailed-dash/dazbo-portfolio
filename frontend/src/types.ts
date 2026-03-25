@@ -8,6 +8,8 @@ export interface ShowcaseItem {
   linkUrl?: string;
   repoUrl?: string;
   isPrivate?: boolean;
+  stargazers_count?: number;
+  updated_at?: string;
   sourceIcon?: string;
   sourceUrl?: string;
   type: 'blog' | 'project' | 'app' | 'video';
@@ -32,6 +34,8 @@ export interface Project {
   demo_url?: string;
   image_url?: string;
   tags: string[];
+  stargazers_count?: number;
+  updated_at?: string;
   featured: boolean;
   source_platform?: string;
   is_manual: boolean;

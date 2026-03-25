@@ -20,6 +20,8 @@ class Project(BaseModel):
     image_url: str | None = None
     featured: bool = False
     source_platform: str | None = None
+    stargazers_count: int = 0
+    updated_at: datetime | None = None
     is_manual: bool = True
     metadata_only: bool = False
     created_at: datetime = Field(default_factory=datetime.now)

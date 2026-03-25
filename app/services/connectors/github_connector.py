@@ -38,6 +38,7 @@ class GitHubConnector:
                 title=repo.get("name"),
                 description=repo.get("description") or "",
                 repo_url=repo.get("html_url"),
+                stargazers_count=repo.get("stargazers_count") or 0,
                 tags=repo.get("topics") or [],
                 source_platform="github",
                 is_manual=False,
@@ -45,6 +46,9 @@ class GitHubConnector:
 
             if created_at := repo.get("created_at"):
                 project.created_at = datetime.fromisoformat(created_at)
+
+            if updated_at := repo.get("updated_at"):
+                project.updated_at = datetime.fromisoformat(updated_at)
 
             # Add language to tags if present
             if repo.get("language") and repo.get("language") not in project.tags:

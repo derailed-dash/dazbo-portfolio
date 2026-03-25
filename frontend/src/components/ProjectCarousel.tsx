@@ -23,8 +23,22 @@ const ProjectCarousel: React.FC = () => {
           tags: p.tags,
           linkUrl: p.demo_url,
           repoUrl: p.repo_url,
+          stargazers_count: p.stargazers_count,
+          updated_at: p.updated_at,
           type: 'project'
         }));
+        // Sort by stargazers_count descending, then by updated_at descending
+        mapped.sort((a, b) => {
+          const starsA = a.stargazers_count || 0;
+          const starsB = b.stargazers_count || 0;
+          if (starsA !== starsB) {
+            return starsB - starsA;
+          }
+          const dateA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+          const dateB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+          return dateB - dateA;
+        });
+
         setProjects(mapped);
       })
       .catch(() => setError('Failed to load projects.'))
