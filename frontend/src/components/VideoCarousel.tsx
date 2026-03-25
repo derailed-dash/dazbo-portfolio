@@ -15,8 +15,15 @@ const VideoCarousel: React.FC = () => {
   useEffect(() => {
     getVideos()
       .then((data: Video[]) => {
+        // Sort data by publish_date descending
+        const sortedData = [...data].sort((a, b) => {
+          if (!a.publish_date) return 1;
+          if (!b.publish_date) return -1;
+          return new Date(b.publish_date).getTime() - new Date(a.publish_date).getTime();
+        });
+
         // Map backend video data to ShowcaseCarousel item format
-        const mapped: ShowcaseItem[] = data.map((v) => ({
+        const mapped: ShowcaseItem[] = sortedData.map((v) => ({
           id: v.id || v.video_url,
           title: v.title,
           description: v.description,
