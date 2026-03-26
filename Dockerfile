@@ -22,13 +22,12 @@ RUN pip install --no-cache-dir uv==0.8.13
 WORKDIR /code
 
 # Copy dependency manifests and install.
-# We use cache mounting to speed up builds and synchronization flags to:
+# We use cache mounting (if supported by builder) and synchronization flags to:
 # 1. --frozen: Ensure the environment matches the lockfile.
 # 2. --no-dev: Exclude testing/dev tools from the production image.
 # 3. --no-install-project: Skip installing the local packages until code is copied.
 COPY ./pyproject.toml ./README.md ./uv.lock ./
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-install-project
+RUN uv sync --frozen --no-dev --no-install-project
 
 # Copy the backend application code.
 COPY ./app ./app
