@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # Stage 1: Build the React frontend
 # We use a Node image to build the frontend assets. These are later copied 
 # into the final production image, keeping the final image lean.
