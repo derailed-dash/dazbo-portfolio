@@ -194,7 +194,6 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
 
                 # If it's the final event, notify the stream is closing
                 if getattr(event, "turn_complete", False):
-                    # logger.info("Agent turn complete")
                     yield "data: [DONE]\n\n"
         except Exception as e:
             logger.error(f"Critical error in event generator: {e}", exc_info=True)
@@ -207,7 +206,7 @@ async def chat_stream(request: Request, chat_request: ChatRequest):
 @app.post("/api/feedback")
 def collect_feedback(feedback: Feedback) -> dict[str, str]:
     """Collect and log feedback."""
-    logger.info(f"Feedback received: {feedback.model_dump()}")
+    logger.debug(f"Feedback received: {feedback.model_dump()}")
     return {"status": "success"}
 
 

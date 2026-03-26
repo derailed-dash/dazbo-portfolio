@@ -16,7 +16,8 @@ WORKDIR /code
 
 # Copy backend requirements and install
 COPY ./pyproject.toml ./README.md ./uv.lock ./
-RUN uv sync --frozen
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev --no-install-project
 
 # Copy backend code
 COPY ./app ./app
@@ -30,6 +31,11 @@ ENV COMMIT_SHA=${COMMIT_SHA}
 ARG AGENT_VERSION=0.0.0
 ENV AGENT_VERSION=${AGENT_VERSION}
 
+RUN useradd -m appuser
+USER appuser
+
+ENV PATH="/code/.venv/bin:$PATH"
+
 EXPOSE 8080
 
-CMD ["uv", "run", "uvicorn", "app.fast_api_app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "app.fast_api_app:app", "--host", "0.0.0.0", "--port", "8080"]
