@@ -19,7 +19,7 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 - @conductor/tech-stack.md - an overview of the tech stack
 - @TODO.md - list of tasks to complete
 - @Makefile - dev commands
-- @docs/design-and-walkthrough.md - design and walkthrough, including design decisions and implementation
+- @docs/architecture-and-walkthrough.md - design and walkthrough, including design decisions and implementation
 - @docs/testing.md - testing docs, including descriptions of all tests
 - @deployment/README.md - deployment docs
 

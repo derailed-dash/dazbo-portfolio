@@ -1,4 +1,4 @@
-# Design and Walkthrough
+# Architecture and Walkthrough
 
 ## Table of Contents
 - [Design Decisions](#design-decisions)
@@ -314,18 +314,9 @@ The architecture is designed to maximize code reuse between the runtime API and 
 3.  **Generic Data Access**: The `FirestoreService` (`app/services/firestore_base.py`) provides a generic implementation of CRUD operations using Python 3.12+ type parameters. Domain-specific services (`ProjectService`, etc.) inherit from this base, reducing boilerplate code.
 4.  **Agent Integration**: The Gemini Agent (`app/agent.py`) is integrated directly into the FastAPI application. It shares the same runtime environment and can potentially access the same services (via tools) to answer user queries about the portfolio content.
 
-## Frontend Implementation
+## Visual Design & Frontend Components
 
-The frontend is a single-page application (SPA) built with React and Vite. It is designed to be responsive, performant, and visually consistent with the Material Design system.
-
-### Key Components
-
-*   **`MainLayout`**: The top-level wrapper for all pages. It includes the `AppNavbar` (top), `Footer` (bottom), and the `ChatWidget`.
-*   **`ShowcaseCarousel`**: A reusable component for displaying collections of items (blogs, projects, etc.).
-    *   **Responsiveness**: On mobile, it displays 1 item per slide. On desktop, it displays a grid of 3 items per slide.
-    *   **Navigation**: Includes custom-styled "Previous" and "Next" controls and indicators.
-*   **`ChatWidget`**: A floating action button (FAB) that expands into a chat interface. It currently serves as a shell for future agent integration.
-*   **`AboutPage`**: A dedicated page for the professional profile, rendering Markdown content from Firestore with a glassmorphic UI design.
+For detailed information on the visual identity, typography, UI components (such as `ShowcaseCarousel` and `ChatWidget`), aesthetic choices like Glassmorphism, and CLI UX, please refer to the dedicated [docs/DESIGN.md](DESIGN.md) document.
 
 ### Development Workflow
 
@@ -406,12 +397,7 @@ The ingestion pipeline performs the following steps:
 
 ### Ingestion Experience (CLI)
 
-The CLI tool (`app/tools/ingest.py`) provides rich visual feedback:
-*   **Progress Bar:** Powered by `rich.progress`, showing real-time status (Reading, Enriching, Saving) for both Dev.to and Medium.
-*   **Summary Stats:** At the end, a detailed report shows counts for New, Updated, Enriched, Skipped, and Filtered items per platform.
-
-#### Console UX with Rich
-The application uses the `rich` library to enhance the CLI experience with spinners, progress bars, and thread-safe logging.
+The CLI tool (`app/tools/ingest.py`) provides visual feedback during lengthy operations. For details on the console UX elements like spinners and progress bars, please refer to the CLI UX section in [docs/DESIGN.md](DESIGN.md).
 
 ### Static Assets (Images)
 

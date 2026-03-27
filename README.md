@@ -178,4 +178,8 @@ The repository includes a Terraform configuration for the setup of a production 
 
 ## Design
 
-See [docs/design-and-walkthrough.md](docs/design-and-walkthrough.md) for a detailed design and walkthrough of the application.
+See [docs/architecture-and-walkthrough.md](docs/architecture-and-walkthrough.md) for a detailed design and walkthrough of the application.
+
+## Visual Design
+
+For details strictly related to the aesthetic style, typography, visual effects (e.g., Glassmorphism), and overall CLI/app UX, see [docs/DESIGN.md](docs/DESIGN.md).
