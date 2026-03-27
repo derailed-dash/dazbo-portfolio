@@ -152,6 +152,7 @@ The infrastructure has been migrated from PostgreSQL to Firestore. Legacy SQL re
 The application utilizes a Google-managed Model Context Protocol (MCP) server to allow the Gemini agent to interact directly with Firestore.
 
 #### Enablement (Manual Step)
+
 While basic APIs are enabled via Terraform, the Firestore MCP service currently requires a one-time manual enablement using the `gcloud` CLI:
 
 ```bash

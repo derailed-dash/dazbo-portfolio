@@ -27,15 +27,30 @@ const ProjectCarousel: React.FC = () => {
           updated_at: p.updated_at,
           type: 'project'
         }));
-        // Sort by stargazers_count descending, then by updated_at descending
+        const FORTY_FIVE_DAYS_MS = 45 * 24 * 60 * 60 * 1000;
+        const now = Date.now();
+
+        // Sort: if updated <= 45 days ago AND has > 0 stars -> prioritise by updated_at.
+        // Else -> sort by stargazers_count descending, then updated_at descending.
         mapped.sort((a, b) => {
+          const dateA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+          const dateB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+          
+          const aRecent = (now - dateA) <= FORTY_FIVE_DAYS_MS && (a.stargazers_count || 0) > 0;
+          const bRecent = (now - dateB) <= FORTY_FIVE_DAYS_MS && (b.stargazers_count || 0) > 0;
+
+          if (aRecent && !bRecent) return -1;
+          if (!aRecent && bRecent) return 1;
+
+          if (aRecent && bRecent) {
+            return dateB - dateA;
+          }
+
           const starsA = a.stargazers_count || 0;
           const starsB = b.stargazers_count || 0;
           if (starsA !== starsB) {
             return starsB - starsA;
           }
-          const dateA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-          const dateB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
           return dateB - dateA;
         });
 
