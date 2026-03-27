@@ -1,5 +1,5 @@
 - [x] Create README.md and GEMINI.md
-- [x] Create design-and-walkthrough doc
+- [x] Create and split architecture-and-walkthrough and DESIGN docs
 - [x] Create testing doc
 - [x] Implement Conductor
 - [x] Add Gemini PR GitHub Actions
