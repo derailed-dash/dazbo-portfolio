@@ -46,6 +46,7 @@ from app.models.content import Content
 from app.models.experience import Experience
 from app.models.project import Project
 from app.models.video import Video
+from app.seo_constants import get_person_schema
 from app.services.application_service import ApplicationService
 from app.services.blog_service import BlogService
 from app.services.content_service import ContentService
@@ -346,41 +347,18 @@ def _generate_head_tags(title: str, description: str, path: str, base_url: str, 
 
 
 def _get_seo_data_dict(path: str, base_url: str) -> dict:
+    base_json_ld = get_person_schema(base_url)
+
     seo_map = {
         "/": {
             "title": SITE_TITLE,
             "description": 'The professional portfolio of Darren "Dazbo" Lester: Enterprise Cloud Architect, Google Cloud Evangelist, AI Champion and Google Developer Expert (GDE).',
-            "json_ld": {
-                "@context": "https://schema.org",
-                "@type": "Person",
-                "@id": "https://darrenlester.net/#person",
-                "name": "Darren Lester",
-                "alternateName": "Dazbo",
-                "jobTitle": "Enterprise Cloud Architect",
-                "url": base_url,
-                "sameAs": [
-                    "https://github.com/derailed-dash",
-                    "https://www.linkedin.com/in/darren-lester-architect/",
-                    "https://medium.com/@derailed.dash",
-                    "https://dev.to/deraileddash",
-                    "https://sessionize.com/dazbo/",
-                ],
-                "knowsAbout": [
-                    "Google Cloud",
-                    "Generative AI",
-                    "Model Context Protocol",
-                    "Architecture",
-                    "ADK",
-                    "Agentic AI",
-                    "Gemini",
-                    "Gemini CLI",
-                ],
-                "description": "Enterprise Cloud Architect, Google Developer Expert (GDE), and Google AI Champion, specializing in Google Cloud, agentic AI, cloud architecture and cloud strategy. Note: Not to be confused with the frontend engineer or other individuals of the same name.",
-            },
+            "json_ld": base_json_ld,
         },
         "/about": {
             "title": "About Darren Lester",
             "description": 'Learn more about Darren "Dazbo" Lester, his background, skills and achievements.',
+            "json_ld": base_json_ld,
         },
     }
 
