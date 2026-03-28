@@ -23,6 +23,17 @@ In includes Terraform IaC for deployment to Google Cloud, using:
 - Author: Darren "Dazbo" Lester
 - Repo: https://github.com/derailed-dash/dazbo-portfolio
 
+## Table of Contents
+
+- [Repo Metadata](#repo-metadata)
+- [Key Project Documentation](#key-project-documentation)
+- [Key Links](#key-links)
+- [Project Structure](#project-structure)
+- [Architecture and Tech Stack - at a Glance](#architecture-and-tech-stack---at-a-glance)
+- [Quick Start: Working With This Repo](#quick-start-working-with-this-repo)
+- [Useful Commands](#useful-commands)
+- [Deployment](#deployment)
+
 ## Key Project Documentation
 
 | Document | Description |
@@ -68,7 +79,34 @@ dazbo-portfolio/
 └── TODO.md                    # TODO list
 ```
 
+## Architecture and Tech Stack - at a Glance
+
+| Component / Pattern | Details |
+| :--- | :--- |
+| **Frontend** | React 19, TypeScript, Vite, Glassmorphism UI |
+| **Backend** | Python 3.12, FastAPI, Pydantic v2 |
+| **AI / Agent** | Google ADK, Gemini 3, `google-genai` SDK |
+| **Database** | Google Firestore (Native Mode) |
+| **Infra / DevOps** | Terraform (IaC), Cloud Build (CI/CD), Docker, `uv` |
+| **Unified Origin** | Single FastAPI backend serving both REST API and React SPA |
+| **Hybrid Agent Tooling** | Managed Firestore MCP + bespoke Python tools for discovery and ranking |
+| **Serverless Foundation** | Fully managed GCP deployment via Cloud Run and Firestore |
+| **Automated Ingestion** | CLI harvesting tool with AI-powered enrichment for GitHub, Medium, and Dev.to |
+
+For a deep dive into implementation, see [docs/architecture-and-walkthrough.md](docs/architecture-and-walkthrough.md).
+
 ## Quick Start: Working With This Repo
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed and configured:
+
+- **Python 3.12+**
+- **[uv](https://docs.astral.sh/uv/)**: Fast Python package and environment management.
+- **[Google Cloud CLI (gcloud)](https://cloud.google.com/sdk/docs/install)**: For interacting with Google Cloud services.
+- **[Terraform](https://developer.hashicorp.com/terraform/downloads)**: For infrastructure as code.
+- **[Docker](https://docs.docker.com/get-docker/)**: For building and running unified container images. (It is not essential, but useful for local testing.)
+- **[GNU Make](https://www.gnu.org/software/make/)**: For running automated development tasks. (Though you can always run the commands manually.)
 
 ### One-Time Setup
 
