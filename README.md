@@ -20,7 +20,19 @@ In includes Terraform IaC for deployment to Google Cloud, using:
 
 ## Repo Metadata
 
-Author: Darren "Dazbo" Lester
+- Author: Darren "Dazbo" Lester
+- Repo: https://github.com/derailed-dash/dazbo-portfolio
+
+## Key Project Documentation
+
+| Document | Description |
+| --- | --- |
+| [README.md](README.md) | This file - the developer front door |
+| [docs/architecture-and-walkthrough.md](docs/architecture-and-walkthrough.md) | Architecture and walkthrough, including design decisions and data models |
+| [docs/DESIGN.md](docs/DESIGN.md) | UI design, visual identity, and frontend UI components |
+| [docs/testing.md](docs/testing.md) | Testing docs, including descriptions of all tests |
+| [deployment/README.md](deployment/README.md) | Deployment guidance, including Terraform, and CI/CD |
+| [GEMINI.md](GEMINI.md) | Guidance for Gemini or other LLMs |
 
 ## Key Links
 
@@ -56,7 +68,7 @@ dazbo-portfolio/
 └── TODO.md                    # TODO list
 ```
 
-## Developing With This Repo
+## Quick Start: Working With This Repo
 
 ### One-Time Setup
 
@@ -125,7 +137,7 @@ direnv allow
 | Command                 | Description                                                   |
 | ----------------------- | ------------------------------------------------------------- |
 | `make install`          | Install dependencies using uv                                 |
-| `make playground`       | Launch local development environment using ADK Web UI         |
+| `make playground`       | Launch local development environment using ADK Web UI. (Select the `app` folder when prompted) |
 | `make lint`             | Run code quality checks                                       |
 | `make test`             | Run unit and integration tests                                |
 | `make deploy-cloud-run` | Deploy agent to Cloud Run                                     |
@@ -138,7 +150,7 @@ direnv allow
 | `make tf-apply`         | Deploy environment resources using Terraform                  |
 | `uv run python -m app.tools.ingest` | Run ingestion tool                                |
 
-For full command options and usage, refer to the [Makefile](Makefile).
+Many common tasks have been automated using `make`. If you work in an environment that doesn't support `make`, you can find the equivalent commands in the [Makefile](Makefile).
 
 ### Ingestion Tool
 
@@ -176,6 +188,3 @@ Access the application at `http://localhost:8080`. The container implementation 
 
 The repository includes a Terraform configuration for the setup of a production Google Cloud project. Refer to [deployment/README.md](deployment/README.md) for detailed instructions on how to deploy the infrastructure and application.
 
-## Design
-
-See [docs/architecture-and-walkthrough.md](docs/architecture-and-walkthrough.md) for a detailed architecture walkthrough of the application, and [docs/DESIGN.md](docs/DESIGN.md) for visual identity and frontend UI.

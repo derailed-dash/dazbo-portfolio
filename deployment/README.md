@@ -8,7 +8,7 @@ The infrastructure is designed to be serverless, scalable, and secure, leveragin
 
 ### Key Components
 
-- **Cloud Run:** Hosts the containerized FastAPI backend and agent.
+- **Cloud Run:** Hosts the containerised FastAPI backend and agent.
 - **Google Firestore:** Serverless NoSQL document database in **Native Mode** for portfolio content and session management.
 - **Cloud Storage (GCS):** Used for storing static assets and telemetry logs.
 - **Artifact Registry:** Stores Docker images for the application.
@@ -149,7 +149,7 @@ The infrastructure has been migrated from PostgreSQL to Firestore. Legacy SQL re
 
 ### Firestore MCP Integration
 
-The application utilizes a Google-managed Model Context Protocol (MCP) server to allow the Gemini agent to interact directly with Firestore.
+The application utilises a Google-managed Model Context Protocol (MCP) server to allow the Gemini agent to interact directly with Firestore.
 
 #### Enablement (Manual Step)
 
@@ -157,7 +157,7 @@ While basic APIs are enabled via Terraform, the Firestore MCP service currently 
 
 ```bash
 # Enable the managed Firestore MCP server
-gcloud beta services mcp enable firestore.googleapis.com
+gcloud beta services mcp enable firestore.googleapis.com --project=$GOOGLE_CLOUD_PROJECT
 ```
 
 #### Verification
