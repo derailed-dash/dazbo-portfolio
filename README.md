@@ -11,7 +11,7 @@ The portfolio site has:
 - AI-based content summarisation and metadata extraction
 - Dynamic SEO tag injection (SSR for SPA)
 
-In includes Terraform IaC for deployment to Google Cloud, using:
+It includes Terraform IaC for deployment to Google Cloud, using:
 
 - Cloud Run for the containerised application
 - Google Firestore for storing ingested content, AI summaries and metadata
