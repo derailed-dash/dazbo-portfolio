@@ -40,7 +40,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Use In-Memory Rate Limiting** | Implemented via `slowapi` to provide essential DoS protection and cost control for the LLM. At our current scale, this avoids the operational overhead of a dedicated Redis cluster. |
 | **Hybrid Ingestion for Medium** | Combines RSS feed and Zip Archive (history) to overcome the issue that Medium's RSS feed only returns the last 10 blogs. |
 | **Platform-Scoped IDs** | Document IDs are prefixed with the platform name (e.g., `medium:slug`) to allow cross-platform articles with identical titles to coexist. |
-| **URL Normalization** | All URLs are normalised (stripping query params and trailing slashes) to ensure consistent matching and prevent duplicates. |
+| **Normalisation** | All URLs are normalised (stripping query params and trailing slashes) to ensure consistent matching and prevent duplicates. |
 | **AI-Powered Summary Creation** | Uses Gemini to generate concise technical summaries from ingested blogs. |
 | **AI-Powered Markdown Creation** | Uses Gemini to generate structured Markdown from raw blog HTML (Archive) or RSS. |
 | **Use Cloud Run Domain Mapping** | Maps custom domain directly to the Cloud Run service, removing the need for a Load Balancer. |
@@ -50,7 +50,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Enable Startup CPU Boost** | Provides additional CPU during instance startup to mitigate cold start latency for the Python application. |
 | **FastAPI SEO Injection** | Dynamically injects SEO tags into `index.html` on the first request, ensuring optimal crawling and social previews for the SPA. |
 | **Server-Side Path Validation** | Robust path traversal protection using high-probability absolute path resolution within `serve_spa`. |
-| **Hybrid Agent Tooling** | Combines managed Firestore MCP for surgical retrieval with bespoke Python tools for discovery and counting to bypass managed service limitations. |
+| **Hybrid Agent Tooling** | Combines managed Firestore MCP for surgical retrieval with bespoke Python tools for discovery and counting. Includes a monkey-patch for the `mcp-python-sdk` to bypass server-side JSON `null` schema bugs. |
 
 ## Application Design
 
@@ -75,7 +75,7 @@ The application employs a **Unified Origin Architecture**. In production, the Fa
     *   **API Calls**: All frontend data fetching is directed to the `/api` prefix (e.g., `/api/blogs`).
 
 *   **Backend (FastAPI)**:
-    *   **Entry Point**: `app/fast_api_app.py` initializes the application, configures middleware (CORS, Telemetry), and defines the lifespan context.
+    *   **Entry Point**: `app/fast_api_app.py` initialises the application, configures middleware (CORS, Telemetry), and defines the lifespan context.
     *   **API Prefixing**: All routes are explicitly prefixed with `/api`.
     *   **Static Serving**: Mounts the `frontend/dist` directory to serve static assets (`/assets/*`).
     *   **SPA Support**: Implements a catch-all route that serves `index.html` for any non-API, non-asset path, enabling React Router's client-side navigation.
@@ -133,7 +133,7 @@ Serving a SPA catch-all route carries the risk of "Path Traversal" attacks (e.g.
 
 Dynamic SEO injection involves inserting user-supplied paths into HTML tags (like `<title>` and `<link>`). We protect against reflected Cross-Site Scripting (XSS) by:
 - **HTML Escaping**: All variables injected into the HTML stream (e.g., `full_title`, `description`, `url`) are strictly escaped using `html.escape()`.
-- **JSON-LD Safety**: Structured data is serialized using `json.dumps()`, ensuring safe injection into the `<script>` block.
+- **JSON-LD Safety**: Structured data is serialised using `json.dumps()`, ensuring safe injection into the `<script>` block.
 
 ## Service Layer
 
@@ -321,7 +321,7 @@ uv run python -m app.tools.ingest \
 
 ### Code Sharing & Dependencies
 
-The ingestion tool is **not** a standalone script. It is an integral part of the application codebase and relies heavily on the same components used by the containerized FastAPI backend.
+The ingestion tool is **not** a standalone script. It is an integral part of the application codebase and relies heavily on the same components used by the containerised FastAPI backend.
 
 **Shared Code:**
 *   **Models (`app.models`):** Uses the exact same Pydantic models (e.g., `Blog`, `Project`, `Content`) to ensure data consistency.
@@ -442,6 +442,16 @@ The agent employs a **Hybrid Tooling Architecture**, combining managed Google se
 4.  **Surgical Retrieval (ROI on Precision)**:
     -   For fetching the full Markdown body of a *specific* item (via `get_document`), the managed MCP server is superior.
     -   It eliminates the need to maintain bespoke retrieval logic and ensures the agent always uses the official Google-managed protocol for detailed data access.
+
+### Search Ranking Logic
+
+To ensure the agent prioritises the most relevant or high-quality content, the `search_portfolio` tool implements the following tier-based ranking logic:
+
+1.  **Direct ID Matches**: Exact matches on document IDs (e.g., a specific project slug) are always returned first.
+2.  **Recent Starred Projects**: For GitHub projects, items updated within the last 45 days that have at least one star are prioritised. This ensures visitors see active work first.
+3.  **Star Count Fallback**: Older projects are sorted primarily by their star count.
+4.  **Blog Recency**: Blogs are ranked by publication date, ensuring the latest technical insights are prominent.
+5.  **Deduplication**: The tool automatically filters out duplicate URLs across platforms, favouring the record with the most complete AI-generated summary and Markdown content.
 
 ### Workflow Handover
 

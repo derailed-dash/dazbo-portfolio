@@ -125,7 +125,7 @@ direnv allow
 | Command                 | Description                                                   |
 | ----------------------- | ------------------------------------------------------------- |
 | `make install`          | Install dependencies using uv                                 |
-| `make playground`       | Launch local development environment using ADK Web UI         |
+| `make playground`       | Launch local development environment using ADK Web UI. (Select the `app` folder when prompted) |
 | `make lint`             | Run code quality checks                                       |
 | `make test`             | Run unit and integration tests                                |
 | `make deploy-cloud-run` | Deploy agent to Cloud Run                                     |

@@ -31,5 +31,5 @@
 
 ## Observability
 - **Telemetry:** OpenTelemetry — Instrumenting the application for traces and metrics.
-- **Monitoring:** Google Cloud Trace — Visualizing application latency and agent performance.
+- **Monitoring:** Google Cloud Trace — Visualising application latency and agent performance.
 - **Logging:** Google Cloud Logging — Centralised log management.

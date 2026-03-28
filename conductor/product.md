@@ -12,7 +12,7 @@ The portfolio is designed for a broad technical audience:
 - **Professional Network:** Including technical recruiters, hiring managers, and potential collaborators or clients.
 
 ## Goals
-- **Content Consolidation:** Centralize diverse material—blogs, open-source projects, and certifications—into a single, cohesive showcase.
+- **Content Consolidation:** Centralise diverse material—blogs, open-source projects, and certifications—into a single, cohesive showcase.
 - **Interactive Showcasing:** Present content through responsive, multi-item carousels (Blogs, Projects, Applications) for easy discovery and navigation.
 - **Technical Demonstration:** Directly showcase expertise in AI agent development using Google's ADK and Gemini models.
 - **Community Engagement:** Facilitate sharing and discovery of technical work within developer circles.
