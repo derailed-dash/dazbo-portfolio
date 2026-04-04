@@ -21,6 +21,7 @@ def get_person_schema(base_url: str) -> dict:
             "https://medium.com/@derailed.dash",
             "https://dev.to/deraileddash",
             "https://sessionize.com/dazbo/",
+            "https://orcid.org/0009-0005-7291-4535",
         ],
         "knowsAbout": [
             "Google Cloud",
