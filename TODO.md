@@ -38,6 +38,7 @@
 - [x] Add GitHub stars and custom sorting to the Project carousel.
 - [x] General Documentation Review and Alignment.
 - [x] Ensure British English Alignment across all docs.
+- [ ] Where articles are duplicated across dev.to and Medium, show icons for both and make them linkable to the respective sites. Remove the separate "Read" link.
 - [ ] Avoid unnecessary updates when running Medium RSS after zip ingestion, or vice versa.  
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
 - [ ] Implement RAG:
