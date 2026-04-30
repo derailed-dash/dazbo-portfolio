@@ -137,7 +137,7 @@ Dynamic SEO injection involves inserting user-supplied paths into HTML tags (lik
 ## Service Layer
 
 *   **Generic Data Access**: `app/services/firestore_base.py` defines a generic `FirestoreService[T]` class. It handles common CRUD operations (create, get, list, update, delete) for any Pydantic model.
-*   **Domain Services**: Specialized services (`ProjectService`, `BlogService`, `ExperienceService`, `ContentService`) inherit from the generic base or use it to implement domain-specific logic.
+*   **Domain Services**: Specialised services (`ProjectService`, `BlogService`, `ExperienceService`, `ContentService`) inherit from the generic base or use it to implement domain-specific logic.
 *   **Session Management**: Uses `InMemorySessionService` from the Google ADK. Sessions are ephemeral and tied to the current application process, which is sufficient for the portfolio's conversational needs.
 
 ### Data/Model Layer
@@ -146,7 +146,7 @@ Dynamic SEO injection involves inserting user-supplied paths into HTML tags (lik
 
 ## Firestore Data Model
 
-The application uses **Google Firestore** in Native mode. Data is organized into top-level collections corresponding to the domain entities.
+The application uses **Google Firestore** in Native mode. Data is organised into top-level collections corresponding to the domain entities.
 
 ### Collections
 
@@ -292,7 +292,7 @@ graph TD
 
 ### Module & Service Relationships
 
-The architecture is designed to maximize code reuse between the runtime API and the offline ingestion tools.
+The architecture is designed to maximise code reuse between the runtime API and the offline ingestion tools.
 
 1.  **Shared Service Layer**: Both the FastAPI application (`app/fast_api_app.py`) and the Ingestion CLI (`app/tools/ingest.py`) rely on the same Service Layer (`app/services/`). This ensures that business logic, such as data validation or Firestore interactions, remains consistent regardless of whether data is being accessed by a user or written by a script.
 2.  **Dependency Injection**: The FastAPI app uses `app/dependencies.py` to inject these services into route handlers. This decouples the routes from the concrete service implementation, facilitating testing and loose coupling.
