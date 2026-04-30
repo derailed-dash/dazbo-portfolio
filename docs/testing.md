@@ -54,6 +54,7 @@ Located in `tests/integration/`.
 Integration tests verify the interaction between components, primarily focusing on the FastAPI endpoints and the Agent runtime.
 
 ### API Endpoints (`test_endpoints.py`)
+
 These tests verify that the API routes return the correct status codes and data structures.
 *   **Mocking Strategy**: To avoid dependencies on a live Firestore database during testing, we use FastAPI's `dependency_overrides`.
     *   We override the service dependencies (e.g., `get_project_service`) in the `app` instance.
@@ -61,12 +62,14 @@ These tests verify that the API routes return the correct status codes and data 
     *   This ensures we test the *API Layer* (routing, serialization) without the *Data Layer* (network calls, DB state).
 
 ### Agent & Server (`test_agent.py`, `test_server_e2e.py`, `test_rate_limiting.py`)
+
 *   **Agent Logic**: Verifies that the Agent can process inputs and generate responses using the configured tools and prompt.
 *   **Search Logic**: `tests/unit/test_search_portfolio_tool.py` verifies the priority logic (Title > Tags > Summary > AI Summary) and deduplication for the search tool.
 *   **Rate Limiting**: Verifies that global and agent-specific limits are enforced (returning HTTP 429).
 *   **E2E Server**: Tests the full server stack, including Server-Sent Events (SSE) for streaming agent responses.
 
 ### Data Ingestion (`test_ingest_e2e.py`)
+
 *   **E2E Ingestion**: Tests the full data ingestion pipeline from mock external sources (GitHub, Medium, Dev.to) down to the Firestore emulator.
 
 ## Manual Verification
@@ -97,12 +100,14 @@ While automated tests cover the core logic, some features (like rate limiting in
 Located in `frontend/src/`, co-located with the source files they test (e.g., `Component.tsx` -> `Component.test.tsx`).
 
 ### Components
+
 Tests verify that UI components render correctly and handle user interactions.
 *   **Rendering**: Checks that components display the expected content (e.g., `Navbar.test.tsx` checks for links).
 *   **Interaction**: Simulates user events like clicking buttons or typing code.
 *   **Mocking**: Uses `vi.mock` to mock child components or external libraries (like `react-router-dom`) to isolate the component under test.
 
 ### Services (`src/services/`)
+
 Tests verify that API service modules correctly handle requests and formatting.
 *   **Logic**: Checks that data transformation logic is correct.
 *   **API Calls**: Uses `vi.mock('axios')` to simulate HTTP requests and ensure the correct endpoints (`/api/...`) are called.

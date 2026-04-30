@@ -1,6 +1,7 @@
 # Architecture and Walkthrough
 
 ## Table of Contents
+
 - [Design Decisions](#design-decisions)
 - [Application Design](#application-design)
     - [Configuration Management](#configuration-management)
@@ -50,6 +51,8 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **FastAPI SEO Injection** | Dynamically injects SEO tags into `index.html` on the first request, ensuring optimal crawling and social previews for the SPA. |
 | **Server-Side Path Validation** | Robust path traversal protection using high-probability absolute path resolution within `serve_spa`. |
 | **Hybrid Agent Tooling** | Combines managed Firestore MCP for surgical retrieval with bespoke Python tools for discovery and counting. Includes a monkey-patch for the `mcp-python-sdk` to bypass server-side JSON `null` schema bugs. |
+| **Custom Agent Subclass** | `PortfolioAgent` fixes ADK's app name inference issues in managed environments. |
+| **Omit Twitter Meta Tags** | Relies on Open Graph fallback for minimalist SEO and cleaner HTML structure. |
 
 ## Application Design
 
@@ -84,7 +87,7 @@ The application employs a **Unified Origin Architecture**. In production, the Fa
 ## CORS Strategy
 
 *   **Production**: Since the frontend and API share the same origin (protocol, host, and port), the browser's Same-Origin Policy is satisfied without any explicit CORS configuration.
-*   **Local Development**: To maintain a rapid developer loop, the React development server (`:5173`) and FastAPI backend (`:8000`) run as separate processes. Vite is configured to **proxy** requests from `/api` to the backend, mirroring the production environment's single-origin behavior. This avoids the need to enable permissive CORS headers on the backend.
+*   **Local Development**: To maintain a rapid developer loop, the React development server (`:5173`) and FastAPI backend (`:8000`) run as separate processes. Vite is configured to **proxy** requests from `/api` to the backend, mirroring the production environment's single-origin behaviour. This avoids the need to enable permissive CORS headers on the backend.
 
 ## Rate Limiting
 
@@ -114,12 +117,13 @@ Since the frontend is a Single Page Application (SPA), search engines and social
 3.  **Client-Side Parity**: A custom `useSeo` hook (`frontend/src/hooks/useSeo.ts`) fetches the same metadata from `/api/seo` during client-side navigation (e.g., clicking a link) to update the browser's document title and meta tags manually.
 
 ### Static XML Sitemap & Robots.txt
+
 *   **Sitemap**: Provided at `/sitemap.xml`, dynamically generated pointing to search-friendly routes.
 *   **Robots.txt**: Located in `frontend/public/`, directing crawlers to the sitemap.
 
 ## Security
 
-The application follows a "defense-in-depth" approach to security, particularly concerning file serving and origin protection.
+The application follows a "defence-in-depth" approach to security, particularly concerning file serving and origin protection.
 
 ### Path Traversal Protection
 

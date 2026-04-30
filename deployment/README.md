@@ -161,6 +161,7 @@ gcloud beta services mcp enable firestore.googleapis.com --project=$GOOGLE_CLOUD
 ```
 
 #### Verification
+
 To verify that the MCP server is accessible to the application:
 1. Ensure the application service account has the following roles assigned (managed in `iam.tf`):
    - `roles/mcp.toolUser`

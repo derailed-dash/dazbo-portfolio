@@ -1,6 +1,7 @@
 # Technology Stack
 
 ## Core Technologies
+
 - **Language:** Python 3.12+ (Backend logic and Agent development).
 - **Agent Framework:** Google Agent Development Kit (ADK) — Powers the interactive chat and agentic features.
 - **Backend Framework:** FastAPI — High-performance web framework for the API layer.
@@ -10,10 +11,12 @@
 - **Client-Side:** `axios` (API calls), `react-router-dom` (Navigation), `lucide-react` (Icons).
 
 ## Data & Storage
+
 - **Primary Database:** Google Firestore — Serverless, NoSQL document database for managing portfolio content and agent session data.
 - **Object Storage:** Google Cloud Storage (GCS) — Storing static assets and telemetry logs.
 
 ## Infrastructure & Deployment
+
 - **Cloud Platform:** Google Cloud Platform (GCP).
 - **Compute:** Google Cloud Run — Serverless execution for the backend and frontend.
 - **IaC:** Terraform — Managing cloud infrastructure as code.
@@ -21,6 +24,7 @@
 - **Containerisation:** Docker — Unified container image for atomic deployments.
 
 ## Development & Quality Tools
+
 - **Package Manager:** `uv` — Fast Python package and environment management.
 - **Frontend Build Tool:** `Vite` — Modern, high-performance build tool for React.
 - **Ingestion & CLI:** `typer`, `httpx`, `PyYAML`, `markdownify`, `beautifulsoup4` — Powering the hybrid resource ingestion system and HTML-to-Markdown conversion.
@@ -30,6 +34,7 @@
 - **Quality Checks:** `codespell` (Spelling), `ty` (Static type checking), `React Testing Library` (UI verification).
 
 ## Observability
+
 - **Telemetry:** OpenTelemetry — Instrumenting the application for traces and metrics.
 - **Monitoring:** Google Cloud Trace — Visualising application latency and agent performance.
 - **Logging:** Google Cloud Logging — Centralised log management.

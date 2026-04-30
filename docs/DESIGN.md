@@ -49,9 +49,9 @@ This document serves as the single source of truth for the visual identity and u
 
 The portfolio follows a high-contrast, premium aesthetic branded as the **"Midnight" Theme**, a refined Material 3-inspired design. It is designed to showcase professional content (blogs, projects) with a focus on legibility, smooth interactions, and a "glassmorphic" feel.
 
-## Colors
+## Colours
 
-The color palette prioritises deep blacks for the background with vibrant Material accents for interactions and branding.
+The colour palette prioritises deep blacks for the background with vibrant Material accents for interactions and branding.
 
 | Token | Value | Description |
 | :--- | :--- | :--- |
@@ -103,23 +103,27 @@ A core design pattern using `backdrop-filter: blur(10px)` and semi-transparent b
 *   **`.glass-tag`**: High-contrast, blurred labels used for technology tags.
 
 ### Key Frontend Components
+
 *   **`MainLayout`**: The top-level wrapper including `AppNavbar`, `Footer`, and `ChatWidget`.
 *   **`ShowcaseCarousel`**: Reusable component displaying collections. Scales from 1 item (mobile) to 3 items (desktop).
 *   **`ProjectCarousel`**: Specifically configured to sort GitHub projects, prioritising active work (updated <45 days, >0 stars).
 *   **`AboutPage`**: Professional profile rendering Markdown from Firestore with a glassmorphic UI.
 
 ### Markdown Rendering
+
 *   **Premium Blockquotes**: Features a left-border accent (`primary`), glassmorphic background, and semi-bold attribution.
 *   **Glass Tags**: Inline code rendered as high-readability glassmorphic tags.
 
 ## Do's and Don't's
 
 ### Do's
+
 - Use glassmorphism for overlays to maintain context with the background.
-- Prioritise readability by using the `on-surface` color for all primary text.
+- Prioritise readability by using the `on-surface` colour for all primary text.
 - Maintain a clear hierarchy using the Material elevation system.
 
 ### Don't's
+
 - Avoid using pure red or green for anything other than errors/success; use the theme's secondary (Teal) for positive actions.
 - Do not use more than two font families; stick to the Inter/Roboto stack.
 
@@ -128,8 +132,10 @@ A core design pattern using `backdrop-filter: blur(10px)` and semi-transparent b
 The CLI tools are designed for immediate visual feedback and clarity when managing content.
 
 ### Console UX with Rich
+
 The application uses the `rich` library to enhance the CLI experience with spinners, progress bars, and thread-safe logging. This ensures a clean and readable output during long-running ingestion tasks.
 
 #### Local Development Access
+
 1.  **Process Mode**: `http://localhost:5173` (via `make react-ui` + `make local-backend`).
 2.  **Container Mode**: `http://localhost:8080` (via `make docker-build` + `make docker-run`).
