@@ -5,15 +5,15 @@
 - [x] Task: Update `Blog` interface in `frontend/src/types.ts` to support an array of platform links (e.g., `platforms: { name: string, url: string }[]`). b02482d
 - [x] Task: Conductor - User Manual Verification 'Research and Frontend Preparation' (Protocol in workflow.md) b02482d
 
-## Phase 2: Deduplication Logic (TDD)
-- [ ] Task: Write failing unit tests for a new utility function `mergeDuplicateArticles` in `frontend/src/utils/blogUtils.test.ts`.
-    - [ ] Test that articles with identical titles are merged.
-    - [ ] Test that dev.to metadata is preserved over Medium when both exist.
-    - [ ] Test that the merged object contains links to all original platforms.
-- [ ] Task: Implement `mergeDuplicateArticles` in `frontend/src/utils/blogUtils.ts`.
-- [ ] Task: Refactor and verify all unit tests pass.
-- [ ] Task: Integrate `mergeDuplicateArticles` into the data fetching hook or component logic.
-- [ ] Task: Conductor - User Manual Verification 'Deduplication Logic' (Protocol in workflow.md)
+## Phase 2: Deduplication Logic (TDD) [checkpoint: 668da21]
+- [x] Task: Write failing unit tests for a new utility function `mergeDuplicateArticles` in `frontend/src/utils/blogUtils.test.ts`. 668da21
+    - [x] Test that articles with identical titles are merged. 668da21
+    - [x] Test that dev.to metadata is preserved over Medium when both exist. 668da21
+    - [x] Test that the merged object contains links to all original platforms. 668da21
+- [x] Task: Implement `mergeDuplicateArticles` in `frontend/src/utils/blogUtils.ts`. 668da21
+- [x] Task: Refactor and verify all unit tests pass. 668da21
+- [x] Task: Integrate `mergeDuplicateArticles` into the data fetching hook or component logic. 668da21
+- [x] Task: Conductor - User Manual Verification 'Deduplication Logic' (Protocol in workflow.md) 668da21
 
 ## Phase 3: UI Component Updates
 - [ ] Task: Update `BlogCard` component to render multiple platform icons.
