@@ -9,5 +9,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Deduplicate cross-platform articles in UI by title.**
+- [~] **Track: Deduplicate cross-platform articles in UI by title.**
 *Link: [./tracks/deduplicate_articles_20260510/](./tracks/deduplicate_articles_20260510/)*
