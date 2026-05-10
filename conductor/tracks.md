@@ -5,4 +5,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Implement Google managed MCP for Firestore**
-*Link: [./tracks/firestore_mcp_integration_20260319/](./tracks/firestore_mcp_integration_20260319/)*
+*Link: [./archive/firestore_mcp_integration_20260319/](./archive/firestore_mcp_integration_20260319/)*
+
+---
+
+- [ ] **Track: Deduplicate cross-platform articles in UI by title.**
+*Link: [./tracks/deduplicate_articles_20260510/](./tracks/deduplicate_articles_20260510/)*

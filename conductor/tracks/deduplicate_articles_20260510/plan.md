@@ -1,0 +1,28 @@
+# Implementation Plan: `deduplicate_articles`
+
+## Phase 1: Research and Frontend Preparation
+- [ ] Task: Analyze current blog rendering logic in `frontend/src/pages/BlogsPage.tsx` (or equivalent).
+- [ ] Task: Update `Blog` interface in `frontend/src/types.ts` to support an array of platform links (e.g., `platforms: { name: string, url: string }[]`).
+- [ ] Task: Conductor - User Manual Verification 'Research and Frontend Preparation' (Protocol in workflow.md)
+
+## Phase 2: Deduplication Logic (TDD)
+- [ ] Task: Write failing unit tests for a new utility function `mergeDuplicateArticles` in `frontend/src/utils/blogUtils.test.ts`.
+    - [ ] Test that articles with identical titles are merged.
+    - [ ] Test that dev.to metadata is preserved over Medium when both exist.
+    - [ ] Test that the merged object contains links to all original platforms.
+- [ ] Task: Implement `mergeDuplicateArticles` in `frontend/src/utils/blogUtils.ts`.
+- [ ] Task: Refactor and verify all unit tests pass.
+- [ ] Task: Integrate `mergeDuplicateArticles` into the data fetching hook or component logic.
+- [ ] Task: Conductor - User Manual Verification 'Deduplication Logic' (Protocol in workflow.md)
+
+## Phase 3: UI Component Updates
+- [ ] Task: Update `BlogCard` component to render multiple platform icons.
+- [ ] Task: Add dev.to and Medium icons (using `lucide-react` or existing assets).
+- [ ] Task: Update CSS/Styles to place icons at the bottom of the card, ensuring they match the Glassmorphism aesthetic.
+- [ ] Task: Conductor - User Manual Verification 'UI Component Updates' (Protocol in workflow.md)
+
+## Phase 4: Finalization
+- [ ] Task: Run full frontend test suite (`npm test`).
+- [ ] Task: Verify responsive layout on mobile devices/emulators.
+- [ ] Task: Update `docs/architecture-and-walkthrough.md` to reflect frontend deduplication logic.
+- [ ] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md)
