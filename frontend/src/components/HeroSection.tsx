@@ -24,12 +24,26 @@ const HeroSection: React.FC = () => {
                     {/* Left Column: Profile Picture & About Link */}
                     <Col xs={12} md={4} lg={3} className="text-start mb-4 mb-md-0">
                         <div className="d-inline-flex flex-column align-items-center">
-                            <img
-                                src="/images/dazbo-profile.png"
-                                alt="Darren 'Dazbo' Lester"
-                                className="shadow-lg hero-profile-img"
-                            />
-                            <h1 className="mt-3 mb-0 fs-6 fw-light text-white-50 text-center" style={{ letterSpacing: '0.5px' }}>Darren (Dazbo) Lester</h1>
+                            <Link to="/about" className="d-block transition-transform hover-scale-sm">
+                                <img
+                                    src="/images/dazbo-profile.png"
+                                    alt="Darren 'Dazbo' Lester"
+                                    className="shadow-lg hero-profile-img"
+                                />
+                            </Link>
+                            <h1 
+                                className="mt-3 mb-0 fs-6 fw-bold text-center px-3 py-1 rounded-pill" 
+                                style={{ 
+                                    letterSpacing: '0.5px', 
+                                    color: 'var(--md-sys-color-branding-accent)',
+                                    background: 'rgba(0, 0, 0, 0.4)',
+                                    backdropFilter: 'blur(8px)',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
+                                }}
+                            >
+                                Darren (Dazbo) Lester
+                            </h1>
                             <div className="mt-3">
                                 <Link 
                                     to="/about" 
