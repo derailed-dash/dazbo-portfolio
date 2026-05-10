@@ -129,14 +129,11 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
               <div className="d-flex gap-1">
                 {sources.map((src) => (
                   <a 
-                    key={src.platform}
+                    key={src.url}
                     href={src.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="d-inline-flex bg-white rounded-circle p-1 shadow-sm border border-secondary transition-transform"
-                    style={{ transition: 'transform 0.2s' }}
-                    onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
-                    onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
+                    className="d-inline-flex bg-white rounded-circle p-1 shadow-sm border border-secondary transition-transform hover-scale-sm"
                     title={`Read on ${src.platform}`}
                   >
                     <img 

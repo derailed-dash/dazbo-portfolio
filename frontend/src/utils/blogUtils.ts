@@ -9,13 +9,12 @@ const normalizeTitle = (title: string): string => {
     .trim()
     .toLowerCase()
     .replace(/[\u2013\u2014\u2015]/g, '-') // Standardize different types of dashes (en, em, etc.)
-    .replace(/\s+/g, ' ')                  // Replace multiple whitespaces with a single space
-    .replace(/[^\w\s-]/g, '');             // Remove non-word, non-space, non-dash characters (optional, but safer)
+    .replace(/\s+/g, ' ');                 // Replace multiple whitespaces with a single space
 };
 
 /**
  * Merges duplicate blog articles based on their title.
- * Articles from dev.to take precedence for metadata.
+ * Articles from dev.to take precedence for metadata and icon order.
  * @param blogs List of blog articles from the backend.
  * @returns Deduplicated list of blog articles.
  */
@@ -43,7 +42,7 @@ export const mergeDuplicateArticles = (blogs: Blog[]): Blog[] => {
       return;
     }
 
-    // Sort to prioritize dev.to for metadata
+    // Sort to prioritize dev.to for metadata AND icon order
     const sorted = [...duplicates].sort((a, b) => {
       const aDev = a.platform.toLowerCase().includes('dev.to');
       const bDev = b.platform.toLowerCase().includes('dev.to');
@@ -53,7 +52,7 @@ export const mergeDuplicateArticles = (blogs: Blog[]): Blog[] => {
     });
 
     const primary = sorted[0];
-    const platforms = duplicates.map((d) => ({
+    const platforms = sorted.map((d) => ({
       name: d.platform,
       url: d.url
     }));

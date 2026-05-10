@@ -81,5 +81,31 @@ describe('blogUtils', () => {
       expect(merged).toHaveLength(1);
       expect(merged[0].platforms).toHaveLength(2);
     });
+
+    it('should NOT merge distinct technical titles (C# vs C)', () => {
+      const blogs: Blog[] = [
+        { title: 'C# Programming', platform: 'dev.to', url: 'url1', date: '2026-01-01', is_manual: false, metadata_only: false, is_private: false },
+        { title: 'C Programming', platform: 'dev.to', url: 'url2', date: '2026-01-01', is_manual: false, metadata_only: false, is_private: false }
+      ];
+      expect(mergeDuplicateArticles(blogs)).toHaveLength(2);
+    });
+
+    it('should NOT merge distinct technical titles (Node.js vs Nodejs)', () => {
+      const blogs: Blog[] = [
+        { title: 'Node.js Guide', platform: 'dev.to', url: 'url1', date: '2026-01-01', is_manual: false, metadata_only: false, is_private: false },
+        { title: 'Nodejs Guide', platform: 'dev.to', url: 'url2', date: '2026-01-01', is_manual: false, metadata_only: false, is_private: false }
+      ];
+      expect(mergeDuplicateArticles(blogs)).toHaveLength(2);
+    });
+
+    it('should provide platform icons in a prioritized order (dev.to first)', () => {
+      const blogs: Blog[] = [
+        { title: 'Duplicate Blog', platform: 'Medium', url: 'medium-url', date: '2026-01-01', is_manual: false, metadata_only: false, is_private: false },
+        { title: 'Duplicate Blog', platform: 'dev.to', url: 'devto-url', date: '2026-01-01', is_manual: false, metadata_only: false, is_private: false }
+      ];
+      const merged = mergeDuplicateArticles(blogs);
+      expect(merged[0].platforms![0].name).toBe('dev.to');
+      expect(merged[0].platforms![1].name).toBe('Medium');
+    });
   });
 });
