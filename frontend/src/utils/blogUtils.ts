@@ -1,4 +1,17 @@
-import { Blog } from '../types';
+import type { Blog } from '../types';
+
+/**
+ * Normalizes a title for comparison by removing extra whitespace, 
+ * converting to lowercase, and standardizing common characters like dashes.
+ */
+const normalizeTitle = (title: string): string => {
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/[\u2013\u2014\u2015]/g, '-') // Standardize different types of dashes (en, em, etc.)
+    .replace(/\s+/g, ' ')                  // Replace multiple whitespaces with a single space
+    .replace(/[^\w\s-]/g, '');             // Remove non-word, non-space, non-dash characters (optional, but safer)
+};
 
 /**
  * Merges duplicate blog articles based on their title.
@@ -9,18 +22,18 @@ import { Blog } from '../types';
 export const mergeDuplicateArticles = (blogs: Blog[]): Blog[] => {
   const blogMap = new Map<string, Blog[]>();
 
-  // Group blogs by title
+  // Group blogs by normalized title
   blogs.forEach((blog) => {
-    const title = blog.title.trim();
-    if (!blogMap.has(title)) {
-      blogMap.set(title, []);
+    const key = normalizeTitle(blog.title);
+    if (!blogMap.has(key)) {
+      blogMap.set(key, []);
     }
-    blogMap.get(title)!.push(blog);
+    blogMap.get(key)!.push(blog);
   });
 
   const result: Blog[] = [];
 
-  blogMap.forEach((duplicates, title) => {
+  blogMap.forEach((duplicates) => {
     if (duplicates.length === 1) {
       const blog = duplicates[0];
       result.push({
@@ -32,8 +45,10 @@ export const mergeDuplicateArticles = (blogs: Blog[]): Blog[] => {
 
     // Sort to prioritize dev.to for metadata
     const sorted = [...duplicates].sort((a, b) => {
-      if (a.platform.toLowerCase().includes('dev.to')) return -1;
-      if (b.platform.toLowerCase().includes('dev.to')) return 1;
+      const aDev = a.platform.toLowerCase().includes('dev.to');
+      const bDev = b.platform.toLowerCase().includes('dev.to');
+      if (aDev && !bDev) return -1;
+      if (!aDev && bDev) return 1;
       return 0;
     });
 

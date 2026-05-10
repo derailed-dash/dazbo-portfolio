@@ -52,25 +52,30 @@ const AboutPage: React.FC = () => {
 
   return (
     <>
-      {/* Header Section (Banner Only with Back Button) */}
       <div className="hero-wrapper position-relative text-white mb-4">
         <div className="position-absolute top-0 start-0 w-100 h-100 hero-banner"></div>
-        <Container className="position-relative py-4">
-          <Row>
-            <Col>
-              <Button 
-                variant="link" 
-                className="text-white text-decoration-none p-0 d-flex align-items-center btn-glass px-3 py-2 rounded-pill"
-                onClick={() => navigate(-1)}
-                style={{ width: 'fit-content' }}
-              >
-                <ArrowLeft size={20} className="me-2" />
-                Back
-              </Button>
-            </Col>
-          </Row>
+        <Container className="position-relative py-2">
+          <div className="d-flex flex-column align-items-start gap-2">
+            <img 
+              src="/images/dazbo-polo-removebg.png" 
+              alt="Dazbo" 
+              style={{ height: '140px', width: 'auto', objectFit: 'contain' }}
+              className="rounded transition-transform hover-scale-sm"
+            />
+            <Button 
+              variant="link" 
+              className="text-white text-decoration-none p-0 d-flex align-items-center btn-glass px-3 py-1 rounded-pill"
+              onClick={() => navigate(-1)}
+              style={{ width: 'fit-content' }}
+            >
+              <ArrowLeft size={18} className="me-2" />
+              Back
+            </Button>
+          </div>
         </Container>
+
       </div>
+
 
       <Container className="mb-5 pb-5">
         {/* Title BELOW Banner - Matching Carousel Style */}

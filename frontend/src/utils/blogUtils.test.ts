@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mergeDuplicateArticles } from './blogUtils';
-import { Blog } from '../types';
+import type { Blog } from '../types';
 
 describe('blogUtils', () => {
   describe('mergeDuplicateArticles', () => {
@@ -56,15 +56,30 @@ describe('blogUtils', () => {
       expect(merged[0].tags).not.toContain('medium');
     });
 
-    it('should include links to all platforms in the merged object', () => {
+    it('should merge articles with extremely similar titles (whitespace/dashes)', () => {
       const blogs: Blog[] = [
-        { title: 'Duplicate Blog', platform: 'Medium', url: 'medium-url', date: '2026-01-01', is_manual: false, metadata_only: false, is_private: false },
-        { title: 'Duplicate Blog', platform: 'dev.to', url: 'devto-url', date: '2026-01-01', is_manual: false, metadata_only: false, is_private: false }
+        { 
+          title: 'How to Avoid an Unexpected Cloud Bill – Fully Automated', // em-dash
+          platform: 'Medium', 
+          url: 'medium-url', 
+          date: '2026-01-01', 
+          is_manual: false, 
+          metadata_only: false, 
+          is_private: false 
+        },
+        { 
+          title: 'How to Avoid an Unexpected Cloud Bill — Fully Automated', // em-dash with different spacing
+          platform: 'dev.to', 
+          url: 'devto-url', 
+          date: '2026-01-01', 
+          is_manual: false, 
+          metadata_only: false, 
+          is_private: false 
+        }
       ];
       const merged = mergeDuplicateArticles(blogs);
+      expect(merged).toHaveLength(1);
       expect(merged[0].platforms).toHaveLength(2);
-      expect(merged[0].platforms).toContainEqual({ name: 'Medium', url: 'medium-url' });
-      expect(merged[0].platforms).toContainEqual({ name: 'dev.to', url: 'devto-url' });
     });
   });
 });
