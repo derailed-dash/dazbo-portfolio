@@ -53,6 +53,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Hybrid Agent Tooling** | Combines managed Firestore MCP for surgical retrieval with bespoke Python tools for discovery and counting. Includes a monkey-patch for the `mcp-python-sdk` to bypass server-side JSON `null` schema bugs. |
 | **Custom Agent Subclass** | `PortfolioAgent` fixes ADK's app name inference issues in managed environments. |
 | **Omit Twitter Meta Tags** | Relies on Open Graph fallback for minimalist SEO and cleaner HTML structure. |
+| **Frontend Deduplication** | Identifies and merges cross-posted articles (e.g. dev.to and Medium) on the client side using title-based normalization, ensuring a single tile per unique article. |
 
 ## Application Design
 
@@ -115,6 +116,14 @@ Since the frontend is a Single Page Application (SPA), search engines and social
 1.  **Backend Tag Injection**: When the FastAPI backend serves the initial `index.html` (via `serve_spa`), it fetches the relevant SEO metadata (title, description, OG tags, JSON-LD) from a server-side `seo_map`.
 2.  **Placeholder Replacement**: The backend replaces a `<!-- __SEO_TAGS__ -->` placeholder in the HTML stream with the actual tags.
 3.  **Client-Side Parity**: A custom `useSeo` hook (`frontend/src/hooks/useSeo.ts`) fetches the same metadata from `/api/seo` during client-side navigation (e.g., clicking a link) to update the browser's document title and meta tags manually.
+
+### Frontend Deduplication & Multi-Platform UI
+
+To provide a cleaner user experience, the frontend implements a client-side deduplication layer for blog articles. 
+
+- **Normalization Engine**: The `mergeDuplicateArticles` utility function standardizes article titles by removing extra whitespace, normalizing dashes (em/en dashes to standard hyphens), and converting to lowercase.
+- **Precedence Logic**: When an article is found on multiple platforms (e.g., both Medium and dev.to), the system prioritizes metadata (summaries, tags) from **dev.to**, which typically offers richer programmatic data.
+- **Unified Actions**: Instead of a single "Read" button, deduplicated tiles display right-aligned platform icons. A bright "Read" indicator (using the branding accent purple) points to these icons, allowing users to choose their preferred reading platform.
 
 ### Static XML Sitemap & Robots.txt
 
