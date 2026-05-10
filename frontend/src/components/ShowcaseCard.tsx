@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
-import { ExternalLink, Github, Lock, Star } from 'lucide-react';
+import { ExternalLink, Github, Lock, Star, MoveRight } from 'lucide-react';
 
 interface ShowcaseCardProps {
   title: string;
@@ -13,6 +13,7 @@ interface ShowcaseCardProps {
   stargazers_count?: number;
   sourceIcon?: string;
   sourceUrl?: string;
+  sources?: { platform: string; url: string; iconPath: string }[];
   type: 'blog' | 'project' | 'app' | 'video';
 }
 
@@ -27,6 +28,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   stargazers_count,
   sourceIcon,
   sourceUrl,
+  sources,
   type
 }) => {
   const getSafeUrl = (url: string | undefined): string | undefined => {
@@ -42,8 +44,8 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
   const safeSourceUrl = getSafeUrl(sourceUrl);
 
   const sourceIconStyle: React.CSSProperties = { 
-    width: '24px', 
-    height: '24px', 
+    width: '18px', 
+    height: '18px', 
     objectFit: 'contain' 
   };
 
@@ -81,10 +83,15 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
         </Card.Text>
 
         
-        {/* Footer Row: Buttons (Left) & Source Icon (Right) */}
+        {/* Footer Row: Buttons (Left) & Source Icons (Right) */}
         <div className="d-flex justify-content-between align-items-center mt-3">
           <div className="d-flex gap-2">
-            {safeLinkUrl && (
+            {type === 'blog' && sources && sources.length > 0 ? (
+              <div className="d-flex align-items-center small fw-bold" style={{ color: 'var(--md-sys-color-branding-accent)' }}>
+                <span>Read</span>
+                <MoveRight size={16} className="ms-2" />
+              </div>
+            ) : safeLinkUrl ? (
               <Button 
                 variant="primary" 
                 size="sm" 
@@ -95,7 +102,7 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
                 <ExternalLink size={14} />
                 <span>{type === 'blog' ? 'Read' : 'View'}</span>
               </Button>
-            )}
+            ) : null}
             {safeRepoUrl && (
               <Button 
                 variant="outline-secondary" 
@@ -117,7 +124,27 @@ const ShowcaseCard: React.FC<ShowcaseCardProps> = ({
                 <span>{stargazers_count}</span>
               </div>
             )}
-            {sourceIcon && (
+            
+            {type === 'blog' && sources && sources.length > 0 ? (
+              <div className="d-flex gap-1">
+                {sources.map((src) => (
+                  <a 
+                    key={src.url}
+                    href={src.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="d-inline-flex bg-white rounded-circle p-1 shadow-sm border border-secondary transition-transform hover-scale-sm"
+                    title={`Read on ${src.platform}`}
+                  >
+                    <img 
+                      src={src.iconPath} 
+                      alt={src.platform} 
+                      style={sourceIconStyle} 
+                    />
+                  </a>
+                ))}
+              </div>
+            ) : sourceIcon && (
               <div className="d-flex align-items-center">
               {safeSourceUrl ? (
                 <a 

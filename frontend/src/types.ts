@@ -1,3 +1,10 @@
+export interface BlogSource {
+  platform: string;
+  url: string;
+  iconPath: string;
+  authorUrl?: string;
+}
+
 export interface ShowcaseItem {
   id: string;
   title: string;
@@ -12,6 +19,7 @@ export interface ShowcaseItem {
   updated_at?: string;
   sourceIcon?: string;
   sourceUrl?: string;
+  sources?: BlogSource[];
   type: 'blog' | 'project' | 'app' | 'video';
 }
 
@@ -62,6 +70,7 @@ export interface Blog {
   author_url?: string;
   tags?: string[];
   created_at?: string;
+  platforms?: { name: string, url: string }[];
 }
 
 export interface ChatMessage {

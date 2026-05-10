@@ -1,0 +1,8 @@
+{
+  "track_id": "deduplicate_articles_20260510",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-05-10T14:45:00Z",
+  "updated_at": "2026-05-10T14:45:00Z",
+  "description": "Where I have articles with the same title duplicated across dev.to and medium, I don't want them to appear as separate tiles on the UI. I want one tile per unique article, and with each tile to have icons that link to dev.to and/or Medium as appropriate."
+}
