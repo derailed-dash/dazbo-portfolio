@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import type { ShowcaseItem, Blog } from '../types';
+import type { ShowcaseItem, Blog, BlogSource } from '../types';
 import ShowcaseCarousel from './ShowcaseCarousel';
 import { getBlogs } from '../services/contentService';
 import { Spinner, Alert } from 'react-bootstrap';
+import { mergeDuplicateArticles } from '../utils/blogUtils';
 
 const BlogCarousel: React.FC = () => {
   const [blogs, setBlogs] = useState<ShowcaseItem[]>([]);
@@ -12,17 +13,26 @@ const BlogCarousel: React.FC = () => {
   useEffect(() => {
     getBlogs()
       .then((data: Blog[]) => {
+        // Deduplicate cross-platform articles
+        const deduplicated = mergeDuplicateArticles(data);
+
         // Map backend data to ShowcaseCarousel item format
-        const mapped: ShowcaseItem[] = data.map((b) => {
-          // Map platform to source icon
-          let iconPath: string | undefined;
-          const lowerPlatform = (b.platform || '').toLowerCase();
-          
-          if (lowerPlatform.includes('medium')) {
-            iconPath = '/images/medium-icon.png';
-          } else if (lowerPlatform.includes('dev.to')) {
-            iconPath = '/images/dev-black.png';
-          }
+        const mapped: ShowcaseItem[] = deduplicated.map((b) => {
+          // Map platforms to BlogSource format
+          const sources: BlogSource[] = (b.platforms || []).map((p) => {
+            let iconPath = '';
+            const lowerPlatform = p.name.toLowerCase();
+            if (lowerPlatform.includes('medium')) {
+              iconPath = '/images/medium-icon.png';
+            } else if (lowerPlatform.includes('dev.to')) {
+              iconPath = '/images/dev-black.png';
+            }
+            return {
+              platform: p.name,
+              url: p.url,
+              iconPath
+            };
+          });
 
           return {
             id: b.id || b.url || 'unknown',
@@ -32,8 +42,7 @@ const BlogCarousel: React.FC = () => {
             tags: b.tags || [b.platform],
             linkUrl: b.url,
             isPrivate: b.is_private,
-            sourceIcon: iconPath,
-            sourceUrl: b.author_url,
+            sources,
             type: 'blog'
           };
         });
