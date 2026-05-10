@@ -29,8 +29,15 @@
 - [x] Task: Verify all tests pass. 64d6ad0
 - [x] Conductor - User Manual Verification 'Matching Logic Refinement' (Protocol in workflow.md) 64d6ad0
 
-## Phase 5: Finalization [checkpoint: 64d6ad0]
-- [x] Task: Run full frontend test suite (`npm test`). 64d6ad0
-- [x] Task: Verify responsive layout on mobile devices/emulators. 64d6ad0
-- [x] Task: Update `docs/architecture-and-walkthrough.md` to reflect frontend deduplication logic. 64d6ad0
-- [x] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md) 64d6ad0
+## Phase 6: Post-Review Refinements (TDD) [checkpoint: b64590a]
+- [x] Task: Update `mergeDuplicateArticles` to preserve technical characters (TDD). b64590a
+    - [x] Update tests to include "C# vs C" and "Node.js vs Nodejs" scenarios. b64590a
+    - [x] Remove aggressive regex in `normalizeTitle`. b64590a
+- [x] Task: Ensure platform icon order matches metadata precedence. b64590a
+    - [x] Update logic to map `platforms` from the `sorted` duplicates array. b64590a
+- [x] Task: Refactor `ShowcaseCard` for better performance and maintainability. b64590a
+    - [x] Use `src.url` as key instead of `src.platform`. b64590a
+    - [x] Move hover effects from inline styles to CSS class `hover-scale-sm`. b64590a
+- [x] Conductor - User Manual Verification 'Post-Review Refinements' (Protocol in workflow.md) b64590a
+
+## Phase 7: Re-Finalization
