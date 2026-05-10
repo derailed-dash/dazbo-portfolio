@@ -1,9 +1,9 @@
 # Implementation Plan: `deduplicate_articles`
 
-## Phase 1: Research and Frontend Preparation
-- [ ] Task: Analyze current blog rendering logic in `frontend/src/pages/BlogsPage.tsx` (or equivalent).
-- [ ] Task: Update `Blog` interface in `frontend/src/types.ts` to support an array of platform links (e.g., `platforms: { name: string, url: string }[]`).
-- [ ] Task: Conductor - User Manual Verification 'Research and Frontend Preparation' (Protocol in workflow.md)
+## Phase 1: Research and Frontend Preparation [checkpoint: b02482d]
+- [x] Task: Analyze current blog rendering logic in `frontend/src/pages/BlogsPage.tsx` (or equivalent). b02482d
+- [x] Task: Update `Blog` interface in `frontend/src/types.ts` to support an array of platform links (e.g., `platforms: { name: string, url: string }[]`). b02482d
+- [x] Task: Conductor - User Manual Verification 'Research and Frontend Preparation' (Protocol in workflow.md) b02482d
 
 ## Phase 2: Deduplication Logic (TDD)
 - [ ] Task: Write failing unit tests for a new utility function `mergeDuplicateArticles` in `frontend/src/utils/blogUtils.test.ts`.
