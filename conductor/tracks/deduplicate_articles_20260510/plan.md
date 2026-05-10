@@ -15,14 +15,22 @@
 - [x] Task: Integrate `mergeDuplicateArticles` into the data fetching hook or component logic. 668da21
 - [x] Task: Conductor - User Manual Verification 'Deduplication Logic' (Protocol in workflow.md) 668da21
 
-## Phase 3: UI Component Updates
-- [ ] Task: Update `BlogCard` component to render multiple platform icons.
-- [ ] Task: Add dev.to and Medium icons (using `lucide-react` or existing assets).
-- [ ] Task: Update CSS/Styles to place icons at the bottom of the card, ensuring they match the Glassmorphism aesthetic.
-- [ ] Task: Conductor - User Manual Verification 'UI Component Updates' (Protocol in workflow.md)
+## Phase 3: UI Component Updates [checkpoint: 64d6ad0]
+- [x] Task: Update `BlogCard` component to render multiple platform icons. 64d6ad0
+    - [x] Update `ShowcaseCard` to render icons in the right corner. 64d6ad0
+    - [x] Add "Read ->" indicator pointing to the icons. 64d6ad0
+- [x] Add dev.to and Medium icons (using `lucide-react` or existing assets). 64d6ad0
+- [x] Update CSS/Styles to place icons at the bottom of the card, ensuring they match the Glassmorphism aesthetic. 64d6ad0
+- [x] Conductor - User Manual Verification 'UI Component Updates' (Protocol in workflow.md) 64d6ad0
 
-## Phase 4: Finalization
-- [ ] Task: Run full frontend test suite (`npm test`).
-- [ ] Task: Verify responsive layout on mobile devices/emulators.
-- [ ] Task: Update `docs/architecture-and-walkthrough.md` to reflect frontend deduplication logic.
-- [ ] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md)
+## Phase 4: Matching Logic Refinement (TDD) [checkpoint: 64d6ad0]
+- [x] Task: Update `mergeDuplicateArticles` to handle similar titles (whitespace/dash normalization). 64d6ad0
+- [x] Task: Add test cases for "Extremely Similar" titles in `blogUtils.test.ts`. 64d6ad0
+- [x] Task: Verify all tests pass. 64d6ad0
+- [x] Conductor - User Manual Verification 'Matching Logic Refinement' (Protocol in workflow.md) 64d6ad0
+
+## Phase 5: Finalization [checkpoint: 64d6ad0]
+- [x] Task: Run full frontend test suite (`npm test`). 64d6ad0
+- [x] Task: Verify responsive layout on mobile devices/emulators. 64d6ad0
+- [x] Task: Update `docs/architecture-and-walkthrough.md` to reflect frontend deduplication logic. 64d6ad0
+- [x] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md) 64d6ad0
