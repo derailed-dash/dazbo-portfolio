@@ -42,16 +42,16 @@ def test_ingest_videos_replacement_detection(
     Test that a video with a matching title but different URL is detected as a replacement.
     """
     # Setup existing video with same title but different URL
+    # Use 11-char IDs to satisfy the regex and avoid migration noise
     existing_video = Video(
-        id="youtube:old_id",
+        id="youtube:oldIDabc123",
         title="Existing Video",
         description="Old description",
-        video_url="https://www.youtube.com/watch?v=old_url",
+        video_url="https://www.youtube.com/watch?v=oldIDabc123",
         is_manual=True,
         source_platform="youtube",
     )
     mock_video_svc.list.return_value = [existing_video]
-    # Also need empty lists for other collections during migration
     mock_app_service.return_value.list = AsyncMock(return_value=[])
     mock_blog_service.return_value.list = AsyncMock(return_value=[])
     mock_project_service.return_value.list = AsyncMock(return_value=[])
@@ -60,13 +60,12 @@ def test_ingest_videos_replacement_detection(
 
     from app.tools.ingest import app
 
-    # Mock yaml.safe_load to return a video that shares a title but has a new URL
     yaml_data = {
         "videos": [
             {
                 "title": "Existing Video",
                 "description": "New description",
-                "video_url": "https://www.youtube.com/watch?v=new_url",
+                "video_url": "https://www.youtube.com/watch?v=newIDxyz456",
             }
         ]
     }
@@ -76,11 +75,11 @@ def test_ingest_videos_replacement_detection(
             result = runner.invoke(app, ["--yaml-file", "manual_videos.yaml"])
 
     assert result.exit_code == 0
-    # Current implementation would NOT prompt because it only matches on URL
-    # Failing test expects it to detect the title match and prompt for update
     assert mock_confirm.called
-    assert mock_video_svc.update.called
-    assert not mock_video_svc.create.called
+    # With improved logic, replacement calls create (new ID) and delete (old ID)
+    assert mock_video_svc.create.called
+    assert mock_video_svc.delete.called
+    assert not mock_video_svc.update.called
 
 
 @patch("app.tools.ingest.ApplicationService")
@@ -101,10 +100,10 @@ def test_ingest_videos_deletion_detection(
     """
     # Existing video in Firestore (manual) but NOT in YAML
     existing_video = Video(
-        id="youtube:missing_in_yaml",
+        id="youtube:staleID1234",
         title="Stale Video",
         description="...",
-        video_url="https://www.youtube.com/watch?v=stale",
+        video_url="https://www.youtube.com/watch?v=staleID1234",
         is_manual=True,
         source_platform="youtube",
     )
@@ -123,7 +122,6 @@ def test_ingest_videos_deletion_detection(
             result = runner.invoke(app, ["--yaml-file", "manual_videos.yaml"])
 
     assert result.exit_code == 0
-    # Failing test expects it to prompt for deletion
     assert mock_confirm.called
     assert mock_video_svc.delete.called
 
@@ -170,9 +168,7 @@ def test_ingest_videos_simulate_no_prompts(
     with patch("typer.confirm") as mock_confirm:
         with patch("builtins.open", MagicMock()):
             with patch("app.tools.ingest.yaml.safe_load", return_value=yaml_data):
-                result = runner.invoke(
-                    app, ["--yaml-file", "manual_videos.yaml", "--simulate"]
-                )
+                result = runner.invoke(app, ["--yaml-file", "manual_videos.yaml", "--simulate"])
 
     assert result.exit_code == 0
     assert not mock_confirm.called

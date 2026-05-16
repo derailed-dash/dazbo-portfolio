@@ -15,4 +15,4 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Replacement and deletion of video entries**
-*Link: [./tracks/video_ingest_sync_20260516/](./tracks/video_ingest_sync_20260516/)*
+*Link: [./archive/video_ingest_sync_20260516/](./archive/video_ingest_sync_20260516/)*

@@ -137,12 +137,32 @@ async def _process_manual_projects(
             stats["new"] += 1
 
 
-async def _process_manual_videos(video_list: list[dict], service: VideoService, stats: dict):
+async def _process_manual_videos(video_list: list[dict], service: VideoService, stats: dict, simulate: bool = False):
     """
     Helper to process manual video entries.
+    Supports title matching for replacements and prompts for deletion of stale entries.
     """
     existing_items = await service.list()
-    existing_urls = {normalize_url(v.video_url): v.id for v in existing_items if v.video_url}
+    # Scoped to manual/youtube only as per spec
+    existing_manual_items = [v for v in existing_items if v.is_manual and v.source_platform == "youtube"]
+
+    existing_urls = {normalize_url(v.video_url): v for v in existing_manual_items if v.video_url}
+
+    # Check for duplicate titles in Firestore which could lead to accidental cleanup deletions
+    existing_titles = {}
+    duplicate_titles = set()
+    for v in existing_manual_items:
+        if v.title in existing_titles:
+            duplicate_titles.add(v.title)
+        existing_titles[v.title] = v
+
+    if duplicate_titles:
+        console.print(
+            f"[bold yellow]Warning: Found duplicate titles in Firestore for manual videos: {', '.join(duplicate_titles)}. "
+            "This may lead to cleanup prompts for the duplicates.[/bold yellow]"
+        )
+
+    touched_ids = set()
 
     for video_data in video_list:
         video_data.setdefault("is_manual", True)
@@ -154,23 +174,90 @@ async def _process_manual_videos(video_list: list[dict], service: VideoService, 
             console.print(f"[red]Validation Error for video {video_data.get('title')}: {validation_err}[/red]")
             continue
 
-        match_id = existing_urls.get(normalize_url(v.video_url))
+        norm_url = normalize_url(v.video_url)
+        match_by_url = existing_urls.get(norm_url)
+        match_by_title = existing_titles.get(v.title)
+
+        action = None  # "create", "update", "replacement", "skip"
+        target_id = None
+
+        if match_by_url:
+            # Exact URL match - standard update
+            target_id = match_by_url.id
+            if v.title != match_by_url.title:
+                action = "update_title"
+            else:
+                action = "update"
+        elif match_by_title:
+            # Title match but different URL - potential replacement
+            target_id = match_by_title.id
+            action = "replacement"
+        else:
+            # New video
+            action = "create"
 
         # Try to extract video ID from URL for a stable slug
-        # https://www.youtube.com/watch?v=dQw4w9WgXcQ -> dQw4w9WgXcQ
         video_id_match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", v.video_url)
         video_id = video_id_match.group(1) if video_id_match else slugify(v.title)
         desired_id = f"youtube:{video_id}"
 
-        if match_id:
-            v.id = match_id
-            await service.update(v.id, v.model_dump(exclude={"id"}))
-            console.print(f"Updated Video: {v.title}")
-            stats["updated"] += 1
+        if action in ["update", "update_title", "replacement"]:
+            v.id = target_id
+            # Always mark the current matching ID as touched so it's not deleted by the cleanup loop
+            touched_ids.add(target_id)
+
+            prompt_msg = f"Update video '{v.title}'?"
+            if action == "replacement":
+                prompt_msg = f"Replace video URL for '{v.title}'\n  Old: {match_by_title.video_url}\n  New: {v.video_url}\nConfirm update?"
+            elif action == "update_title":
+                prompt_msg = f"Update title for video URL {v.video_url}\n  Old: {match_by_url.title}\n  New: {v.title}\nConfirm update?"
+
+            if simulate:
+                if action == "replacement" and desired_id != target_id:
+                    console.print(f"[yellow]Would replace Video: {v.title} (ID: {target_id} -> {desired_id})[/yellow]")
+                else:
+                    console.print(f"[yellow]Would update Video: {v.title}[/yellow]")
+                stats["updated"] += 1
+            elif typer.confirm(prompt_msg, default=True):
+                if action == "replacement" and desired_id != target_id:
+                    # CRITICAL FIX: Ensure v.id is None so service.create uses desired_id
+                    v.id = None
+                    # Perform migration-style update: create new, delete old
+                    await service.create(v, item_id=desired_id)
+                    await service.delete(target_id)
+                    console.print(f"Replaced Video: {v.title} (ID: {target_id} -> {desired_id})")
+                    # Also mark the NEW ID as touched
+                    touched_ids.add(desired_id)
+                else:
+                    await service.update(v.id, v.model_dump(exclude={"id"}))
+                    console.print(f"Updated Video: {v.title}")
+                stats["updated"] += 1
+            else:
+                console.print(f"[dim]Skipped update for Video: {v.title}[/dim]")
+                stats["skipped"] += 1
         else:
-            await service.create(v, item_id=desired_id)
-            console.print(f"Created Video: {v.title} (ID: {desired_id})")
-            stats["new"] += 1
+            if simulate:
+                console.print(f"[yellow]Would create Video: {v.title} (ID: {desired_id})[/yellow]")
+                stats["new"] += 1
+            else:
+                await service.create(v, item_id=desired_id)
+                console.print(f"Created Video: {v.title} (ID: {desired_id})")
+                stats["new"] += 1
+                touched_ids.add(desired_id)
+
+    # Deletion detection
+    for existing_v in existing_manual_items:
+        if existing_v.id not in touched_ids:
+            if simulate:
+                console.print(f"[magenta]Would delete stale Video: {existing_v.title} (ID: {existing_v.id})[/magenta]")
+            elif typer.confirm(
+                f"Video '{existing_v.title}' (ID: {existing_v.id}) is missing from source. Delete from Firestore?",
+                default=False,
+            ):
+                await service.delete(existing_v.id)
+                console.print(f"[red]Deleted Video: {existing_v.title}[/red]")
+            else:
+                console.print(f"[dim]Kept stale Video: {existing_v.title}[/dim]")
 
 
 async def _migrate_existing_items(blog_service, project_service, application_service, video_service):
@@ -627,9 +714,8 @@ async def ingest_resources(
 
             # Process Videos
             manual_videos = data.get("videos", [])
-            if manual_videos:
-                console.print(f"Found {len(manual_videos)} manual videos.")
-                await _process_manual_videos(manual_videos, video_service, stats["videos"])
+            console.print(f"Found {len(manual_videos)} manual videos.")
+            await _process_manual_videos(manual_videos, video_service, stats["videos"], simulate=simulate)
 
             # Process Blogs
             manual_blogs = data.get("blogs", [])

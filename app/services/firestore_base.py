@@ -16,6 +16,7 @@ class FirestoreService[T: BaseModel]:
 
     async def create(self, item: T, item_id: str | None = None) -> T:
         data = item.model_dump(mode="json", exclude={"id"})  # Exclude ID from payload, we use doc ID
+
         # If item has explicit ID set, use it.
         if item.id:
             item_id = item.id

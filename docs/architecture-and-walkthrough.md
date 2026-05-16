@@ -382,8 +382,13 @@ The ingestion pipeline performs the following steps:
 
 ### Data Management
 
-*   **Deletions:** The ingestion tool currently supports **create** and **update** operations. It does *not* delete entries that have been removed from the source.
-    *   **To Delete:** Use the **Google Cloud Console (Firestore)** to manually delete obsolete documents. This is a safety design choice to prevent accidental bulk deletion.
+*   **Video Synchronization & Deletions**: The ingestion tool includes intelligent synchronization for manual video resources:
+    -   **Matching Logic**: Uses both **Video Title** and **Video URL**.
+    -   **Replacement Detection**: Identifies if a video in the YAML shares a title with a Firestore entry but has a different URL, prompting for a replacement (atomic `create` + `delete`).
+    -   **Interactive Deletion**: Automatically identifies videos in Firestore (manual source) that are missing from the current YAML file and prompts for their removal.
+    -   **Prompts**: Prompts for user confirmation before updating, replacing, or deleting any video entry.
+*   **Other Resources (Blogs & Projects)**: For automated feeds and other manual categories, the tool currently supports **create** and **update** operations. It does *not* automatically delete entries that have been removed from the source.
+    -   **To Delete**: Use the **Google Cloud Console (Firestore)** to manually delete obsolete documents for these collections. This is a safety design choice to prevent accidental bulk deletion of automated feeds.
 
 ### Manual Resources YAML Schema
 
