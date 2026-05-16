@@ -141,10 +141,10 @@ def test_ingest_videos_simulate_no_prompts(
     Test that --simulate mode does not trigger interactive prompts but logs intended actions.
     """
     existing_video = Video(
-        id="youtube:old_id",
+        id="youtube:oldIDabc123",
         title="Existing Video",
         description="Old description",
-        video_url="https://www.youtube.com/watch?v=old_url",
+        video_url="https://www.youtube.com/watch?v=oldIDabc123",
         is_manual=True,
         source_platform="youtube",
     )
@@ -160,7 +160,7 @@ def test_ingest_videos_simulate_no_prompts(
             {
                 "title": "Existing Video",
                 "description": "New description",
-                "video_url": "https://www.youtube.com/watch?v=new_url",
+                "video_url": "https://www.youtube.com/watch?v=newIDxyz456",
             }
         ]
     }
@@ -172,4 +172,4 @@ def test_ingest_videos_simulate_no_prompts(
 
     assert result.exit_code == 0
     assert not mock_confirm.called
-    assert "Would update Video: Existing Video" in result.stdout
+    assert "Would replace Video: Existing Video" in result.stdout
