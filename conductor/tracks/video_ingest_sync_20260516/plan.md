@@ -1,21 +1,21 @@
 # Implementation Plan: Video Ingestion Sync
 
 ## Phase 1: Research and TDD for Sync Logic
-- [ ] Task: Analyze `_process_manual_videos` in `app/tools/ingest.py` for extension points.
-- [ ] Task: Create `tests/unit/test_ingest_videos_sync.py` with failing tests for:
-    - [ ] Detecting video replacement (Title matches, URL differs).
-    - [ ] Detecting title updates (URL matches, Title differs).
-    - [ ] Detecting missing manual entries in YAML that exist in Firestore.
-    - [ ] Verifying simulation mode (`--simulate`) behavior for these scenarios.
+- [x] Task: Analyze `_process_manual_videos` in `app/tools/ingest.py` for extension points. c223a49
+- [x] Task: Create `tests/unit/test_ingest_videos_sync.py` with failing tests for: ea634b9
+    - [x] Detecting video replacement (Title matches, URL differs).
+    - [x] Detecting title updates (URL matches, Title differs).
+    - [x] Detecting missing manual entries in YAML that exist in Firestore.
+    - [x] Verifying simulation mode (`--simulate`) behavior for these scenarios.
 - [ ] Task: Conductor - User Manual Verification 'Research and TDD' (Protocol in workflow.md)
 
 ## Phase 2: Core Matching and Detection Logic
-- [ ] Task: Refactor `_process_manual_videos` to support multi-key matching (Title + URL).
+- [~] Task: Refactor `_process_manual_videos` to support multi-key matching (Title + URL).
 - [ ] Task: Implement deletion detection logic to identify "stale" manual videos in Firestore.
 - [ ] Task: Update logic to support `--simulate` by logging proposed sync actions.
 - [ ] Task: Verify that all new unit tests pass (Green phase).
 - [ ] Task: Conductor - User Manual Verification 'Core Detection Logic' (Protocol in workflow.md)
-
+...
 ## Phase 3: Interactive CLI Prompts
 - [ ] Task: Implement asynchronous-friendly interactive prompts for:
     - [ ] Confirming video replacement/update.
