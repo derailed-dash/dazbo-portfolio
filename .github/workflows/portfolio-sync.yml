@@ -63,6 +63,6 @@ jobs:
         run: |
           uv run python -m app.tools.ingest \
             --github-user "derailed-dash" \
-            --medium-user "derailed-dash" \
+            --medium-user "derailed.dash" \
             --devto-user "deraileddash" \
             --project-id "dazbo-portfolio"
