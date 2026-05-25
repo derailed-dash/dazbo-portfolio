@@ -61,7 +61,7 @@ jobs:
           GOOGLE_CLOUD_REGION: '${{ vars.GOOGLE_CLOUD_REGION }}'
           GOOGLE_GENAI_USE_VERTEXAI: 'True'
           GOOGLE_CLOUD_LOCATION: '${{ vars.GOOGLE_CLOUD_LOCATION }}'
-          MODEL: '${{ vars.GEMINI_MODEL || "gemini-3-flash-preview" }}'
+          MODEL: "${{ vars.GEMINI_MODEL || 'gemini-3-flash-preview' }}"
         run: |
           uv run python -m app.tools.ingest \
             --github-user "derailed-dash" \
