@@ -194,6 +194,10 @@ Many common tasks have been automated using `make`. If you work in an environmen
 
 The ingestion tool supports a `--simulate` flag. Use `uv run python -m app.tools.ingest --simulate [OPTIONS]` to perform a dry run without modifying the Firestore database. This mode will print before and after snapshots showing exactly what actions would be performed.
 
+### Automated Ingestion Sync
+
+An automated daily synchronization workflow is configured in GitHub Actions (`.github/workflows/portfolio-sync.yml`). It runs automatically at `02:00 UTC` every day and can also be triggered manually via the Actions UI. It uses secure Workload Identity Federation (WIF) to authenticate with GCP and runs the full ingestion pipeline to keep your GitHub stargazers counts, Medium articles, and Dev.to posts fresh.
+
 ## Deployment
 
 ### Dev Environment

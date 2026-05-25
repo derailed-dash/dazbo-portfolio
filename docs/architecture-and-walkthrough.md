@@ -331,6 +331,15 @@ uv run python -m app.tools.ingest \
   --yaml-file manual_resources.yaml
 ```
 
+### Automated Ingestion Workflow (GitHub Actions)
+
+To ensure the portfolio content (such as GitHub stargazers, Medium articles, and Dev.to posts) remains fresh and accurate without manual developer intervention, an automated synchronization workflow is configured in GitHub Actions.
+
+*   **Workflow File:** `.github/workflows/portfolio-sync.yml`
+*   **Trigger:** Runs automatically on a daily schedule (`0 2 * * *` / 02:00 UTC) and supports manual triggering (`workflow_dispatch`).
+*   **Authentication:** Uses secure **Workload Identity Federation (WIF)** to authenticate with Google Cloud using OIDC tokens, completely avoiding the need for long-lived static key storage in GitHub.
+*   **Vertex AI Integration:** The execution environment uses Vertex AI mode (`GOOGLE_GENAI_USE_VERTEXAI: 'True'`), leveraging your GCP service account's authenticated credentials directly to interact with Vertex AI and Firestore.
+
 ### Code Sharing & Dependencies
 
 The ingestion tool is **not** a standalone script. It is an integral part of the application codebase and relies heavily on the same components used by the containerised FastAPI backend.
@@ -437,7 +446,7 @@ blogs:
 
 ## Agent Integration Architecture
 
-The application features an interactive AI assistant powered by the **Google Agent Development Kit (ADK)** and the **Gemini 3** model.
+The application features an interactive AI assistant powered by the **Google Agent Development Kit (ADK)** and the **Gemini 3.5 Flash** model.
 
 ### Hybrid Tooling Rationale
 

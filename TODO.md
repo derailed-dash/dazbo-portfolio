@@ -40,6 +40,7 @@
 - [x] Ensure British English Alignment across all docs.
 - [x] Where articles are duplicated across dev.to and Medium, show icons for both and make them linkable to the respective sites. Remove the separate "Read" link.
 - [x] If I remove a video with my manual update, prompt to remove the old entry. If I update an existing video, update the Firestore entry in-place, after prompting to confirm; don't duplicate.
+- [x] Add daily scheduled GitHub Actions workflow for portfolio content sync using GCP Service Account key.
 - [ ] Avoid unnecessary updates when running Medium RSS after zip ingestion, or vice versa.  
 - [ ] Look at AI summarisation performance improvements: e.g. asyncio.gather for concurrent processing rather than `await` inside a for `loop`
 - [ ] Implement RAG:
