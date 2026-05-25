@@ -47,9 +47,7 @@ jobs:
       - name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2'
         with:
-          project_id: '${{ vars.GOOGLE_CLOUD_PROJECT }}'
-          workload_identity_provider: '${{ vars.GCP_WIF_PROVIDER }}'
-          service_account: '${{ vars.SERVICE_ACCOUNT_EMAIL }}'
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
       - name: 'Install Dependencies'
         run: |
@@ -57,14 +55,14 @@ jobs:
 
       - name: 'Run Ingestion'
         env:
-          GOOGLE_CLOUD_PROJECT: '${{ vars.GOOGLE_CLOUD_PROJECT }}'
-          GOOGLE_CLOUD_REGION: '${{ vars.GOOGLE_CLOUD_REGION }}'
+          GOOGLE_CLOUD_PROJECT: 'dazbo-portfolio'
+          GOOGLE_CLOUD_REGION: 'europe-west1'
           GOOGLE_GENAI_USE_VERTEXAI: 'True'
-          GOOGLE_CLOUD_LOCATION: '${{ vars.GOOGLE_CLOUD_LOCATION }}'
-          MODEL: "${{ vars.GEMINI_MODEL || 'gemini-3-flash-preview' }}"
+          GOOGLE_CLOUD_LOCATION: 'global'
+          MODEL: "${{ vars.GEMINI_MODEL || 'gemini-3.5-flash' }}"
         run: |
           uv run python -m app.tools.ingest \
             --github-user "derailed-dash" \
             --medium-user "derailed-dash" \
             --devto-user "deraileddash" \
-            --project-id "${{ vars.GOOGLE_CLOUD_PROJECT }}"
+            --project-id "dazbo-portfolio"
