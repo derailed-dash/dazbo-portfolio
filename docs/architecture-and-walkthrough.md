@@ -446,7 +446,7 @@ blogs:
 
 ## Agent Integration Architecture
 
-The application features an interactive AI assistant powered by the **Google Agent Development Kit (ADK)** and the **Gemini 3** model.
+The application features an interactive AI assistant powered by the **Google Agent Development Kit (ADK)** and the **Gemini 3.5 Flash** model.
 
 ### Hybrid Tooling Rationale
 
