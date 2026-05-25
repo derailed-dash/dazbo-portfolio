@@ -1,0 +1,70 @@
+name: '🔄 Portfolio Content Sync'
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Runs daily at 02:00 UTC
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - '.github/workflows/portfolio-sync.yml'
+  push:
+    branches:
+      - 'main'
+    paths:
+      - '.github/workflows/portfolio-sync.yml'
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions UI
+
+concurrency:
+  group: '${{ github.workflow }}'
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: 'bash'
+
+jobs:
+  sync:
+    name: 'Sync Content'
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: 'Checkout Repository'
+        uses: 'actions/checkout@v4'
+
+      - name: 'Set up Python'
+        uses: 'actions/setup-python@v5'
+        with:
+          python-version: '3.12'
+
+      - name: 'Set up uv'
+        uses: 'astral-sh/setup-uv@v3'
+        with:
+          enable-cache: true
+
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: '${{ vars.GOOGLE_CLOUD_PROJECT }}'
+          workload_identity_provider: '${{ vars.GCP_WIF_PROVIDER }}'
+          service_account: '${{ vars.SERVICE_ACCOUNT_EMAIL }}'
+
+      - name: 'Install Dependencies'
+        run: |
+          uv sync
+
+      - name: 'Run Ingestion'
+        env:
+          GOOGLE_CLOUD_PROJECT: '${{ vars.GOOGLE_CLOUD_PROJECT }}'
+          GOOGLE_CLOUD_REGION: '${{ vars.GOOGLE_CLOUD_REGION }}'
+          GOOGLE_GENAI_USE_VERTEXAI: 'True'
+          GOOGLE_CLOUD_LOCATION: '${{ vars.GOOGLE_CLOUD_LOCATION }}'
+          MODEL: '${{ vars.GEMINI_MODEL || "gemini-3-flash-preview" }}'
+        run: |
+          uv run python -m app.tools.ingest \
+            --github-user "derailed-dash" \
+            --medium-user "derailed-dash" \
+            --devto-user "deraileddash" \
+            --project-id "${{ vars.GOOGLE_CLOUD_PROJECT }}"
