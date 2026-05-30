@@ -54,7 +54,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Custom Agent Subclass** | `PortfolioAgent` fixes ADK's app name inference issues in managed environments. |
 | **Omit Twitter Meta Tags** | Relies on Open Graph fallback for minimalist SEO and cleaner HTML structure. |
 | **Frontend Deduplication** | Identifies and merges cross-posted articles (e.g. dev.to and Medium) on the client side using title-based normalization, ensuring a single tile per unique article. |
-| **Low Thinking Level for Agent** | Configured `thinking_level = types.ThinkingLevel.LOW` for the Gemini 3.5 Flash model. Because this is a conversational portfolio chatbot that answers structured queries using highly optimized tools (bespoke search + surgical MCP), it does not require deep, multi-step chain-of-thought reasoning. Selecting `'low'` significantly reduces latency and API cost while maintaining excellent response quality. |
+| **Zero Thinking Budget for Agent** | Configured `thinking_budget = 0` for the Gemini 3.5 Flash model. Because this is a conversational portfolio chatbot that answers structured queries using highly optimized tools (bespoke search + surgical MCP), it does not require deep, multi-step chain-of-thought reasoning. Disabling the thinking budget completely eliminates thinking token overhead, ensuring near-instantaneous response times and absolute zero thinking costs while maintaining excellent response quality and universal CI/CD compatibility. |
 
 ## Application Design
 
@@ -484,12 +484,13 @@ To ensure the agent prioritises the most relevant or high-quality content, the `
 
 When a user asks a general question (e.g., "What Python blogs do you have?"), the agent uses `search_portfolio` to find relevant matches and their unique IDs. If the user then requests details on a specific item, the agent hands over the ID to the MCP `get_document` tool to fetch the full Markdown body directly from Firestore.
 
-### Thinking Level Optimization
+### Thinking Budget Optimization
 
-The portfolio agent is configured to use the `LOW` thinking level (`thinking_level = types.ThinkingLevel.LOW`) for the Gemini 3.5 Flash model:
+The portfolio agent is configured to disable thinking by setting the token budget to `0` (`thinking_config = types.ThinkingConfig(thinking_budget=0)`) for the Gemini 3.5 Flash model:
 
-*   **Low Latency**: Minimising the reasoning tokens ensures near-instantaneous responses, preserving a fluid, interactive conversational experience for portfolio visitors.
-*   **Cost Efficiency**: Because thinking tokens are billed as output tokens, selecting the `LOW` level substantially reduces Vertex AI usage costs.
-*   **Structured Tooling Synergy**: The agent relies on a highly efficient **Hybrid Tooling Architecture** where the heavy lifting (discovery, ranking, and counting) is handled deterministically by custom Python code (`search_portfolio`), and precise retrieval is handled by Firestore MCP. Since the model does not need to perform complex mathematical reasoning or multi-step logic planning, a deep chain-of-thought is unnecessary.
+*   **Near-Instantaneous Response Times**: Bypassing the model's internal reasoning tokens ensures there is absolutely no chain-of-thought latency, preserving a highly responsive and fluid conversational experience for portfolio visitors.
+*   **Absolute Cost Efficiency**: Since thinking tokens are billed as output tokens, selecting a budget of `0` completely eliminates additional reasoning token costs.
+*   **Universal Environment & CI/CD Compatibility**: Setting the budget explicitly to `0` avoids relying on advanced/varying SDK features like `types.ThinkingLevel.LOW` which can be absent or trigger type validation failures in different runner or bot review environments (such as the standard `gemini-code-assist[bot]`).
+*   **Structured Tooling Synergy**: The agent relies on a highly efficient **Hybrid Tooling Architecture** where all heavy lifting (discovery, search ranking, and counting) is handled deterministically by custom Python code (`search_portfolio`), and precise retrieval is done via Firestore MCP. Since the model does not perform complex math or multi-step logic planning, a thinking budget is entirely unnecessary.
 
 
