@@ -82,6 +82,7 @@ root_agent = PortfolioAgent(
     description="You are Dazbo's helpful assistant. You can search for content in his portfolio.",
     model=Gemini(
         model=settings.model,
+        thinking_config=types.ThinkingConfig(thinking_level=types.ThinkingLevel.LOW),
         retry_options=types.HttpRetryOptions(attempts=3),
     ),
     instruction=(

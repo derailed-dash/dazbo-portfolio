@@ -54,6 +54,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Custom Agent Subclass** | `PortfolioAgent` fixes ADK's app name inference issues in managed environments. |
 | **Omit Twitter Meta Tags** | Relies on Open Graph fallback for minimalist SEO and cleaner HTML structure. |
 | **Frontend Deduplication** | Identifies and merges cross-posted articles (e.g. dev.to and Medium) on the client side using title-based normalization, ensuring a single tile per unique article. |
+| **Low Thinking Level for Agent** | Configured `thinking_level = types.ThinkingLevel.LOW` for the Gemini 3.5 Flash model. Because this is a conversational portfolio chatbot that answers structured queries using highly optimized tools (bespoke search + surgical MCP), it does not require deep, multi-step chain-of-thought reasoning. Selecting `'low'` significantly reduces latency and API cost while maintaining excellent response quality. |
 
 ## Application Design
 
@@ -482,4 +483,13 @@ To ensure the agent prioritises the most relevant or high-quality content, the `
 ### Workflow Handover
 
 When a user asks a general question (e.g., "What Python blogs do you have?"), the agent uses `search_portfolio` to find relevant matches and their unique IDs. If the user then requests details on a specific item, the agent hands over the ID to the MCP `get_document` tool to fetch the full Markdown body directly from Firestore.
+
+### Thinking Level Optimization
+
+The portfolio agent is configured to use the `LOW` thinking level (`thinking_level = types.ThinkingLevel.LOW`) for the Gemini 3.5 Flash model:
+
+*   **Low Latency**: Minimising the reasoning tokens ensures near-instantaneous responses, preserving a fluid, interactive conversational experience for portfolio visitors.
+*   **Cost Efficiency**: Because thinking tokens are billed as output tokens, selecting the `LOW` level substantially reduces Vertex AI usage costs.
+*   **Structured Tooling Synergy**: The agent relies on a highly efficient **Hybrid Tooling Architecture** where the heavy lifting (discovery, ranking, and counting) is handled deterministically by custom Python code (`search_portfolio`), and precise retrieval is handled by Firestore MCP. Since the model does not need to perform complex mathematical reasoning or multi-step logic planning, a deep chain-of-thought is unnecessary.
+
 
