@@ -83,6 +83,11 @@ root_agent = PortfolioAgent(
     model=Gemini(
         model=settings.model,
         retry_options=types.HttpRetryOptions(attempts=3),
+        generate_content_config=types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(
+                thinking_level="low",  # Can be "low", "medium", or "high"
+            )
+        ),
     ),
     instruction=(
         textwrap.dedent(f"""

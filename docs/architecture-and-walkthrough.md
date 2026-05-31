@@ -54,6 +54,8 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Custom Agent Subclass** | `PortfolioAgent` fixes ADK's app name inference issues in managed environments. |
 | **Omit Twitter Meta Tags** | Relies on Open Graph fallback for minimalist SEO and cleaner HTML structure. |
 | **Frontend Deduplication** | Identifies and merges cross-posted articles (e.g. dev.to and Medium) on the client side using title-based normalization, ensuring a single tile per unique article. |
+| **Thinking Level (`low`)** | Configured to balance reasoning depth with latency. For a simple portfolio chatbot, a `low` reasoning budget minimises response latency and API cost while still providing sufficient cognitive capability for basic instruction following and conversational QA. |
+
 
 ## Application Design
 
@@ -482,4 +484,12 @@ To ensure the agent prioritises the most relevant or high-quality content, the `
 ### Workflow Handover
 
 When a user asks a general question (e.g., "What Python blogs do you have?"), the agent uses `search_portfolio` to find relevant matches and their unique IDs. If the user then requests details on a specific item, the agent hands over the ID to the MCP `get_document` tool to fetch the full Markdown body directly from Firestore.
+
+### Thinking Level Configuration
+
+To optimise the performance, responsiveness, and cost of the portfolio assistant, the agent is configured with a custom thinking level using the Gemini 3.5 model's native thinking budget capabilities:
+
+1. **Reasoning-Latency Balance**: Gemini 3.5 Flash supports dynamic reasoning depth (levels `"low"`, `"medium"`, `"high"`). Since the portfolio assistant acts primarily as a navigational chatbot (fetching, summarising, and presenting existing database documents rather than writing complex scripts or solving multi-step logic puzzles), a `"low"` thinking depth is selected.
+2. **Latency Reduction**: Selecting a `"low"` thinking level reduces internal reasoning tokens and significantly decreases the time-to-first-token (TTFT) and overall generation latency, delivering a snappier user experience.
+3. **Cost Optimisation**: Restricting the thinking budget reduces token usage per turn, lowering API token costs.
 
