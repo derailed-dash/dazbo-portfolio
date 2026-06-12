@@ -25,7 +25,7 @@ class DevToConnector:
         """
         existing_urls = existing_urls or set()
         async with httpx.AsyncClient() as client:
-            url = f"{self.base_url}/articles?username={username}"
+            url = f"{self.base_url}/articles?username={username}&per_page=100"
             response = await client.get(url)
             response.raise_for_status()
             articles_data = response.json()
