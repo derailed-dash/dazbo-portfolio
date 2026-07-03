@@ -107,5 +107,32 @@ describe('blogUtils', () => {
       expect(merged[0].platforms![0].name).toBe('dev.to');
       expect(merged[0].platforms![1].name).toBe('Medium');
     });
+
+    it('should merge duplicate articles even if one of them is truncated with an ellipsis', () => {
+      const blogs: Blog[] = [
+        { 
+          title: 'FinSavant Part 1: Building an Agentic FinOps Platform with Google ADK, A2UI and Gemini Enterprise Agent Platform — Goals, Architecture, and Tech Stack',
+          platform: 'dev.to', 
+          url: 'devto-url', 
+          date: '2026-07-01', 
+          is_manual: false, 
+          metadata_only: false, 
+          is_private: false 
+        },
+        { 
+          title: 'FinSavant Part 1: Building an Agentic FinOps Platform with Google ADK, A2UI and Gemini Enterprise…',
+          platform: 'Medium', 
+          url: 'medium-url', 
+          date: '2026-07-01', 
+          is_manual: false, 
+          metadata_only: false, 
+          is_private: false 
+        }
+      ];
+      const merged = mergeDuplicateArticles(blogs);
+      expect(merged).toHaveLength(1);
+      expect(merged[0].platforms).toHaveLength(2);
+      expect(merged[0].title).toBe('FinSavant Part 1: Building an Agentic FinOps Platform with Google ADK, A2UI and Gemini Enterprise Agent Platform — Goals, Architecture, and Tech Stack');
+    });
   });
 });
