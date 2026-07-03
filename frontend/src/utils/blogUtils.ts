@@ -30,10 +30,10 @@ const isDuplicateTitle = (t1: string, t2: string): boolean => {
   };
 
   const s1 = stripEllipsis(t1);
-  if (s1 && t2.startsWith(s1)) return true;
+  if (s1 && s1.length >= 10 && t2.startsWith(s1)) return true;
 
   const s2 = stripEllipsis(t2);
-  if (s2 && t1.startsWith(s2)) return true;
+  if (s2 && s2.length >= 10 && t1.startsWith(s2)) return true;
 
   return false;
 };
