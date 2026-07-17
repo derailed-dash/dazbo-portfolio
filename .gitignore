@@ -209,3 +209,7 @@ tools/a2a-inspector/
 working_docs/
 gha-creds-*.json
 
+/sample_data/dazbo_prompt.md
+/sample_data/manual_videos.yaml
+/sample_data/dazbo_about.md
+/sample_data/manual_applications.yaml
