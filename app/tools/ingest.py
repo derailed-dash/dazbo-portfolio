@@ -546,7 +546,11 @@ async def ingest_resources(
                                 # Persist immediately
                                 normalized_url = normalize_url(blog.url)
                                 if normalized_url in existing_blog_map:
-                                    blog.id = existing_blog_map[normalized_url].id
+                                    existing = existing_blog_map[normalized_url]
+                                    blog.id = existing.id
+                                    if blog.ai_summary is None:
+                                        blog.ai_summary = existing.ai_summary
+                                    blog.created_at = existing.created_at
                                     await blog_service.update(blog.id, blog.model_dump(exclude={"id"}))
                                     stats["medium"]["updated"] += 1
                                 else:
@@ -600,6 +604,11 @@ async def ingest_resources(
                     progress.update(task, description=f"[blue]Saving[/blue] [white]{blog.title[:30]}...[/white]")
                     if existing:
                         blog.id = existing.id
+                        if blog.ai_summary is None:
+                            blog.ai_summary = existing.ai_summary
+                        if blog.markdown_content is None:
+                            blog.markdown_content = existing.markdown_content
+                        blog.created_at = existing.created_at
                         await blog_service.update(blog.id, blog.model_dump(exclude={"id"}))
                         stats["medium"]["updated"] += 1
                     else:
@@ -643,8 +652,8 @@ async def ingest_resources(
                     normalized_url = normalize_url(b.url)
                     existing = existing_blog_map.get(normalized_url)
 
-                    # 1. Skip if already exists and has summary
-                    if existing and existing.ai_summary:
+                    # 1. Skip if already exists, has summary, and the image_url matches (or we don't need to update it)
+                    if existing and existing.ai_summary and (existing.image_url == b.image_url):
                         stats["devto"]["skipped"] += 1
                         progress.advance(task)
                         continue
@@ -666,6 +675,11 @@ async def ingest_resources(
                     progress.update(task, description=f"[blue]Saving[/blue] [white]{b.title[:30]}...[/white]")
                     if existing:
                         b.id = existing.id
+                        if b.ai_summary is None:
+                            b.ai_summary = existing.ai_summary
+                        if b.markdown_content is None:
+                            b.markdown_content = existing.markdown_content
+                        b.created_at = existing.created_at
                         await blog_service.update(b.id, b.model_dump(exclude={"id"}))
                         stats["devto"]["updated"] += 1
                     else:
@@ -749,6 +763,11 @@ async def ingest_resources(
 
                     if existing:
                         b.id = existing.id
+                        if b.ai_summary is None:
+                            b.ai_summary = existing.ai_summary
+                        if b.markdown_content is None:
+                            b.markdown_content = existing.markdown_content
+                        b.created_at = existing.created_at
                         await blog_service.update(b.id, b.model_dump(exclude={"id"}))
                         console.print(f"Updated Manual: {b.title}")
                         stats["manual"]["updated"] += 1

@@ -23,6 +23,7 @@ async def test_fetch_posts():
             "published_at": "2026-01-18T10:00:00Z",
             "url": "https://dev.to/user/test-devto-post",
             "tag_list": ["python", "webdev"],
+            "cover_image": "https://media.dev.to/cover.jpg",
         }
     ]
 
@@ -44,6 +45,7 @@ async def test_fetch_posts():
         assert blog.source_platform == "devto_api"
         assert blog.is_manual is False
         assert blog.date.startswith("2026-01-18")
+        assert blog.image_url == "https://media.dev.to/cover.jpg"
 
 
 @pytest.mark.asyncio

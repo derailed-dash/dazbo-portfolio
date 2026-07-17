@@ -16,6 +16,7 @@ class Blog(BaseModel):
     date: str  # ISO 8601 string as per spec
     platform: str
     url: str
+    image_url: str | None = None
     source_platform: str | None = None
     tags: list[str] = Field(default_factory=list)
     is_manual: bool = True

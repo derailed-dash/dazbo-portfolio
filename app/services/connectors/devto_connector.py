@@ -73,6 +73,7 @@ class DevToConnector:
                 # date is published_at, e.g. "2026-01-18T10:00:00Z"
                 date_iso = article.get("published_at", "").split("T")[0]
                 tags = article.get("tag_list", [])
+                image_url = article.get("cover_image") or article.get("social_image") or None
 
                 blog = Blog(
                     title=title,
@@ -80,6 +81,7 @@ class DevToConnector:
                     date=date_iso,
                     platform="Dev.to",
                     url=article_url,
+                    image_url=image_url,
                     source_platform="devto_api",
                     is_manual=False,
                     markdown_content=body_markdown,
