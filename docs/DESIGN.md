@@ -105,7 +105,7 @@ A core design pattern using `backdrop-filter: blur(10px)` and semi-transparent b
 ### Key Frontend Components
 
 *   **`MainLayout`**: The top-level wrapper including `AppNavbar`, `Footer`, and `ChatWidget`.
-*   **`ShowcaseCarousel`**: Reusable component displaying collections. Scales from 1 item (mobile) to 3 items (desktop).
+*   **`ShowcaseCarousel`**: Reusable component displaying collections. Scales from 1 item (mobile) to 4 items (desktop).
 *   **`ProjectCarousel`**: Specifically configured to sort GitHub projects, prioritising active work (updated <45 days, >0 stars).
 *   **`AboutPage`**: Professional profile rendering Markdown from Firestore with a glassmorphic UI.
 

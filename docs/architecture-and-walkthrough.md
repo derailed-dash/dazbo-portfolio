@@ -55,6 +55,7 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Omit Twitter Meta Tags** | Relies on Open Graph fallback for minimalist SEO and cleaner HTML structure. |
 | **Frontend Deduplication** | Identifies and merges cross-posted articles (e.g. dev.to and Medium) on the client side using title-based normalization, ensuring a single tile per unique article. |
 | **Thinking Level (`low`)** | Configured to balance reasoning depth with latency. For a simple portfolio chatbot, a `low` reasoning budget minimises response latency and API cost while still providing sufficient cognitive capability for basic instruction following and conversational QA. |
+| **Migrate to `gemini-review-action`** | Replaced deprecated `run-gemini-cli` action with a faster, custom-built composite action utilizing `uv` for rapid execution and Pydantic schema validation for JSON schema compliance. |
 
 
 ## Application Design
