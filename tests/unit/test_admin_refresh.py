@@ -117,3 +117,26 @@ def test_trigger_refresh_oidc_unauthorized_email(mock_verify):
     assert response.status_code == 403
     assert "Forbidden" in response.json()["detail"]
 
+
+@patch("google.oauth2.id_token.verify_oauth2_token")
+@patch("app.tools.ingest.ingest_resources", new_callable=AsyncMock)
+def test_trigger_refresh_oidc_success_with_https_header(mock_ingest, mock_verify):
+    """Test OIDC validation maps http to https when x-forwarded-proto is set to https."""
+    settings.google_cloud_project = "dazbo-portfolio"
+    settings.log_level = "INFO"
+    mock_verify.return_value = {"email": "dazbo-portfolio-scheduler@dazbo-portfolio.iam.gserviceaccount.com"}
+
+    response = client.post(
+        "/api/admin/refresh",
+        headers={
+            "Authorization": "Bearer valid-fake-token",
+            "X-Forwarded-Proto": "https"
+        }
+    )
+
+    assert response.status_code == 200
+    mock_verify.assert_called_once()
+    _, kwargs = mock_verify.call_args
+    assert kwargs.get("audience") == "https://testserver/api/admin/refresh"
+
+

@@ -239,13 +239,13 @@ async def trigger_refresh(
             # Verify Google OIDC token. Cloud Scheduler signs it with a service account.
             # We verify the audience (expected_audience) to prevent token replay attacks.
             expected_audience = str(request.url)
+            if request.headers.get("x-forwarded-proto") == "https" and expected_audience.startswith("http://"):
+                expected_audience = expected_audience.replace("http://", "https://", 1)
             payload = id_token.verify_oauth2_token(token, google_requests.Request(), audience=expected_audience)
 
             # Restrict callers to our scheduler service account or app service account
             allowed_emails = [
-                f"{settings.app_name}-scheduler@{settings.google_cloud_project}.iam.gserviceaccount.com",
-                f"{settings.app_name}-app@{settings.google_cloud_project}.iam.gserviceaccount.com",
-                # Also support project-name variant since project_name has hyphens
+                # Support project-name variant since project_name has hyphens
                 f"dazbo-portfolio-scheduler@{settings.google_cloud_project}.iam.gserviceaccount.com",
                 f"dazbo-portfolio-app@{settings.google_cloud_project}.iam.gserviceaccount.com"
             ]
