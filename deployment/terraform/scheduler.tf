@@ -13,6 +13,13 @@ resource "google_service_account" "scheduler" {
   project      = var.project_id
 }
 
+# 1b. Grant the Cloud Scheduler service agent permission to use this service account
+resource "google_service_account_iam_member" "scheduler_user" {
+  service_account_id = google_service_account.scheduler.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
+}
+
 # 2. Create the Cloud Scheduler Job to run daily at midnight
 resource "google_cloud_scheduler_job" "refresh_job" {
   name             = "${var.project_name}-refresh-job"

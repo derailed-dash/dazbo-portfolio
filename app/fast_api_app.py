@@ -213,6 +213,7 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
 
 @app.post("/api/admin/refresh")
 async def trigger_refresh(
+    request: Request,
     background_tasks: BackgroundTasks,
     authorization: str = Header(None)
 ):
@@ -236,9 +237,9 @@ async def trigger_refresh(
             from google.oauth2 import id_token
 
             # Verify Google OIDC token. Cloud Scheduler signs it with a service account.
-            # We pass audience=None to verify standard signature/expiration,
-            # and manually check the target audience or the service account email.
-            payload = id_token.verify_oauth2_token(token, google_requests.Request())
+            # We verify the audience (expected_audience) to prevent token replay attacks.
+            expected_audience = str(request.url)
+            payload = id_token.verify_oauth2_token(token, google_requests.Request(), audience=expected_audience)
 
             # Restrict callers to our scheduler service account or app service account
             allowed_emails = [
@@ -252,6 +253,8 @@ async def trigger_refresh(
             if caller_email not in allowed_emails:
                 logger.warning(f"Unauthorized caller: {caller_email}")
                 raise HTTPException(status_code=403, detail="Forbidden: Unauthorized caller")
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"OIDC token verification failed: {e}")
             raise HTTPException(status_code=401, detail=f"Unauthorized: {e}") from e

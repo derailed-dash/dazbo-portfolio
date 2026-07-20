@@ -68,3 +68,52 @@ def test_trigger_refresh_missing_github_user(mock_ingest):
 
     assert response.status_code == 400
     assert "github_user is not configured" in response.json()["detail"]
+
+
+@patch("google.oauth2.id_token.verify_oauth2_token")
+@patch("app.tools.ingest.ingest_resources", new_callable=AsyncMock)
+def test_trigger_refresh_oidc_success(mock_ingest, mock_verify):
+    """Test successful OIDC token validation and verification of audience."""
+    settings.google_cloud_project = "dazbo-portfolio"
+    settings.log_level = "INFO"
+    mock_verify.return_value = {"email": "dazbo-portfolio-scheduler@dazbo-portfolio.iam.gserviceaccount.com"}
+
+    response = client.post(
+        "/api/admin/refresh",
+        headers={"Authorization": "Bearer valid-fake-token"}
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "refresh triggered"}
+    mock_verify.assert_called_once()
+    # Check that it verified the expected audience URL
+    _, kwargs = mock_verify.call_args
+    assert kwargs.get("audience") == "http://testserver/api/admin/refresh"
+
+
+def test_trigger_refresh_oidc_missing_header():
+    """Test that a missing Authorization header returns 401."""
+    settings.google_cloud_project = "dazbo-portfolio"
+    settings.log_level = "INFO"
+
+    response = client.post("/api/admin/refresh")
+
+    assert response.status_code == 401
+    assert "Missing or invalid Authorization header" in response.json()["detail"]
+
+
+@patch("google.oauth2.id_token.verify_oauth2_token")
+def test_trigger_refresh_oidc_unauthorized_email(mock_verify):
+    """Test that an unauthorized caller email returns 403."""
+    settings.google_cloud_project = "dazbo-portfolio"
+    settings.log_level = "INFO"
+    mock_verify.return_value = {"email": "attacker@evil.com"}
+
+    response = client.post(
+        "/api/admin/refresh",
+        headers={"Authorization": "Bearer valid-fake-token"}
+    )
+
+    assert response.status_code == 403
+    assert "Forbidden" in response.json()["detail"]
+
