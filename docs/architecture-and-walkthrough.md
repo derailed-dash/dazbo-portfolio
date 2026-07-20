@@ -335,14 +335,31 @@ uv run python -m app.tools.ingest \
   --yaml-file manual_resources.yaml
 ```
 
-### Automated Ingestion Workflow (GitHub Actions)
+### Automated Ingestion Workflow (Cloud Scheduler & Admin API)
 
-To ensure the portfolio content (such as GitHub stargazers, Medium articles, and Dev.to posts) remains fresh and accurate without manual developer intervention, an automated synchronization workflow is configured in GitHub Actions.
+To ensure the portfolio content (such as GitHub stargazers, Medium articles, and Dev.to posts) remains fresh and accurate without manual developer intervention, an automated synchronisation workflow is configured using Google Cloud Scheduler.
 
-*   **Workflow File:** `.github/workflows/portfolio-sync.yml`
-*   **Trigger:** Runs automatically on a daily schedule (`0 2 * * *` / 02:00 UTC) and supports manual triggering (`workflow_dispatch`).
-*   **Authentication:** Uses secure **Workload Identity Federation (WIF)** to authenticate with Google Cloud using OIDC tokens, completely avoiding the need for long-lived static key storage in GitHub.
-*   **Vertex AI Integration:** The execution environment uses Vertex AI mode (`GOOGLE_GENAI_USE_VERTEXAI: 'True'`), leveraging your GCP service account's authenticated credentials directly to interact with Vertex AI and Firestore.
+*   **Scheduler Job:** A `google_cloud_scheduler_job` (defined in [scheduler.tf](file:///home/dazbo/localdev/dazbo-portfolio/deployment/terraform/scheduler.tf)) runs automatically on a daily schedule at midnight (`0 0 * * *` Europe/London timezone).
+*   **Target Endpoint:** The job sends an authenticated `POST` request to the application's `/api/admin/refresh` endpoint.
+*   **Authentication:** The Scheduler uses Google OIDC token authentication signed by a dedicated service account (`dazbo-portfolio-scheduler`). The FastAPI backend verifies the OIDC token via `google.oauth2.id_token.verify_oauth2_token` to restrict access strictly to authorized project service accounts.
+*   **Local Bypass:** In local development or debug mode, OIDC token verification is bypassed to allow direct manual testing via curl.
+*   **Concurrency Guard:** The endpoint enforces a concurrency check using `app.state.is_ingesting`. If a refresh is already active, subsequent requests immediately return `409 Conflict`.
+
+### What does `/api/admin/refresh` execute?
+
+When the endpoint is triggered, it executes the following steps in a non-blocking FastAPI **Background Task**:
+
+1. **Loads Configurations:** Reads `GITHUB_USER`, `MEDIUM_PROFILE`, and `DEVTO_PROFILE` from the service's environment variables.
+2. **Parses Usernames:** Extracts the usernames dynamically from the profiles (e.g., `https://medium.com/@derailed.dash` -> `@derailed.dash` and `https://dev.to/deraileddash` -> `deraileddash`).
+3. **Executes Ingestion:** Runs the core ingestion workflow (`ingest_resources`) with the following arguments:
+    *   `github_user`: The configured GitHub user (`derailed-dash`).
+    *   `medium_user`: The parsed Medium RSS user (`@derailed.dash`).
+    *   `devto_user`: The parsed Dev.to API user (`deraileddash`).
+    *   `medium_zip = None`: Skips processing Medium history archives (only fetches latest blogs via RSS).
+    *   `yaml_file = None`: Skips manual application resource ingestion (which are managed via static git files).
+    *   `about_file = None`: Skips manual biography updates.
+    *   `project_id`: The GCP Project ID.
+    *   `simulate = False`: Commits updates directly to Firestore.
 
 ### Code Sharing & Dependencies
 

@@ -46,6 +46,21 @@ resource "google_cloud_run_v2_service" "app" {
           }
         }
       }
+
+      env {
+        name  = "GITHUB_USER"
+        value = var.github_user
+      }
+
+      env {
+        name  = "MEDIUM_PROFILE"
+        value = var.medium_profile
+      }
+
+      env {
+        name  = "DEVTO_PROFILE"
+        value = var.devto_profile
+      }
     }
 
     service_account                  = google_service_account.app_sa.email

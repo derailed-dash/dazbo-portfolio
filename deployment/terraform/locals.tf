@@ -26,6 +26,7 @@ locals {
     "logging.googleapis.com",
     "cloudtrace.googleapis.com",
     "firestore.googleapis.com",
+    "cloudscheduler.googleapis.com",
   ]
 
   all_project_ids = distinct([

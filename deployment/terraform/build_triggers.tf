@@ -82,6 +82,9 @@ resource "google_cloudbuild_trigger" "deploy_to_prod_pipeline" {
     _MIN_INSTANCES               = var.min_instances
     _BASE_URL                    = var.base_url
     _LOG_LEVEL                   = var.log_level
+    _GITHUB_USER                 = var.github_user
+    _MEDIUM_PROFILE              = var.medium_profile
+    _DEVTO_PROFILE               = var.devto_profile
   }
 
   depends_on = [
