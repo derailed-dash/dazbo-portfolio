@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 
 import anyio
 import google.auth
-from fastapi import Depends, FastAPI, Request, Response
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Request, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -209,6 +209,96 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
     """Collect and log feedback."""
     logger.debug(f"Feedback received: {feedback.model_dump()}")
     return {"status": "success"}
+
+
+@app.post("/api/admin/refresh")
+async def trigger_refresh(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    authorization: str = Header(None)
+):
+    """Trigger background portfolio data ingestion."""
+    # Concurrency check
+    if getattr(app.state, "is_ingesting", False):
+        return JSONResponse(
+            status_code=409,
+            content={"detail": "Ingestion is already in progress"}
+        )
+
+    # Authentication validation
+    if not settings.google_cloud_project or settings.log_level == "DEBUG":
+        logger.info("Local environment or DEBUG mode - skipping OIDC verification")
+    else:
+        if not authorization or not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+        token = authorization.split(" ")[1]
+        try:
+            from google.auth.transport import requests as google_requests
+            from google.oauth2 import id_token
+
+            # Verify Google OIDC token. Cloud Scheduler signs it with a service account.
+            # We verify the audience (expected_audience) to prevent token replay attacks.
+            expected_audience = str(request.url)
+            if request.headers.get("x-forwarded-proto") == "https" and expected_audience.startswith("http://"):
+                expected_audience = expected_audience.replace("http://", "https://", 1)
+            payload = id_token.verify_oauth2_token(token, google_requests.Request(), audience=expected_audience)
+
+            # Restrict callers to our scheduler service account or app service account
+            # Derived dynamically from app_name (converting underscores to hyphens for GCP SA compliance)
+            app_name_hyphenated = settings.app_name.replace("_", "-")
+            allowed_emails = [
+                f"{app_name_hyphenated}-scheduler@{settings.google_cloud_project}.iam.gserviceaccount.com",
+                f"{app_name_hyphenated}-app@{settings.google_cloud_project}.iam.gserviceaccount.com"
+            ]
+            caller_email = payload.get("email")
+            if caller_email not in allowed_emails:
+                logger.warning(f"Unauthorized caller: {caller_email}")
+                raise HTTPException(status_code=403, detail="Forbidden: Unauthorized caller")
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"OIDC token verification failed: {e}")
+            raise HTTPException(status_code=401, detail=f"Unauthorized: {e}") from e
+
+    # Extract usernames from profile URLs
+    github_user = settings.github_user
+    if not github_user:
+        raise HTTPException(status_code=400, detail="github_user is not configured")
+
+    import re
+    medium_user = None
+    if settings.medium_profile:
+        match = re.search(r"medium\.com/(@[a-zA-Z0-9_.-]+)", settings.medium_profile)
+        medium_user = match.group(1) if match else settings.medium_profile.rstrip("/").split("/")[-1]
+
+    devto_user = None
+    if settings.devto_profile:
+        devto_user = settings.devto_profile.rstrip("/").split("/")[-1]
+
+    # Ingestion runner wrapper
+    async def run_ingestion():
+        app.state.is_ingesting = True
+        try:
+            from app.tools.ingest import ingest_resources
+            logger.info("Starting background ingestion...")
+            await ingest_resources(
+                github_user=github_user,
+                medium_user=medium_user,
+                medium_zip=None,
+                devto_user=devto_user,
+                yaml_file=None,
+                about_file=None,
+                project_id=settings.google_cloud_project,
+                simulate=False
+            )
+            logger.info("Background ingestion completed successfully.")
+        except Exception as err:
+            logger.error(f"Error during background ingestion: {err}")
+        finally:
+            app.state.is_ingesting = False
+
+    background_tasks.add_task(run_ingestion)
+    return {"status": "refresh triggered"}
 
 
 @app.get("/api/projects", response_model=list[Project])

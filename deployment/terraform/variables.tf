@@ -173,3 +173,18 @@ variable "base_url" {
   type        = string
   default     = ""
 }
+
+variable "github_user" {
+  description = "GitHub username to sync"
+  type        = string
+}
+
+variable "medium_profile" {
+  description = "Medium profile URL to sync"
+  type        = string
+}
+
+variable "devto_profile" {
+  description = "Dev.to profile URL to sync"
+  type        = string
+}

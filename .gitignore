@@ -147,7 +147,7 @@ dmypy.json
 *.tfstate
 *.tfstate.backup
 *.tfplan
-# env.tfvars
+deployment/terraform/vars/env.tfvars
 
 # Node
 **/node_modules

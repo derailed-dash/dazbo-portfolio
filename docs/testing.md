@@ -46,6 +46,8 @@ Unit tests focus on isolating individual components, particularly Models and Ser
     *   `tests/unit/test_seo_injection.py`: Verifies dynamic injection of meta tags, OpenGraph, JSON-LD, and canonical URLs into the `index.html` stream.
     *   `tests/unit/test_security_traversal.py`: Verifies the block-list and allow-list logic in the `serve_spa` function to prevent path traversal attacks.
     *   `tests/unit/test_tool_content_details_security.py`: Verify that tools handles file paths securely.
+*   **Admin API / Refresh**:
+    *   `tests/unit/test_admin_refresh.py`: Verifies the `/api/admin/refresh` endpoint success flow, OIDC authentication bypass in dev, and the concurrency guard.
 
 ## Integration Tests
 
@@ -94,6 +96,13 @@ While automated tests cover the core logic, some features (like rate limiting in
       -s -o /dev/null -w "%{http_code}\n"; done
     ```
     Expected: 5 `200` responses followed by `429`.
+
+3.  **Admin Ingestion Refresh**:
+    ```bash
+    # Trigger refresh ingestion locally (bypasses OIDC validation in debug/dev)
+    curl -i -X POST http://localhost:8000/api/admin/refresh
+    ```
+    Expected: `200 OK` on the first call (with background task started in logs), followed by `409 Conflict` on subsequent concurrent calls while ingestion is active.
 
 ## Frontend Tests
 
