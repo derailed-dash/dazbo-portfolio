@@ -13,6 +13,7 @@ The infrastructure is designed to be serverless, scalable, and secure, leveragin
 - **Cloud Storage (GCS):** Used for storing static assets and telemetry logs.
 - **Artifact Registry:** Stores Docker images for the application.
 - **Cloud Build:** Manages the CI/CD pipeline for automated deployments.
+- **Cloud Scheduler:** Automates daily content synchronisation by triggering the `/api/admin/refresh` endpoint at midnight.
 - **Cloud Logging & Trace:** Provides observability and long-term telemetry storage.
 
 
@@ -28,6 +29,7 @@ deployment/terraform/
 ├── iam.tf                # IAM bindings and permissions
 ├── locals.tf             # Local variable definitions and helpers
 ├── providers.tf          # Terraform provider configuration
+├── scheduler.tf          # Cloud Scheduler job and service account
 ├── service.tf            # Cloud Run service definition
 ├── service_accounts.tf   # Service Account definitions
 ├── storage.tf            # GCS buckets, Artifact Registry, and Firestore
