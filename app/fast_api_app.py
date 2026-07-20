@@ -244,10 +244,11 @@ async def trigger_refresh(
             payload = id_token.verify_oauth2_token(token, google_requests.Request(), audience=expected_audience)
 
             # Restrict callers to our scheduler service account or app service account
+            # Derived dynamically from app_name (converting underscores to hyphens for GCP SA compliance)
+            app_name_hyphenated = settings.app_name.replace("_", "-")
             allowed_emails = [
-                # Support project-name variant since project_name has hyphens
-                f"dazbo-portfolio-scheduler@{settings.google_cloud_project}.iam.gserviceaccount.com",
-                f"dazbo-portfolio-app@{settings.google_cloud_project}.iam.gserviceaccount.com"
+                f"{app_name_hyphenated}-scheduler@{settings.google_cloud_project}.iam.gserviceaccount.com",
+                f"{app_name_hyphenated}-app@{settings.google_cloud_project}.iam.gserviceaccount.com"
             ]
             caller_email = payload.get("email")
             if caller_email not in allowed_emails:
