@@ -186,13 +186,19 @@ direnv allow
 | `make docker-run`       | Run the unified container locally                             |
 | `make tf-plan`          | Plan Terraform deployment                                     |
 | `make tf-apply`         | Deploy environment resources using Terraform                  |
-| `uv run python -m app.tools.ingest` | Run ingestion tool                                |
+| `uv run python -m app.tools.ingest` | Run direct ingestion CLI tool |
+| `uv run python .agents/skills/refresh-portfolio/scripts/refresh.py --github-user <user>` | Run ingestion via portfolio refresh skill |
 
 Many common tasks have been automated using `make`. If you work in an environment that doesn't support `make`, you can find the equivalent commands in the [Makefile](Makefile).
 
-### Ingestion Tool
+### Ingestion Tool & Agent Skill
 
-The ingestion tool supports a `--simulate` flag. Use `uv run python -m app.tools.ingest --simulate [OPTIONS]` to perform a dry run without modifying the Firestore database. This mode will print before and after snapshots showing exactly what actions would be performed.
+Content ingestion can be executed via the CLI tool directly or using the `refresh-portfolio` workspace skill ([.agents/skills/refresh-portfolio/SKILL.md](.agents/skills/refresh-portfolio/SKILL.md)):
+
+* **Direct CLI Tool:** `uv run python -m app.tools.ingest [OPTIONS]`
+* **Agent Skill Helper:** `uv run python .agents/skills/refresh-portfolio/scripts/refresh.py --github-user <user> [--simulate]`
+
+Both options support a `--simulate` flag to perform a dry run without modifying the Firestore database, printing before and after snapshots showing actions to be performed.
 
 ## Deployment
 

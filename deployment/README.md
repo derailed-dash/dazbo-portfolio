@@ -174,6 +174,33 @@ To verify that the MCP server is accessible to the application:
 
 Telemetry data (prompts, responses, and traces) is captured and routed to dedicated Cloud Logging buckets with 10-year retention. This data can be queried directly via Cloud Logging or exported for further analysis.
 
+### Cloud Scheduler Operations & Verification
+
+Cloud Scheduler triggers automated content refreshes daily at midnight by sending an authenticated `POST` request to `/api/admin/refresh`.
+
+To verify job status and audit execution logs:
+```bash
+# Check job status and last run timestamp
+gcloud scheduler jobs describe dazbo-portfolio-refresh-job \
+  --location=europe-west1 \
+  --project=dazbo-portfolio \
+  --format="json(name,state,lastAttemptTime,status)"
+
+# View Cloud Scheduler attempt logs
+gcloud logging read 'resource.type="cloud_scheduler_job" AND resource.labels.job_id="dazbo-portfolio-refresh-job"' \
+  --project=dazbo-portfolio \
+  --limit=5 \
+  --format="json(timestamp,severity,jsonPayload,httpRequest)"
+
+# View backend response logs in Cloud Run
+gcloud logging read 'resource.type="cloud_run_revision" AND httpRequest.requestUrl:"/api/admin/refresh"' \
+  --project=dazbo-portfolio \
+  --limit=5 \
+  --format="json(timestamp,severity,httpRequest)"
+```
+
+*Note: New backend routes (like `/api/admin/refresh`) must be deployed to Cloud Run (`make deploy-cloud-run`) before Cloud Scheduler calls can succeed.*
+
 ## Security
 
 - **Least Privilege:** Service accounts are assigned only the roles necessary for their function (e.g., `roles/aiplatform.user`, `roles/logging.logWriter`).

@@ -362,6 +362,34 @@ When the endpoint is triggered, it executes the following steps in a non-blockin
     *   `project_id`: The GCP Project ID.
     *   `simulate = False`: Commits updates directly to Firestore.
 
+### Verification & Monitoring (Cloud Scheduler Executions)
+
+To verify the operational status and execution history of the Cloud Scheduler job:
+
+1. **Describe Job Status:**
+   ```bash
+   gcloud scheduler jobs describe dazbo-portfolio-refresh-job \
+     --location=europe-west1 \
+     --project=dazbo-portfolio \
+     --format="json(name,state,lastAttemptTime,status)"
+   ```
+2. **Inspect Cloud Scheduler Execution Logs:**
+   ```bash
+   gcloud logging read 'resource.type="cloud_scheduler_job" AND resource.labels.job_id="dazbo-portfolio-refresh-job"' \
+     --project=dazbo-portfolio \
+     --limit=5 \
+     --format="json(timestamp,severity,jsonPayload,httpRequest)"
+   ```
+3. **Inspect Backend Endpoint Request Logs:**
+   ```bash
+   gcloud logging read 'resource.type="cloud_run_revision" AND httpRequest.requestUrl:"/api/admin/refresh"' \
+     --project=dazbo-portfolio \
+     --limit=5 \
+     --format="json(timestamp,severity,httpRequest)"
+   ```
+
+*Note: Any backend API changes (such as adding `/api/admin/refresh`) require deploying the updated container image to Cloud Run (e.g. `make deploy-cloud-run`) before Cloud Scheduler triggers can succeed.*
+
 ### Code Sharing & Dependencies
 
 The ingestion tool is **not** a standalone script. It is an integral part of the application codebase and relies heavily on the same components used by the containerised FastAPI backend.
