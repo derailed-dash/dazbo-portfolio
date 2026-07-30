@@ -5,6 +5,7 @@ How: Uses httpx to call Dev.to API and maps results to Blog model.
 """
 
 import logging
+import time
 
 import httpx
 
@@ -25,7 +26,10 @@ class DevToConnector:
         """
         existing_urls = existing_urls or set()
         async with httpx.AsyncClient() as client:
-            url = f"{self.base_url}/articles?username={username}&per_page=30"
+            # Request per_page=100 and a cache-busting timestamp to fetch full article history
+            # and prevent Dev.to's Fastly CDN edge cache from serving stale responses.
+            timestamp = int(time.time())
+            url = f"{self.base_url}/articles?username={username}&per_page=100&_t={timestamp}"
             response = await client.get(url)
             response.raise_for_status()
             articles_data = response.json()
