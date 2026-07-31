@@ -13,7 +13,7 @@ def get_person_schema(base_url: str) -> dict:
         "@id": "https://darrenlester.net/#person",
         "name": "Darren Lester",
         "alternateName": "Dazbo",
-        "jobTitle": "Enterprise Cloud Architect",
+        "jobTitle": "Google Cloud & AI Chief Technologist",
         "url": base_url,
         "sameAs": [
             "https://github.com/derailed-dash",
@@ -38,5 +38,5 @@ def get_person_schema(base_url: str) -> dict:
             "MCP",
             "Agent skills",
         ],
-        "description": "Enterprise Cloud Architect, Google Developer Expert (GDE), and Google AI Champion, specializing in Google Cloud, agentic AI, cloud architecture and cloud strategy. Note: Not to be confused with the frontend engineer or other individuals of the same name.",
+        "description": "Google Cloud & AI Chief Technologist, Google Cloud Ambassador, Google Developer Expert (GDE), and Google AI Champion, specializing in Google Cloud, agentic AI, cloud architecture and cloud strategy. Note: Not to be confused with the frontend engineer or other individuals of the same name.",
     }

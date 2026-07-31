@@ -24,9 +24,9 @@ def test_api_seo_home():
     data = response.json()
     assert "head_tags" in data
     assert "title" in data
-    assert data["title"] == 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
+    assert data["title"] == 'Darren "Dazbo" Lester - Google Cloud & AI Chief Technologist and Google Evangelist'
     assert (
-        "<title>Darren &quot;Dazbo&quot; Lester - Enterprise Cloud Architect and Google Evangelist</title>"
+        "<title>Darren &quot;Dazbo&quot; Lester - Google Cloud &amp; AI Chief Technologist and Google Evangelist</title>"
         in data["head_tags"]
     )
     assert 'rel="canonical"' in data["head_tags"]
@@ -40,9 +40,12 @@ def test_api_seo_about():
     data = response.json()
     assert "head_tags" in data
     assert "title" in data
-    assert data["title"] == 'About Darren Lester | Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
     assert (
-        "<title>About Darren Lester | Darren &quot;Dazbo&quot; Lester - Enterprise Cloud Architect and Google Evangelist</title>"
+        data["title"]
+        == 'About Darren Lester | Darren "Dazbo" Lester - Google Cloud & AI Chief Technologist and Google Evangelist'
+    )
+    assert (
+        "<title>About Darren Lester | Darren &quot;Dazbo&quot; Lester - Google Cloud &amp; AI Chief Technologist and Google Evangelist</title>"
         in data["head_tags"]
     )
     assert 'rel="canonical"' in data["head_tags"]
@@ -62,7 +65,10 @@ def test_serve_spa_injection_home():
         response = client.get("/")
         assert response.status_code == 200
         html = response.text
-        assert "<title>Darren &quot;Dazbo&quot; Lester - Enterprise Cloud Architect and Google Evangelist</title>" in html
+        assert (
+            "<title>Darren &quot;Dazbo&quot; Lester - Google Cloud &amp; AI Chief Technologist and Google Evangelist</title>"
+            in html
+        )
         assert 'property="og:title"' in html
         assert "<!-- __SEO_TAGS__ -->" not in html
 
@@ -81,7 +87,7 @@ def test_serve_spa_injection_about():
         assert response.status_code == 200
         html = response.text
         assert (
-            "<title>About Darren Lester | Darren &quot;Dazbo&quot; Lester - Enterprise Cloud Architect and Google Evangelist</title>"
+            "<title>About Darren Lester | Darren &quot;Dazbo&quot; Lester - Google Cloud &amp; AI Chief Technologist and Google Evangelist</title>"
             in html
         )
         assert 'property="og:title"' in html

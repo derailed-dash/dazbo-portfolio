@@ -119,7 +119,7 @@ app: FastAPI = get_fast_api_app(
 app.title = "dazbo-portfolio"
 app.description = "API for interacting with the Agent dazbo-portfolio"
 
-SITE_TITLE = 'Darren "Dazbo" Lester - Enterprise Cloud Architect and Google Evangelist'
+SITE_TITLE = 'Darren "Dazbo" Lester - Google Cloud & AI Chief Technologist and Google Evangelist'
 
 # Add Limiter to app state and exception handler
 app.state.limiter = limiter
@@ -442,7 +442,7 @@ def _get_seo_data_dict(path: str, base_url: str) -> dict:
     seo_map = {
         "/": {
             "title": SITE_TITLE,
-            "description": 'The professional portfolio of Darren "Dazbo" Lester: Enterprise Cloud Architect, Google Cloud Evangelist, AI Champion and Google Developer Expert (GDE).',
+            "description": 'The professional portfolio of Darren "Dazbo" Lester: Google Cloud & AI Chief Technologist, Google Cloud Ambassador, Google Cloud Evangelist, AI Champion and Google Developer Expert (GDE).',
             "json_ld": base_json_ld,
         },
         "/about": {
