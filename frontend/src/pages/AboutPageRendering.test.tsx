@@ -67,7 +67,7 @@ describe('AboutPage Rendering', () => {
   it('renders user specific content correctly', async () => {
     const mockContent = {
       title: 'About Me',
-      body: 'Enterprise Cloud Architect | Google Cloud | Strategist\n\nHi folks. My name is Darren, aka _Dazbo_.',
+      body: 'Google Cloud & AI Chief Technologist | Google Cloud | Strategist\n\nHi folks. My name is Darren, aka _Dazbo_.',
       last_updated: '2026-01-24T12:00:00Z',
     };
     (getContentBySlug as Mock).mockResolvedValueOnce(mockContent);
@@ -79,7 +79,7 @@ describe('AboutPage Rendering', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Enterprise Cloud Architect/)).toBeInTheDocument();
+      expect(screen.getByText(/Google Cloud & AI Chief Technologist/)).toBeInTheDocument();
       const em = screen.getByText('Dazbo');
       expect(em.tagName).toBe('EM');
     });
