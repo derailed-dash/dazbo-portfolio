@@ -18,8 +18,8 @@ def get_person_schema(base_url: str) -> dict:
         "sameAs": [
             "https://github.com/derailed-dash",
             "https://www.linkedin.com/in/darren-lester-architect/",
-            "https://medium.com/@derailed.dash",
-            "https://dev.to/deraileddash",
+            "https://medium.com/@dazbo",
+            "https://dev.to/dazbo",
             "https://sessionize.com/dazbo/",
             "https://orcid.org/0009-0005-7291-4535",
         ],

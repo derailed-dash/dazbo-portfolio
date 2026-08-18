@@ -5,8 +5,8 @@ We are building a dev portfolio application. The goal is to showcase my blogs, p
 ## Portfolio Resources
 
 - Blogs
-  - On Medium: https://medium.com/@derailed.dash
-  - On dev.to: https://dev.to/deraileddash
+  - On Medium: https://medium.com/@dazbo
+  - On dev.to: https://dev.to/dazbo
 - My Advent of Code Walkthroughs and Python Learning site: https://aoc.just2good.co.uk/
 - My public repos on GitHub: https://github.com/derailed-dash
 - My LinkedIn: https://www.linkedin.com/in/darren-lester-architect/
