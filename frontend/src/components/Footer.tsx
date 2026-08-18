@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
                 <Linkedin size={20} />
               </a>
               <a 
-                href="https://medium.com/@derailed.dash" 
+                href="https://medium.com/@dazbo" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-white hover-primary"
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
                 </svg>
               </a>
               <a 
-                href="https://dev.to/deraileddash" 
+                href="https://dev.to/dazbo" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="text-white hover-primary"

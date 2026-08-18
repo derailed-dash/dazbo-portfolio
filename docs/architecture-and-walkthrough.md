@@ -351,11 +351,11 @@ To ensure the portfolio content (such as GitHub stargazers, Medium articles, and
 When the endpoint is triggered, it executes the following steps in a non-blocking FastAPI **Background Task**:
 
 1. **Loads Configurations:** Reads `GITHUB_USER`, `MEDIUM_PROFILE`, and `DEVTO_PROFILE` from the service's environment variables.
-2. **Parses Usernames:** Extracts the usernames dynamically from the profiles (e.g., `https://medium.com/@derailed.dash` -> `@derailed.dash` and `https://dev.to/deraileddash` -> `deraileddash`).
+2. **Parses Usernames:** Extracts the usernames dynamically from the profiles (e.g., `https://medium.com/@dazbo` -> `@dazbo` and `https://dev.to/dazbo` -> `dazbo`).
 3. **Executes Ingestion:** Runs the core ingestion workflow (`ingest_resources`) with the following arguments:
     *   `github_user`: The configured GitHub user (`derailed-dash`).
-    *   `medium_user`: The parsed Medium RSS user (`@derailed.dash`).
-    *   `devto_user`: The parsed Dev.to API user (`deraileddash`).
+    *   `medium_user`: The parsed Medium RSS user (`@dazbo`).
+    *   `devto_user`: The parsed Dev.to API user (`dazbo`).
     *   `medium_zip = None`: Skips processing Medium history archives (only fetches latest blogs via RSS).
     *   `yaml_file = None`: Skips manual application resource ingestion (which are managed via static git files).
     *   `about_file = None`: Skips manual biography updates.
