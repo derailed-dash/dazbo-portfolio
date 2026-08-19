@@ -117,9 +117,11 @@ It might seem redundant to define the service in Terraform if Cloud Build deploy
 
 ## Deployment Instructions
 
+### 1. Infrastructure Provisioning (Terraform)
+
 The easiest way to manage the infrastructure is using the provided `Makefile` in the project root.
 
-### Quick Start (Makefile)
+#### Quick Start (Makefile)
 
 ```bash
 # Plan
@@ -129,7 +131,7 @@ make tf-plan
 make tf-apply
 ```
 
-### Manual Terraform Usage
+#### Manual Terraform Usage
 
 If you prefer to run Terraform directly:
 
@@ -141,6 +143,48 @@ terraform plan -var-file="vars/env.tfvars"
 
 # Apply changes
 terraform apply -var-file="vars/env.tfvars"
+```
+
+### 2. Application CI/CD Pipeline (Cloud Build)
+
+The project uses Google Cloud Build triggers configured in `build_triggers.tf` to manage automated builds and deployments:
+
+#### a. Pull Request Checks (`pr-dazbo-portfolio`)
+
+- **Trigger:** Opened or updated Pull Requests targeting `main`.
+- **Pipeline:** Runs `.cloudbuild/pr_checks.yaml` to execute code quality linters (`codespell`, `ruff`, `ty`) and test suites (`pytest`, `npm test`).
+
+#### b. Production Deployment with Manual Approval (`deploy-dazbo-portfolio`)
+
+- **Trigger:** Pushes / merges to the `main` branch.
+- **Pipeline:** `.cloudbuild/deploy-to-prod.yaml`.
+- **Approval Requirement:** The trigger is configured with `approval_config { approval_required = true }`. When triggered, the build pauses in a **`PENDING APPROVAL`** state to prevent accidental production rollouts.
+
+##### Approving the Production Build
+
+1. **Via Google Cloud Console:**
+   - Go to **Cloud Build** &rarr; **Approvals** (or **Build history**) in the `dazbo-portfolio` project.
+   - Select the pending build for the deployment trigger (`deploy-dazbo-portfolio`).
+   - Review the commit details and click **Approve**.
+
+2. **Via `gcloud` CLI:**
+   ```bash
+   # List pending approval builds in europe-west1
+   gcloud builds list --ongoing --region=europe-west1 --project=dazbo-portfolio
+
+   # Approve the build
+   gcloud builds approve <BUILD_ID> --region=europe-west1 --project=dazbo-portfolio
+   ```
+
+Once approved, Cloud Build will build the unified Docker container, push the image to Artifact Registry, and roll out the new Cloud Run revision.
+
+### 3. Manual / Development Application Deployment (Cloud Run)
+
+For local development or testing before committing to `main`, you can deploy directly to Cloud Run from your local source tree:
+
+```bash
+# Deploy local source directly to Cloud Run
+make deploy-cloud-run
 ```
 
 ## Maintenance & Cleanup

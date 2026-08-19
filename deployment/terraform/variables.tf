@@ -148,7 +148,7 @@ variable "google_genai_use_vertexai" {
 variable "model" {
   description = "Gemini model to use"
   type        = string
-  default     = "gemini-2.5-flash"
+  default     = "gemini-3.7-flash"
 }
 
 variable "app_domain_name" {

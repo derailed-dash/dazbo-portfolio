@@ -97,6 +97,7 @@ The design language uses rounded corners consistently to soften the high-contras
 ## Components
 
 ### Glassmorphism
+
 A core design pattern using `backdrop-filter: blur(10px)` and semi-transparent backgrounds:
 *   **`.btn-glass`**: Transparent buttons with white borders and subtle hover glows.
 *   **`.glass-card`**: Low-opacity containers for markdown content and background elements.

@@ -22,13 +22,14 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 
 | Decision | Rationale |
 |----------|-----------|
-| **Use Gemini for LLM** | Native multimodal capabilities and massive 1M+ token context window. |
-| **Use ADK for agent framework** | Provides a production-grade foundation for agent orchestration. Provides the ability to orchestrate across multiple agents, manage context and artifacts, provides agentic evaluation tools, and provides convenient developer tools for interacting with agents. |
+| **Use Gemini for LLM** | Standardised on `gemini-3.7-flash` across all components (Chatbot, Enrichment, PR Review Actions) for low-latency multimodal reasoning, high instruction adherence, and cost efficiency. |
+| **Use ADK for agent framework** | Built on Google Agent Development Kit (ADK) `1.35.x` (`google-adk>=1.35.0,<2.0.0`). Provides a stable, production-grade foundation for agent orchestration, tools, and SSE streaming. |
 | **Use FastAPI for backend** | Chosen for its high-performance async capabilities, automatic OpenAPI documentation, and native Pydantic integration, ensuring strict type validation across the API surface. |
 | **Use React for frontend** | The industry standard for dynamic UIs. Its declarative component model efficiently handles complex states (like real-time chat and dynamic content filters) and benefits from a massive ecosystem. |
 | **Use Vite for frontend build** | Offers instant Hot Module Replacement and optimised production builds using Javascript ES modules, significantly outperforming legacy Webpack-based tools in developer experience and build speed. Efficient delivery to the client. |
 | **Use Terraform for infrastructure** | Enables declarative Infrastructure as Code (IaC), allowing us to version, audit, and reproduce the entire GCP environment (Cloud Run, Firestore, IAM) consistently across environments. |
 | **Use Google Cloud Build for CI/CD** | A fully managed, serverless CI/CD platform that integrates natively with GCP security. It executes builds in ephemeral, secure environments close to our artifact registry. Integrates seamlessly with GitHub, so that changes pushed to GitHub result in new builds and deployments. |
+| **Cloud Build Production Approval Gate** | The production deployment trigger enforces manual promotion (`approval_config { approval_required = true }`) to ensure deliberate release verification before updating Cloud Run revisions. |
 | **Unified Container Image** | Packaging the frontend, backend, and agent into a single container ensures atomic deployments, and greatly simplifies the overall solution and deployment process. |
 | **Unified Origin Architecture** | Serving React static assets directly from the FastAPI backend (acting as the origin) completely eliminates CORS complexity in production and simplifies cookie handling. |
 | **Use Firestore for Database** | A serverless, NoSQL document database chosen for its flexibility with semi-structured data (blogs, projects) and seamless integration with the ADK for chat memory/history. |
@@ -53,9 +54,9 @@ This document serves as the technical reference for the **Dazbo Portfolio** appl
 | **Hybrid Agent Tooling** | Combines managed Firestore MCP for surgical retrieval with bespoke Python tools for discovery and counting. Includes a monkey-patch for the `mcp-python-sdk` to bypass server-side JSON `null` schema bugs. |
 | **Custom Agent Subclass** | `PortfolioAgent` fixes ADK's app name inference issues in managed environments. |
 | **Omit Twitter Meta Tags** | Relies on Open Graph fallback for minimalist SEO and cleaner HTML structure. |
-| **Frontend Deduplication** | Identifies and merges cross-posted articles (e.g. dev.to and Medium) on the client side using title-based normalization, ensuring a single tile per unique article. |
+| **Frontend Deduplication** | Identifies and merges cross-posted articles (e.g. dev.to and Medium) on the client side using title-based normalisation, ensuring a single tile per unique article. |
 | **Thinking Level (`low`)** | Configured to balance reasoning depth with latency. For a simple portfolio chatbot, a `low` reasoning budget minimises response latency and API cost while still providing sufficient cognitive capability for basic instruction following and conversational QA. |
-| **Migrate to `gemini-review-action`** | Replaced deprecated `run-gemini-cli` action with a faster, custom-built composite action utilizing `uv` for rapid execution and Pydantic schema validation for JSON schema compliance. |
+| **Migrate to `gemini-review-action`** | Replaced deprecated `run-gemini-cli` action with a faster, custom-built composite action utilising `uv` for rapid execution and Pydantic schema validation for JSON schema compliance. |
 | **Automated Ingestion via Cloud Scheduler** | Moves daily ingestion out of GitHub Actions to a native GCP architecture. Cloud Scheduler triggers a secure FastAPI POST endpoint using Google OIDC token verification to execute sync tasks in non-blocking background threads. |
 
 

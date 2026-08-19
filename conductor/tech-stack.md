@@ -6,7 +6,7 @@
 - **Agent Framework:** Google Agent Development Kit (ADK) — Powers the interactive chat and agentic features.
 - **Backend Framework:** FastAPI — High-performance web framework for the API layer.
 - **Frontend Framework:** React 19 (with `react-markdown`) — Building the user interface for the portfolio and chat interaction. Uses **Glassmorphism** for a modern, cohesive UI aesthetic.
-- **AI Enrichment:** Gemini (via `google-genai` SDK) — Powers the `ContentEnrichmentService` for technical summarisation and tagging (Medium & Dev.to).
+- **AI Enrichment:** Gemini 3.7 Flash (via `google-genai` SDK) — Powers the `ContentEnrichmentService` for technical summarisation and tagging (Medium & Dev.to).
 - **Configuration:** `pydantic-settings` — Centralised and type-safe configuration management.
 - **Client-Side:** `axios` (API calls), `react-router-dom` (Navigation), `lucide-react` (Icons).
 
