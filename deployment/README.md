@@ -150,10 +150,12 @@ terraform apply -var-file="vars/env.tfvars"
 The project uses Google Cloud Build triggers configured in `build_triggers.tf` to manage automated builds and deployments:
 
 #### a. Pull Request Checks (`pr-dazbo-portfolio`)
+
 - **Trigger:** Opened or updated Pull Requests targeting `main`.
 - **Pipeline:** Runs `.cloudbuild/pr_checks.yaml` to execute code quality linters (`codespell`, `ruff`, `ty`) and test suites (`pytest`, `npm test`).
 
 #### b. Production Deployment with Manual Approval (`deploy-dazbo-portfolio`)
+
 - **Trigger:** Pushes / merges to the `main` branch.
 - **Pipeline:** `.cloudbuild/deploy-to-prod.yaml`.
 - **Approval Requirement:** The trigger is configured with `approval_config { approval_required = true }`. When triggered, the build pauses in a **`PENDING APPROVAL`** state to prevent accidental production rollouts.

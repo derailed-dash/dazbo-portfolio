@@ -84,8 +84,8 @@ dazbo-portfolio/
 | Component / Pattern | Details |
 | :--- | :--- |
 | **Frontend** | React 19, TypeScript, Vite, Glassmorphism UI |
-| **Backend** | Python 3.12, FastAPI, Pydantic v2 |
-| **AI / Agent** | Google ADK, Gemini 3, `google-genai` SDK |
+| **Backend** | Python 3.12 / 3.13, FastAPI, Pydantic v2 |
+| **AI / Agent** | Google ADK, Gemini 3.7 Flash, `google-genai` SDK |
 | **Database** | Google Firestore (Native Mode) |
 | **Infra / DevOps** | Terraform (IaC), Cloud Build (CI/CD), Docker, `uv` |
 | **Unified Origin** | Single FastAPI backend serving both REST API and React SPA |
